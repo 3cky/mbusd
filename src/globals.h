@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: globals.h,v 1.1 2003/09/13 20:38:16 kapyar Exp $
+ * $Id: globals.h,v 1.2 2003/09/27 13:45:01 kapyar Exp $
  */
 
 #ifndef _GLOBALS_H
@@ -36,7 +36,7 @@
 
 /* Include global configuration header file */
 #ifdef HAVE_CONFIG_H
-#include <config.h>
+#  include <config.h>
 #endif
 
 #include <sys/types.h>
@@ -59,7 +59,7 @@
 #include <netdb.h>
 #include <fcntl.h>
 #ifdef HAVE_LIBUTIL
-#include <libutil.h>
+#  include <libutil.h>
 #endif
 
 /*
@@ -68,7 +68,7 @@
 #define LOG
 #ifdef LOG
 /* uncomment this line for extra debug log info */
-#define DEBUG
+#  define DEBUG
 #endif
 
 /*
@@ -86,18 +86,18 @@
 /*
  * Constants
  */
-#define RC_OK 0
-#define RC_ERR -1
-#define RC_BREAK -2
+#define RC_OK       0
+#define RC_ERR     -1
+#define RC_BREAK   -2
 #define RC_TIMEOUT -3
-#define RC_AOPEN -4
-#define RC_ACLOSE -5
+#define RC_AOPEN   -4
+#define RC_ACLOSE  -5
 
 /* Internal string buffers size */
 #if defined(PATH_MAX)
-#define INTBUFSIZE PATH_MAX
+#  define INTBUFSIZE PATH_MAX
 #else
-#define INTBUFSIZE 1023
+#  define INTBUFSIZE 1023
 #endif
 
 #endif

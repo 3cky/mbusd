@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: sock.h,v 1.1 2003/09/13 20:38:45 kapyar Exp $
+ * $Id: sock.h,v 1.2 2003/09/27 13:45:01 kapyar Exp $
  */
 
 #ifndef _SOCKUTILS_H
@@ -36,7 +36,7 @@
 
 #include "globals.h"
 #ifdef LOG
-#include "log.h"
+#  include "log.h"
 #endif
 
 #define BACKLOG 5

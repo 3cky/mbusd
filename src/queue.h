@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: queue.h,v 1.1 2003/09/13 20:38:39 kapyar Exp $
+ * $Id: queue.h,v 1.2 2003/09/27 13:45:01 kapyar Exp $
  */
 
 #ifndef _QUEUE_H
@@ -37,7 +37,7 @@
 #include "globals.h"
 #include "conn.h"
 #ifdef LOG
-#include "log.h"
+#  include "log.h"
 #endif
 
 /*
