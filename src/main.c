@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: main.c,v 1.1 2003/09/13 20:38:16 kapyar Exp $
+ * $Id: main.c,v 1.2 2003/09/27 13:22:52 kapyar Exp $
  */
 
 #include "globals.h"
@@ -39,7 +39,7 @@
 #include "queue.h"
 #include "sig.h"
 #ifdef LOG
-#include "log.h"
+#  include "log.h"
 #endif
 
 int isdaemon = TRUE;
@@ -52,6 +52,46 @@ int server_sd = -1;
 ttydata_t tty;
 /* Connections queue descriptor */
 queue_t queue;
+
+#ifndef HAVE_DAEMON
+#include <fcntl.h>
+#include <unistd.h>
+/* 
+ * System function daemon() replacement based on FreeBSD implementation.
+ * Original source file CVS tag:
+ * $FreeBSD: src/lib/libc/gen/daemon.c,v 1.3 2000/01/27 23:06:14 jasone Exp $
+ */
+int
+daemon(nochdir, noclose)
+  int nochdir, noclose;
+{
+  int fd;
+
+  switch (fork()) {
+    case -1:
+      return (-1);
+    case 0:
+      break;
+    default:
+      _exit(0);
+  }
+
+  if (setsid() == -1)
+    return (-1);
+
+  if (!nochdir)
+    (void)chdir("/");
+
+  if (!noclose && (fd = _open("/dev/null", O_RDWR, 0)) != -1) {
+    (void)dup2(fd, STDIN_FILENO);
+    (void)dup2(fd, STDOUT_FILENO);
+    (void)dup2(fd, STDERR_FILENO);
+    if (fd > 2)
+      (void)_close(fd);
+  }
+  return (0);
+}
+#endif
 
 void
 usage(char *exename)
@@ -244,4 +284,3 @@ main(int argc, char *argv[])
 #endif
   return (err);
 }
-

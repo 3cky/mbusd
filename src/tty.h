@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: tty.h,v 1.1 2003/09/13 20:38:28 kapyar Exp $
+ * $Id: tty.h,v 1.2 2003/09/27 13:22:52 kapyar Exp $
  */
 
 #ifndef _TTY_H
@@ -45,7 +45,14 @@
 /*
  * Default tty port parameters
  */
-#define DEFAULT_PORT "/dev/cuaa0"
+#if defined (__CYGWIN__)
+#  define DEFAULT_PORT "/dev/COM1"
+#elif defined (__linux__)
+#  define DEFAULT_PORT "/dev/ttyS0"
+#else
+#  define DEFAULT_PORT "/dev/cuaa0"
+#endif
+
 #define DEFAULT_SPEED 19200
 #define DEFAULT_BSPEED B19200
 
@@ -58,8 +65,8 @@
  * TRX control types
  */
 #ifdef  TRX_CTL
-#define TRX_ADDC 0
-#define TRX_RTS  !TRX_ADDC
+#  define TRX_ADDC 0
+#  define TRX_RTS  !TRX_ADDC
 #endif
 
 /*

@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: tty.c,v 1.1 2003/09/13 20:38:28 kapyar Exp $
+ * $Id: tty.c,v 1.2 2003/09/27 13:22:52 kapyar Exp $
  */
 
 #include "tty.h"
@@ -134,7 +134,12 @@ tty_set_attr(ttydata_t *mod)
   mod->tios.c_lflag = FALSE;
   mod->tios.c_cc[VTIME] = 0;
   mod->tios.c_cc[VMIN] = 1;
+#ifdef HAVE_CFSETSPEED
   cfsetspeed(&mod->tios, tty_transpeed(mod->speed));
+#else
+  cfsetispeed(&mod->tios, tty_transpeed(mod->speed));
+  cfsetospeed(&mod->tios, tty_transpeed(mod->speed));
+#endif
   if (tcsetattr(mod->fd, TCSANOW, &mod->tios))
     return RC_ERR;
 #if defined(TIOCSETA)
