@@ -6,14 +6,14 @@ RunInTerminal=true
 ShowLocals=true
 
 [filenumbers]
-0=39
-1=46
-2=141
+0=1
+1=143
+2=143
 3=1
 4=1
-5=143
-6=143
-7=1
+5=115
+6=59
+7=39
 
 [filemarkers]
 0=
@@ -26,14 +26,14 @@ ShowLocals=true
 7=
 
 [filelist]
-0=/usr/home/avm/work/mbus/src/log.h
-1=/usr/home/avm/work/mbus/src/log.c
-2=/usr/home/avm/work/mbus/src/main.c
-3=/usr/home/avm/work/mbus/src/cfg.c
-4=/usr/home/avm/work/mbus/src/cfg.h
-5=/usr/home/avm/work/mbus/src/sock.c
-6=/usr/home/avm/work/mbus/src/tty.c
-7=/usr/home/avm/work/mbus/src/globals.h
+0=/usr/home/avm/work/mbus/src/globals.h
+1=/usr/home/avm/work/mbus/src/tty.c
+2=/usr/home/avm/work/mbus/src/sock.c
+3=/usr/home/avm/work/mbus/src/cfg.h
+4=/usr/home/avm/work/mbus/src/cfg.c
+5=/usr/home/avm/work/mbus/src/main.c
+6=/usr/home/avm/work/mbus/src/log.c
+7=/usr/home/avm/work/mbus/src/log.h
 
 [find_text]
 0=argv[0]
