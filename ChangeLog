@@ -1,0 +1,10 @@
+0.1.1
+-----------
+13-sep-2003  Initial release.
+
+0.1.2
+-----------
+26-sep-2003  Some changes and fixups:
+
+* Compilation under CYGWIN now is possible.
+
