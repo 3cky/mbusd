@@ -1,6 +1,6 @@
-.TH "mbusd" 8 "13 September 2003" "mbusd @VERSION@" 
+.TH "mbusd" 8 "26 October 2003" "mbusd @VERSION@" 
 .SH NAME
-mbusd \- OpenMODBUS/TCP to MODBUS RTU gateway server
+mbusd \- MODBUS/TCP to MODBUS/RTU gateway server
 .SH SYNOPSIS
 .B mbusd
 .RB [ -h ]
@@ -26,7 +26,7 @@ mbusd \- OpenMODBUS/TCP to MODBUS RTU gateway server
 .RB [ -T
 .IR value ] 
 .SH DESCRIPTION
-\fImbusd\fR is OpenMODBUS/TCP to MODBUS RTU gateway server.
+\fImbusd\fR is MODBUS/TCP to MODBUS/RTU gateway server (currently master mode only is supported).
 .SH OPTIONS
 .IP \fB-h\fR
 Usage help.
@@ -39,7 +39,7 @@ If \fImbusd\fR was compiled in debug mode, valid log levels is up to 9,
 where log levels above 2 forces logging of information about additional 
 internal events.
 .IP "\fB-L \fIname\fR"
-Specifies log file name.
+Specifies log file name. Value '-' forces log data output to STDOUT only if \fB-d\fR switch was given.
 .IP "\fB-p \fIname\fR"
 Specifies serial port device name.
 .IP "\fB-s \fIvalue\fR"
@@ -60,9 +60,9 @@ Specifies connection timeout value in seconds. 0 - no timeout.
 Because MODBUS RTU protocol have situations which can't straightforwardly 
 translated into MODBUS/TCP protocol entities, \fImbusd\fR extends standard excepton codes set.
 In case of situation when \fImbusd\fR received response with invalid CRC and can't correct
-error by re-request, it returns MODBUS/TCP packet with exception code 128. In case of situation 
+error by re-request, it return MODBUS/TCP packet with exception code 128. In case of situation 
 when \fImbusd\fR can't receive response from MODBUS RTU device (e.g. addressed controller 
-is not present on the network), it returns MODBUS/TCP packet with exception code 129.
+is not present on the network), it return MODBUS/TCP packet with exception code 129.
 .SH FILES
 .PP
 The default location of the \fImbusd\fR log file is:
