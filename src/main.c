@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: main.c,v 1.3 2003/10/10 20:40:53 kapyar Exp $
+ * $Id: main.c,v 1.4 2003/10/26 19:22:18 kapyar Exp $
  */
 
 #include "globals.h"
@@ -110,7 +110,9 @@ usage(char *exename)
 #else
    "  -v<level>      set log level (0-2, default %d, 0 - errors only)\n"
 #endif
-   "  -L<name>       set log file name (default %s%s)\n"
+   "  -L<name>       set log file name (default %s%s, \n"
+   "                 value '-' forces log data output to STDOUT only\n"
+   "                 if '-d' switch was given)\n"
 #endif
 	 "  -p<name>       set serial port device name (default %s)\n"
 	 "  -s<value>      set serial port speed (default %d)\n"
@@ -177,26 +179,40 @@ main(int argc, char *argv[])
 #ifdef LOG
       case 'v':
         cfg.dbglvl = (char)strtol(optarg, NULL, 0);
-#ifdef DEBUG
+#  ifdef DEBUG
         if (cfg.dbglvl < 0 || cfg.dbglvl > 9)
         { /* report about invalid log level */
           printf("%s: -v: invalid loglevel value"
                  " (%d, must be 0-9)\n", exename, cfg.dbglvl);
-#else
+#  else
         if (cfg.dbglvl < 0 || cfg.dbglvl > 9)
         { /* report about invalid log level */
           printf("%s: -v: invalid loglevel value"
                  " (%d, must be 0-2)\n", exename, cfg.dbglvl);
-#endif
+#  endif
           exit(-1);
         }
         break;
       case 'L':
-        if (*optarg != '/') 
-        { /* concatenate given log file name with default path */
-          strncpy(cfg.logname, LOGPATH, INTBUFSIZE);
-          strncat(cfg.logname, optarg,
-                  INTBUFSIZE - strlen(cfg.logname));
+        if (*optarg != '/')
+        {
+          if (*optarg == '-')
+          {
+            if (isdaemon)
+            {
+               printf("%s: -L: '-' value is valid only if "
+                      "-d switch was given\n", exename);
+               exit(-1);
+            }
+            /* logfile isn't needed, doing all output to STDOUT */
+            *cfg.logname = '\0';
+          }
+          else
+          { /* concatenate given log file name with default path */
+            strncpy(cfg.logname, LOGPATH, INTBUFSIZE);
+            strncat(cfg.logname, optarg,
+                    INTBUFSIZE - strlen(cfg.logname));
+          }
         }
         else strncpy(cfg.logname, optarg, INTBUFSIZE);
         break;
