@@ -28,13 +28,15 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: log.h,v 1.1 2003/09/13 20:38:16 kapyar Exp $
+ * $Id: log.h,v 1.2 2003/10/02 20:03:55 kapyar Exp $
  */
 
 #ifndef _LOG_H
 #define _LOG_H
 
 #include "globals.h"
+
+extern int isdaemon;
 
 /* Default log file path and name */
 #define LOGPATH "/var/log/"

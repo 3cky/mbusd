@@ -40,7 +40,7 @@ if test "X${CDPATH+set}" = Xset; then CDPATH=:; export CDPATH; fi
 # LD="/usr/libexec/elf/ld" LDFLAGS="" LIBS="" \
 # NM="/usr/bin/nm -B" RANLIB="ranlib" LN_S="ln -s" \
 # DLLTOOL="" OBJDUMP="" AS="" \
-#   ./ltconfig --cache-file=./config.cache --with-gcc --with-gnu-ld --no-verify ./ltmain.sh i386-unknown-freebsdelf4.8
+#   ./ltconfig --cache-file=./config.cache --with-gcc --with-gnu-ld --no-verify ./ltmain.sh i386-unknown-freebsdelf4.9
 #
 # Compiler and other test output produced by ltconfig, useful for
 # debugging ltconfig, is in ./config.log if it exists.
@@ -70,8 +70,8 @@ build_old_libs=yes
 fast_install=yes
 
 # The host system.
-host_alias=i386-unknown-freebsdelf4.8
-host=i386-unknown-freebsdelf4.8
+host_alias=i386-unknown-freebsdelf4.9
+host=i386-unknown-freebsdelf4.9
 
 # An echo program that does not interpret backslashes.
 echo="echo"

@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: log.c,v 1.1 2003/09/13 20:38:16 kapyar Exp $
+ * $Id: log.c,v 1.2 2003/10/02 20:03:55 kapyar Exp $
  */
 
 #include "log.h"
@@ -93,7 +93,7 @@ log(int level, char *fmt, ...)
   int strsize = 0;
   static char str[INTBUFSIZE + 1] = {0}, *p;
 
-  if (*logfullname == '\0' || level > cfg.dbglvl) return;
+  if (level > cfg.dbglvl) return;
 #ifdef HRDATE
   tt = time(NULL);
   t = localtime(&tt);
@@ -107,6 +107,8 @@ log(int level, char *fmt, ...)
   strsize += vsnprintf(p, INTBUFSIZE - strsize, fmt, args);
   va_end(args);
   strcpy(str + strsize++, "\n");
+  if (!isdaemon) printf("%s", str);
+  if (*logfullname == '\0') return;
   log_app(logfullname, str);
 }
 #endif
