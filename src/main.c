@@ -28,10 +28,12 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: main.c,v 1.2 2003/09/27 13:22:52 kapyar Exp $
+ * $Id: main.c,v 1.3 2003/10/10 20:40:53 kapyar Exp $
  */
 
 #include "globals.h"
+#include "string.h"
+#include "errno.h"
 #include "cfg.h"
 #include "tty.h"
 #include "sock.h"
@@ -42,6 +44,7 @@
 #  include "log.h"
 #endif
 
+extern char logfullname[];
 int isdaemon = TRUE;
 
 void usage(char *exename);
@@ -96,35 +99,36 @@ daemon(nochdir, noclose)
 void
 usage(char *exename)
 {
-  printf("%s-%s copyright (c) Victor Antonovich, 2002-2003 // 2:5055/124.13@fidonet\n"
-	 "usage: %s [<options>] \n"
-	 "-h             this help\n"
-	 "-d             don't daemonize\n"
+  printf("%s-%s Copyright (C) 2002, 2003 Victor Antonovich <avmlink@vlink.ru>\n\n"
+	 "Usage: %s [-h] [-d] [-v level] [-L name] [-p name] [-s value] [-P number]\n"
+   "             [-C number] [-N number] [-R value] [-W value] [-T value]\n\n"
+	 "  -h             this help\n"
+	 "  -d             don't daemonize\n"
 #ifdef LOG
 #ifdef DEBUG
-     "-v<level>      set log level (0-9, default %d, 0 - errors only)\n"
+   "  -v<level>      set log level (0-9, default %d, 0 - errors only)\n"
 #else
-     "-v<level>      set log level (0-2, default %d, 0 - errors only)\n"
+   "  -v<level>      set log level (0-2, default %d, 0 - errors only)\n"
 #endif
-     "-L<name>       set log file name (default %s%s)\n"
+   "  -L<name>       set log file name (default %s%s)\n"
 #endif
-	 "-p<name>       set serial port device name (default %s)\n"
-	 "-s<value>      set serial port speed (default %d)\n"
+	 "  -p<name>       set serial port device name (default %s)\n"
+	 "  -s<value>      set serial port speed (default %d)\n"
 #ifdef TRXCTL
-	 "-t             force RTS RS-485 transmitting/receiving control\n"
+	 "  -t             force RTS RS-485 transmitting/receiving control\n"
 #endif
-	 "-P<number>     set TCP server port number (default %d)\n"
-     "-C<number>     set number of simultaneous connections\n"
-     "               (1-128, default %d)\n"
-     "-N<number>     set number of request retries\n"
-     "               (0-15, default %d, 0 - without retries)\n"
-     "-R<value>      set pause between requests, millisecs\n"
-     "               (1-10000, default %lu)\n"
-     "-W<value>      set response wait time, millisecs\n"
-     "               (1-10000, default %lu)\n"
-     "-T<value>      set connection timeout value, secs\n"
-     "               (0-1000, default %d, 0 - no timeout)"
-	 "\n", PACKAGE, VERSION, exename,
+	 "  -P<number>     set TCP server port number (default %d)\n"
+   "  -C<number>     set maximum number of simultaneous connections\n"
+   "                 (1-128, default %d)\n"
+   "  -N<number>     set maximum number of request retries\n"
+   "                 (0-15, default %d, 0 - without retries)\n"
+   "  -R<value>      set pause between requests in milliseconds\n"
+   "                 (1-10000, default %lu)\n"
+   "  -W<value>      set response wait time in milliseconds\n"
+   "                 (1-10000, default %lu)\n"
+   "  -T<value>      set connection timeout value in seconds\n"
+   "                 (0-1000, default %d, 0 - no timeout)"
+   "\n", PACKAGE, VERSION, exename,
 #ifdef LOG
       cfg.dbglvl, LOGPATH, LOGNAME,
 #endif
@@ -137,10 +141,17 @@ int
 main(int argc, char *argv[])
 {
   int err = 0, rc;
+  char *exename;
+  
   sig_init();
   cfg_init();
 
-  /* command line parsing */
+  if ((exename = strrchr(argv[0], '/')) == NULL)
+    exename = argv[0];
+  else
+    exename++;
+    
+  /* command line argument list parsing */
   while ((rc = getopt(argc, argv,
                "dh"
 #ifdef TRXCTL
@@ -153,6 +164,8 @@ main(int argc, char *argv[])
   {
     switch (rc)
     {
+      case '?':
+        exit(-1);
       case 'd':
         isdaemon = FALSE;
         break;
@@ -167,13 +180,13 @@ main(int argc, char *argv[])
 #ifdef DEBUG
         if (cfg.dbglvl < 0 || cfg.dbglvl > 9)
         { /* report about invalid log level */
-          printf("-v: invalid loglevel"
-                 " (%d, must be 0-9)\n", cfg.dbglvl);
+          printf("%s: -v: invalid loglevel value"
+                 " (%d, must be 0-9)\n", exename, cfg.dbglvl);
 #else
         if (cfg.dbglvl < 0 || cfg.dbglvl > 9)
         { /* report about invalid log level */
-          printf("-v: invalid loglevel"
-                 " (%d, must be 0-2)\n", cfg.dbglvl);
+          printf("%s: -v: invalid loglevel value"
+                 " (%d, must be 0-2)\n", exename, cfg.dbglvl);
 #endif
           exit(-1);
         }
@@ -190,8 +203,8 @@ main(int argc, char *argv[])
 #endif
       case 'p':
         if (*optarg != '/') 
-        { /* concatenate given port name with default */
-          /* path to devices mountpoint */
+        { /* concatenate given port name with default
+             path to devices mountpoint */
           strncpy(cfg.ttyport, "/dev/", INTBUFSIZE);
           strncat(cfg.ttyport, optarg,
                   INTBUFSIZE - strlen(cfg.ttyport));
@@ -208,17 +221,17 @@ main(int argc, char *argv[])
         cfg.maxconn = strtoul(optarg, NULL, 0);
         if (cfg.maxconn < 1 || cfg.maxconn > 128)
         { /* report about invalid max conn number */
-          printf("-C: invalid number"
-                 " (%d, must be 1-128)\n", cfg.maxconn);
+          printf("%s: -C: invalid maxconn value"
+                 " (%d, must be 1-128)\n", exename, cfg.maxconn);
           exit(-1);
         }
         break;
       case 'N':
         cfg.maxtry = strtoul(optarg, NULL, 0);
         if (cfg.maxtry > 15)
-        { /* report about invalid max conn number */
-          printf("-N: invalid number"
-                 " (%d, must be 0-15)\n", cfg.maxtry);
+        { /* report about invalid max try number */
+          printf("%s: -N: invalid maxtry value"
+                 " (%d, must be 0-15)\n", exename, cfg.maxtry);
           exit(-1);
         }
         break;
@@ -226,8 +239,8 @@ main(int argc, char *argv[])
         cfg.rqstpause = strtoul(optarg, NULL, 0);
         if (cfg.rqstpause < 1 || cfg.rqstpause > 10000)
         { /* report about invalid rqst pause value */
-          printf("-R: invalid number"
-                 " (%lu, must be 1-10000)\n", cfg.rqstpause);
+          printf("%s: -R: invalid inter-request pause value"
+                 " (%lu, must be 1-10000)\n", exename, cfg.rqstpause);
           exit(-1);
         }
         break;
@@ -235,8 +248,8 @@ main(int argc, char *argv[])
         cfg.respwait = strtoul(optarg, NULL, 0);
         if (cfg.respwait < 1 || cfg.respwait > 10000)
         { /* report about invalid resp wait value */
-          printf("-W: invalid number"
-                 " (%lu, must be 1-10000)\n", cfg.respwait);
+          printf("%s: -W: invalid response wait time value"
+                 " (%lu, must be 1-10000)\n", exename, cfg.respwait);
           exit(-1);
         }
         break;
@@ -244,18 +257,25 @@ main(int argc, char *argv[])
         cfg.conntimeout = strtoul(optarg, NULL, 0);
         if (cfg.conntimeout > 1000)
         { /* report about invalid conn timeout value */
-          printf("-T: invalid number"
-                 " (%d, must be 1-1000)\n", cfg.conntimeout);
+          printf("%s: -T: invalid conn timeout value"
+                 " (%d, must be 1-1000)\n", exename, cfg.conntimeout);
           exit(-1);
         }
         break;
       case 'h':
-        usage(argv[0]);
+        usage(exename);
     }
   }
 
 #ifdef LOG
-  log_init(cfg.logname);
+  if (log_init(cfg.logname) != RC_OK)
+  {
+    printf("%s: can't open logfile '%s' (%s), exiting...\n",
+           exename,
+           logfullname[0] ? logfullname : "no log name was given",
+           strerror(errno));
+    exit(-1);
+  }
   log(2, "%s-%s started...", PACKAGE, VERSION);
 #endif
 
