@@ -1,0 +1,5 @@
+To do:
+
+* Broadcast MODBUS messaging implementation
+* Response receiving by length (currently by timeout)
+* SSL secure connection handling

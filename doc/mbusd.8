@@ -1,0 +1,79 @@
+.TH "mbusd" 8 "13 September 2003" "mbusd 0.1.1" 
+.SH NAME
+mbusd \- OpenMODBUS/TCP to MODBUS RTU gateway server
+.SH SYNOPSIS
+.B mbusd
+.RB [ -h ]
+.RB [ -d ]
+.RB [ -v
+.IR level ]
+.RB [ -L
+.IR name ]
+.RB [ -p
+.IR name ] 
+.RB [ -s
+.IR value ] 
+.RB [ -P
+.IR number ] 
+.RB [ -C
+.IR number ]
+.RB [ -N
+.IR number ] 
+.RB [ -R
+.IR value ] 
+.RB [ -W
+.IR value ] 
+.RB [ -T
+.IR value ] 
+.SH DESCRIPTION
+\fImbusd\fR is OpenMODBUS/TCP to MODBUS RTU gateway server.
+.SH OPTIONS
+.IP \fB-h\fR
+Usage help.
+.IP \fB-d\fR
+Instruct \fImbusd\fR not to fork itself (non-daemonize).
+.IP "\fB-v \fIlevel\fR"
+Specifies log verbosity level. 0 enables logging of errors only, 
+1 also enables warnings and 2 enables information messages.
+If \fImbusd\fR was compiled in debug mode, valid log levels is up to 9, 
+where log levels above 2 forces logging of information about additional 
+internal events.
+.IP "\fB-L \fIname\fR"
+Specifies log file name.
+.IP "\fB-p \fIname\fR"
+Specifies serial port device name.
+.IP "\fB-s \fIvalue\fR"
+Specifies serial port speed.
+.IP "\fB-P \fInumber\fR"
+Specifies TCP port number.
+.IP "\fB-C \fInumber\fR"
+Specifies maximum number of simultaneous connections.
+.IP "\fB-N \fInumber\fR"
+Specifies maximum number of request retries. 0 - no retries.
+.IP "\fB-R \fIvalue\fR"
+Specifies pause between requests in miliseconds.
+.IP "\fB-W \fIvalue\fR"
+Specifies response wait time in miliseconds.
+.IP "\fB-T \fIvalue\fR"
+Specifies connection timeout value in seconds. 0 - no timeout.
+.SH NOTES
+Because MODBUS RTU protocol have situations which can't straightforwardly 
+translated into MODBUS/TCP protocol entities, \fImbusd\fR extends standard excepton codes set.
+In case of situation when \fImbusd\fR received response with invalid CRC and can't correct
+error by re-request, it returns MODBUS/TCP packet with exception code 128. In case of situation 
+when \fImbusd\fR can't receive response from MODBUS RTU device (e.g. addressed controller 
+is not present on the network), it returns MODBUS/TCP packet with exception code 129.
+.SH FILES
+.PP
+The default locations of the \fImbusd\fR log file is:
+.PP
+/var/log/mbusd.log
+.SH BUGS
+Broadcast messaging on MODBUS network isn't supported.
+
+Please send bug reports to author.
+.SH AUTHOR
+Victor Antonovich <avmlink@vlink.ru>.
+.SH LICENSE
+This program is distributed under the BSD-like license, included in
+each source file. See also COPYING file in the installation directory.
