@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: log.c,v 1.2 2003/10/02 20:03:55 kapyar Exp $
+ * $Id: log.c,v 1.3 2003/10/10 20:44:06 kapyar Exp $
  */
 
 #include "log.h"
@@ -60,7 +60,6 @@ log_init(char *logname)
     fclose(logfile);
     return RC_OK;
   }
-  *logfullname = '\0';
   return RC_ERR;
 }
 
