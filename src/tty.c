@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: tty.c,v 1.1 2003/09/13 20:38:28 kapyar Exp $
+ * $Id: tty.c,v 1.1.1.1 2003/09/13 20:38:28 kapyar Exp $
  */
 
 #include "tty.h"
