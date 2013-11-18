@@ -3,19 +3,19 @@
  *
  * conn.h - connections management procedures
  *
- * Copyright (c) 2002-2003, Victor Antonovich (avmlink@vlink.ru)
- * 
+ * Copyright (c) 2002-2003, 2013, Victor Antonovich (avmlink@vlink.ru)
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * - Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
- * 
+ *
  * - Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -28,9 +28,9 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: conn.h,v 1.1 2003/09/13 20:38:33 kapyar Exp $
+ * $Id: conn.h,v 1.2 2013/11/18 08:57:01 kapyar Exp $
  */
- 
+
 #ifndef _CONN_H
 #define _CONN_H
 
@@ -44,13 +44,13 @@
 #endif
 
 /*
- * Default values 
+ * Default values
  */
 #define DEFAULT_SERVERPORT 502
 #define DEFAULT_MAXCONN 32
 #define DEFAULT_MAXTRY 3
 #define DEFAULT_RQSTPAUSE 100
-#define DEFAULT_RESPWAIT 10
+#define DEFAULT_RESPWAIT 50
 #define DEFAULT_CONNTIMEOUT 60
 
 #define CRCSIZE 2       /* size (in bytes) of CRC */

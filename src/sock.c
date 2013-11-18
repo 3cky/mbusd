@@ -1,21 +1,21 @@
 /*
  * OpenMODBUS/TCP to RS-232/485 MODBUS RTU gateway
  *
- * sock.c - socket manipulation routines 
+ * sock.c - socket manipulation routines
  *
- * Copyright (c) 2002-2003, Victor Antonovich (avmlink@vlink.ru)
- * 
+ * Copyright (c) 2002-2003, 2013, Victor Antonovich (avmlink@vlink.ru)
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * - Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
- * 
+ *
  * - Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: sock.c,v 1.1 2003/09/13 20:38:45 kapyar Exp $
+ * $Id: sock.c,v 1.2 2013/11/18 08:57:01 kapyar Exp $
  */
 
 #include "sock.h"
@@ -38,7 +38,7 @@
  *
  * Return: RC_ERR if there some errors
  */
-int 
+int
 sock_set_blkmode(int sd, int blkmode)
 {
   int flags;
@@ -57,7 +57,7 @@ sock_set_blkmode(int sd, int blkmode)
  *
  * Return: socket descriptor, otherwise RC_ERR if there some errors
  */
-int 
+int
 sock_create(int blkmode)
 {
   int sock;
@@ -93,7 +93,7 @@ sock_create(int blkmode)
  *
  * Return: socket descriptor, otherwise RC_ERR if there some errors
  */
-int 
+int
 sock_create_server(char *server_ip,
   unsigned short server_port, int blkmode)
 {
@@ -127,7 +127,7 @@ sock_create_server(char *server_ip,
 #endif
     return RC_ERR;
   }
-  /* ajust socket rx and tx buffer sizes */
+  /* adjust socket rx and tx buffer sizes */
   sock_opt = SOCKBUFSIZE;
   if ((setsockopt(server_s, SOL_SOCKET,
                   SO_SNDBUF, (void *)&sock_opt,
@@ -143,7 +143,7 @@ sock_create_server(char *server_ip,
 #endif
     return RC_ERR;
   }
-  
+
   memset(&server_sockaddr, 0, sizeof(server_sockaddr));
   server_sockaddr.sin_family = AF_INET;
 
@@ -164,7 +164,7 @@ sock_create_server(char *server_ip,
 #endif
     return RC_ERR;
   }
-  
+
   /* let's listen */
   if (listen(server_s, BACKLOG) == -1)
   {
@@ -186,12 +186,12 @@ sock_create_server(char *server_ip,
  * Return: socket descriptor, otherwise RC_ERR if there some errors;
  *         RMT_ADDR - ptr to connection info structure
  */
-int 
+int
 sock_accept(int server_sd, struct sockaddr_in *rmt_addr, int blkmode)
 {
   int sd, sock_opt = SOCKBUFSIZE;
   int rmt_len = sizeof(struct sockaddr_in);
-  
+
   sd = accept(server_sd, (struct sockaddr *) rmt_addr,
               (socklen_t *) &rmt_len);
   if (sd == -1)
@@ -207,13 +207,13 @@ sock_accept(int server_sd, struct sockaddr_in *rmt_addr, int blkmode)
   if (sock_set_blkmode(sd, blkmode) == RC_ERR)
   {
 #ifdef LOG
-    log(0, "sock_accept(): can't set socket blocking mode (%s)", 
+    log(0, "sock_accept(): can't set socket blocking mode (%s)",
            strerror(errno));
 #endif
     close(sd);
     return RC_ERR;
   }
-  /* ajust socket rx and tx buffer sizes */
+  /* adjust socket rx and tx buffer sizes */
   if ((setsockopt(sd, SOL_SOCKET,
                   SO_SNDBUF, (void *)&sock_opt,
 		          sizeof(sock_opt)) == -1) ||

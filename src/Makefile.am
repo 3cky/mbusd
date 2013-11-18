@@ -1,8 +1,9 @@
 ## Process this file with automake to produce Makefile.in
 
-CFLAGS =\
-	-W -pedantic\
-	 -Wall -O2
+AM_CFLAGS =\
+	-W -pedantic -fno-builtin-log\
+	-Wall\
+	-O2
 
 bin_PROGRAMS = mbusd
 

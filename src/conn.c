@@ -3,19 +3,19 @@
  *
  * conn.c - connections management procedures
  *
- * Copyright (c) 2002-2003, Victor Antonovich (avmlink@vlink.ru)
- * 
+ * Copyright (c) 2002-2003, 2013, Victor Antonovich (avmlink@vlink.ru)
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * - Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
- * 
+ *
  * - Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: conn.c,v 1.1 2003/09/13 20:38:33 kapyar Exp $
+ * $Id: conn.c,v 1.2 2013/11/18 08:57:01 kapyar Exp $
  */
 
 #include "conn.h"
@@ -47,7 +47,7 @@ int max_sd; /* major descriptor in the select() sets */
 void conn_tty_start(ttydata_t *tty, conn_t *conn);
 ssize_t conn_read(int d, void *buf, size_t nbytes);
 ssize_t conn_write(int d, void *buf, size_t nbytes);
-int conn_select(int nfds, 
+int conn_select(int nfds,
                 fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
                 struct timeval *timeout);
 
@@ -77,7 +77,7 @@ conn_init(void)
     return RC_ERR;
   }
   state_tty_set(&tty, TTY_READY);
-  
+
   /* create server socket */
   if ((server_sd =
          sock_create_server("", cfg.serverport, TRUE)) < 0)
@@ -89,10 +89,10 @@ conn_init(void)
 #endif
     return RC_ERR;
   }
-  
+
   /* connections queue initialization */
   queue_init(&queue);
-  
+
   return RC_OK;
 }
 
@@ -107,7 +107,7 @@ conn_open(void)
   int sd;
   conn_t *newconn;
   struct sockaddr_in rmt_addr;
-  
+
   if ((sd = sock_accept(server_sd, &rmt_addr, TRUE)) == RC_ERR)
   { /* error in conn_accept() */
 #ifdef LOG
@@ -144,7 +144,7 @@ conn_open(void)
   /* enqueue connection */
   newconn = queue_new_elem(&queue);
   newconn->sd = sd;
-  memcpy((void *) &newconn->sockaddr, 
+  memcpy((void *) &newconn->sockaddr,
          &rmt_addr, sizeof(struct sockaddr_in));
   state_conn_set(newconn, CONN_HEADER);
 }
@@ -174,14 +174,14 @@ conn_close(conn_t *conn)
 
 /*
  * Start tty transaction
- * Parameters: TTY - ptr to tty structure, 
+ * Parameters: TTY - ptr to tty structure,
  *             CONN - ptr to active connection
  * Return: none
  */
 void
 conn_tty_start(ttydata_t *tty, conn_t *conn)
 {
-  (void)memcpy((void *)tty->txbuf, 
+  (void)memcpy((void *)tty->txbuf,
                (void *)(conn->buf + HDRSIZE),
                MB_HDR(conn->buf, MB_LENGTH_L));
   modbus_crc_write(tty->txbuf, MB_HDR(conn->buf, MB_LENGTH_L));
@@ -192,7 +192,7 @@ conn_tty_start(ttydata_t *tty, conn_t *conn)
 
 /*
  * Read() wrapper. Read nomore BYTES from descriptor D in buffer BUF
- * Return: number of successfully readed bytes,
+ * Return: number of successfully read bytes,
  *         RC_ERR in case of error.
  */
 ssize_t
@@ -200,14 +200,18 @@ conn_read(int d, void *buf, size_t nbytes)
 {
   int rc;
   do
-  { /* trying read from descriptor while breaked by signals */ 
+  { /* trying read from descriptor while breaked by signals */
     rc = read(d, buf, nbytes);
   } while (rc == -1 && errno == EINTR);
   return (rc < 0) ? RC_ERR : rc;
 }
 
+#include <stdio.h>
+#include <stdlib.h>
+
+
 /*
- * Write() wrapper. Write nomore BYTES to descriptor D from buffer BUF
+ * Write() wrapper. Write no more than BYTES to descriptor D from buffer BUF
  * Return: number of successfully written bytes,
  *         RC_ERR in case of error.
  */
@@ -216,7 +220,7 @@ conn_write(int d, void *buf, size_t nbytes)
 {
   int rc;
   do
-  { /* trying write to descriptor while breaked by signals */ 
+  { /* trying write to descriptor while breaked by signals */
     rc = write(d, buf, nbytes);
   } while (rc == -1 && errno == EINTR);
   return (rc < 0) ? RC_ERR : rc;
@@ -234,7 +238,7 @@ conn_select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
 {
   int rc;
   do
-  { /* trying to select() while breaked by signals */ 
+  { /* trying to select() while breaked by signals */
     rc = select(nfds, readfds, writefds, exceptfds, timeout);
   } while (rc == -1 && errno == EINTR);
   return (rc < 0) ? RC_ERR : rc;
@@ -259,7 +263,7 @@ conn_loop(void)
   {
     /* check for the signals */
     if (sig_flag) sig_exec();
-      
+
     /* update FD_SETs */
     FD_ZERO(&sdsetrd);
     max_sd = server_sd;
@@ -285,7 +289,7 @@ conn_loop(void)
       min_timeout = MIN(min_timeout, curconn->timeout);
       curconn = queue_next_elem(&queue, curconn);
     }
-    
+
     /* update FD_SETs by tty connection */
     FD_MSET(tty.fd, &sdsetrd);
     if (tty.state == TTY_RQST) FD_MSET(tty.fd, &sdsetwr);
@@ -296,18 +300,18 @@ conn_loop(void)
       t_out.tv_usec = tty.timer % 1000000ul;
     }
     else
-    { 
+    {
       t_out.tv_usec = 0ul;
       if (cfg.conntimeout)
         t_out.tv_sec = min_timeout; /* minor timeout value */
-      else 
+      else
         t_out.tv_sec = 10ul; /* XXX default timeout value */
     }
 
     (void)gettimeofday(&ts, NULL); /* make timestamp */
- 
+
 #ifdef DEBUG
-    log(7, "conn_loop(): select(): max_sd = %d, t_out = %06lu:%06lu ", 
+    log(7, "conn_loop(): select(): max_sd = %d, t_out = %06lu:%06lu ",
            max_sd, t_out.tv_sec, t_out.tv_usec);
 #endif
 
@@ -323,11 +327,11 @@ conn_loop(void)
       break;
     }
 
-    /* calculating elapsed time */    
+    /* calculating elapsed time */
     (void)gettimeofday(&tts, NULL);
     tval = 1000000ul * (tts.tv_sec - ts.tv_sec) +
                        (tts.tv_usec - ts.tv_usec);
-    
+
     /* modify tty timer */
     if (tty.timer)
     { /* tty timer is active */
@@ -364,12 +368,12 @@ conn_loop(void)
                 break;
               }
             }
-            else 
+            else
             { /* some data received */
 #ifdef DEBUG
-            log(5, "tty: response readed (total %d bytes)", tty.ptrbuf);
+            log(5, "tty: response read (total %d bytes)", tty.ptrbuf);
 #endif
-              if (tty.ptrbuf >= MB_MIN_LEN && 
+              if (tty.ptrbuf >= MB_MIN_LEN &&
                      modbus_crc_correct(tty.rxbuf, tty.ptrbuf))
               { /* received response is correct, make OpenMODBUS response */
 #ifdef DEBUG
@@ -406,7 +410,7 @@ conn_loop(void)
         }
       else tty.timer -= tval;
     }
-    
+
     if (cfg.conntimeout)
     { /* expire staled connections */
       tout += tval;
@@ -441,7 +445,7 @@ conn_loop(void)
         tout = tout % 1000000ul;
       }
     }
-    
+
     if (rc == 0)
       continue;	/* timeout caused, we will do select() again */
 
@@ -473,7 +477,7 @@ conn_loop(void)
           state_tty_set(&tty, TTY_RESP);
         }
       }
-    
+
     if (FD_ISSET(tty.fd, &sdsetrd))
     {
       if (tty.state == TTY_RESP)
@@ -488,7 +492,7 @@ conn_loop(void)
           break; /* exiting... */
         }
 #ifdef DEBUG
-          log(7, "tty: readed %d bytes", rc);
+          log(7, "tty: read %d bytes", rc);
 #endif
         tty.ptrbuf += rc;
         if (tty.ptrbuf == tty.rxlen)
@@ -517,7 +521,7 @@ conn_loop(void)
 #endif
       }
     }
-    
+
     /* processing data on the sockets */
     len = queue.len;
     curconn = queue.beg;
@@ -549,7 +553,7 @@ conn_loop(void)
                 state_conn_set(curconn, CONN_RQST);
               }
             if (curconn->state == CONN_RQST)
-              if (curconn->ctr >= 
+              if (curconn->ctr >=
                     HDRSIZE + MB_HDR(curconn->buf, MB_LENGTH_L))
               { /* ### packet received completely ### */
                 state_conn_set(curconn, CONN_TTY);
@@ -564,7 +568,7 @@ conn_loop(void)
           {
             rc = conn_write(curconn->sd,
                             curconn->buf + curconn->ctr,
-                            MB_HDR(curconn->buf, MB_LENGTH_L) + 
+                            MB_HDR(curconn->buf, MB_LENGTH_L) +
                             HDRSIZE - curconn->ctr);
             if (rc <= 0)
             { /* error - drop this connection and go to next queue element */
@@ -580,6 +584,6 @@ conn_loop(void)
       } /* switch (curconn->state) */
     } /* while (len--) */
   } /* while (TRUE) */
-  
+
   /* XXX some cleanup must be here */
 }

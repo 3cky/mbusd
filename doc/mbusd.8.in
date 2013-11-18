@@ -1,4 +1,4 @@
-.TH "mbusd" 8 "26 October 2003" "mbusd @VERSION@" 
+.TH "mbusd" 8 "18 November 2013" "mbusd @VERSION@"
 .SH NAME
 mbusd \- MODBUS/TCP to MODBUS/RTU gateway server
 .SH SYNOPSIS
@@ -10,21 +10,21 @@ mbusd \- MODBUS/TCP to MODBUS/RTU gateway server
 .RB [ -L
 .IR name ]
 .RB [ -p
-.IR name ] 
+.IR name ]
 .RB [ -s
-.IR value ] 
+.IR value ]
 .RB [ -P
-.IR number ] 
+.IR number ]
 .RB [ -C
 .IR number ]
 .RB [ -N
-.IR number ] 
+.IR number ]
 .RB [ -R
-.IR value ] 
+.IR value ]
 .RB [ -W
-.IR value ] 
+.IR value ]
 .RB [ -T
-.IR value ] 
+.IR value ]
 .SH DESCRIPTION
 \fImbusd\fR is MODBUS/TCP to MODBUS/RTU gateway server (currently master mode only is supported).
 .SH OPTIONS
@@ -33,10 +33,10 @@ Usage help.
 .IP \fB-d\fR
 Instruct \fImbusd\fR not to fork itself (non-daemonize).
 .IP "\fB-v \fIlevel\fR"
-Specifies log verbosity level. 0 enables logging of errors only, 
+Specifies log verbosity level. 0 enables logging of errors only,
 1 also enables warnings and 2 enables information messages.
-If \fImbusd\fR was compiled in debug mode, valid log levels is up to 9, 
-where log levels above 2 forces logging of information about additional 
+If \fImbusd\fR was compiled in debug mode, valid log levels is up to 9,
+where log levels above 2 forces logging of information about additional
 internal events.
 .IP "\fB-L \fIname\fR"
 Specifies log file name. Value '-' forces log data output to STDOUT only if \fB-d\fR switch was given.
@@ -51,17 +51,17 @@ Specifies maximum number of simultaneous connections.
 .IP "\fB-N \fInumber\fR"
 Specifies maximum number of request retries. 0 - no retries.
 .IP "\fB-R \fIvalue\fR"
-Specifies pause between requests in miliseconds.
+Specifies pause between requests in milliseconds.
 .IP "\fB-W \fIvalue\fR"
-Specifies response wait time in miliseconds.
+Specifies response wait time in milliseconds.
 .IP "\fB-T \fIvalue\fR"
 Specifies connection timeout value in seconds. 0 - no timeout.
 .SH NOTES
-Because MODBUS RTU protocol have situations which can't straightforwardly 
-translated into MODBUS/TCP protocol entities, \fImbusd\fR extends standard excepton codes set.
+Because MODBUS RTU protocol have situations which can't straightforwardly
+translated into MODBUS/TCP protocol entities, \fImbusd\fR extends standard exception codes set.
 In case of situation when \fImbusd\fR received response with invalid CRC and can't correct
-error by re-request, it return MODBUS/TCP packet with exception code 128. In case of situation 
-when \fImbusd\fR can't receive response from MODBUS RTU device (e.g. addressed controller 
+error by re-request, it return MODBUS/TCP packet with exception code 128. In case of situation
+when \fImbusd\fR can't receive response from MODBUS RTU device (e.g. addressed controller
 is not present on the network), it return MODBUS/TCP packet with exception code 129.
 .SH FILES
 .PP

@@ -3,7 +3,7 @@
  *
  * sock.h - socket manipulation routines 
  *
- * Copyright (c) 2002-2003, Victor Antonovich (avmlink@vlink.ru)
+ * Copyright (c) 2002-2003, 2013, Victor Antonovich (avmlink@vlink.ru)
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: sock.h,v 1.2 2003/09/27 13:45:01 kapyar Exp $
+ * $Id: sock.h,v 1.3 2013/11/18 08:57:01 kapyar Exp $
  */
 
 #ifndef _SOCKUTILS_H

@@ -3,19 +3,19 @@
  *
  * tty.c - terminal I/O related procedures
  *
- * Copyright (c) 2002-2003, Victor Antonovich (avmlink@vlink.ru)
- * 
+ * Copyright (c) 2002-2003, 2013, Victor Antonovich (avmlink@vlink.ru)
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * - Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
- * 
+ *
  * - Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: tty.c,v 1.2 2003/09/27 13:22:52 kapyar Exp $
+ * $Id: tty.c,v 1.3 2013/11/18 08:57:01 kapyar Exp $
  */
 
 #include "tty.h"
@@ -40,7 +40,7 @@ static int tty_break;
 /*
  * Flag signal SIG
  */
-void 
+void
 tty_sighup(void)
 {
   tty_break = TRUE;
@@ -50,7 +50,7 @@ tty_sighup(void)
 /*
  * Init serial link parameters MOD to PORT name, SPEED and TRXCNTL type
  */
-void 
+void
 #ifdef  TRXCTL
 tty_init(ttydata_t *mod, char *port, int speed, int trxcntl)
 #else
@@ -88,7 +88,7 @@ tty_get_name(char *ttyfullname)
 /*
  * Opening serial link whith parameters in MOD
  */
-int 
+int
 tty_open(ttydata_t *mod)
 {
 #ifdef HAVE_LIBUTIL
@@ -105,7 +105,7 @@ tty_open(ttydata_t *mod)
 #ifdef LOG
     log(0, "uu_lock(): can't lock tty device %s (%s)",
         ttyname, uu_lockerr(uuerr));
-#endif  
+#endif
     errno = buferr;
     return RC_ERR;
   }
@@ -119,19 +119,24 @@ tty_open(ttydata_t *mod)
 /*
  * Setting up tty device MOD attributes
  */
-int 
+int
 tty_set_attr(ttydata_t *mod)
 {
   int flag;
 
+  memset(&mod->savedtios, 0, sizeof(struct termios));
   if (tcgetattr(mod->fd, &mod->savedtios))
     return RC_ERR;
   memcpy(&mod->tios, &mod->savedtios, sizeof(mod->tios));
-  mod->tios.c_cflag &= ~(CSTOPB | PARENB | PARODD | CRTSCTS);
-  mod->tios.c_cflag |= CS8 | CREAD | CLOCAL;
-  mod->tios.c_iflag = FALSE;
-  mod->tios.c_oflag = FALSE;
-  mod->tios.c_lflag = FALSE;
+#ifdef HAVE_CFMAKERAW
+  cfmakeraw(&mod->tios);
+#else
+  mod->tios.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL | IXON);
+  mod->tios.c_oflag &= ~OPOST;
+  mod->tios.c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
+  mod->tios.c_cflag &= ~(CSIZE | CSTOPB | PARENB | PARODD | CRTSCTS);
+  mod->tios.c_cflag |= CS8 | CREAD | CLOCAL ;
+#endif
   mod->tios.c_cc[VTIME] = 0;
   mod->tios.c_cc[VMIN] = 1;
 #ifdef HAVE_CFSETSPEED
@@ -142,12 +147,6 @@ tty_set_attr(ttydata_t *mod)
 #endif
   if (tcsetattr(mod->fd, TCSANOW, &mod->tios))
     return RC_ERR;
-#if defined(TIOCSETA)
-  ioctl(mod->fd, TIOCSETA, &mod->tios);
-#else
-  /* if TIOCSETA is not defined, try to fallback to TCSETA */
-  ioctl(mod->fd, TCSETA, &mod->tios);
-#endif
   tcflush(mod->fd, TCIOFLUSH);
 #ifdef  TRXCTL
   tty_clr_rts(mod->fd);
@@ -161,7 +160,7 @@ tty_set_attr(ttydata_t *mod)
 /*
  * Translate integer SPEED value to speed_t constant
  */
-speed_t 
+speed_t
 tty_transpeed(int speed)
 {
   speed_t tspeed;
@@ -280,6 +279,7 @@ tty_transpeed(int speed)
 #endif
   default:
     tspeed = DEFAULT_BSPEED;
+    break;
   }
   return tspeed;
 }
@@ -287,7 +287,7 @@ tty_transpeed(int speed)
 /*
  * Prepare tty device MOD to closing
  */
-int 
+int
 tty_cooked(ttydata_t *mod)
 {
   signal(SIGHUP, SIG_IGN);
@@ -302,7 +302,7 @@ tty_cooked(ttydata_t *mod)
 /*
  * Closing tty device MOD
  */
-int 
+int
 tty_close(ttydata_t *mod)
 {
 #ifdef HAVE_LIBUTIL
@@ -334,7 +334,7 @@ tty_close(ttydata_t *mod)
 
 #ifdef  TRXCTL
 /* Set RTS line to active state */
-void 
+void
 tty_set_rts(int fd)
 {
   int mstat = TIOCM_RTS;
@@ -342,7 +342,7 @@ tty_set_rts(int fd)
 }
 
 /* Set RTS line to passive state */
-void 
+void
 tty_clr_rts(int fd)
 {
   int mstat = TIOCM_RTS;

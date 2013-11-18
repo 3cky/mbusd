@@ -3,19 +3,19 @@
  *
  * main.c - main module
  *
- * Copyright (c) 2002-2003, Victor Antonovich (avmlink@vlink.ru)
- * 
+ * Copyright (c) 2002-2003, 2013, Victor Antonovich (avmlink@vlink.ru)
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * - Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
- * 
+ *
  * - Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: main.c,v 1.4 2003/10/26 19:22:18 kapyar Exp $
+ * $Id: main.c,v 1.5 2013/11/18 08:57:01 kapyar Exp $
  */
 
 #include "globals.h"
@@ -59,7 +59,7 @@ queue_t queue;
 #ifndef HAVE_DAEMON
 #include <fcntl.h>
 #include <unistd.h>
-/* 
+/*
  * System function daemon() replacement based on FreeBSD implementation.
  * Original source file CVS tag:
  * $FreeBSD: src/lib/libc/gen/daemon.c,v 1.3 2000/01/27 23:06:14 jasone Exp $
@@ -99,7 +99,7 @@ daemon(nochdir, noclose)
 void
 usage(char *exename)
 {
-  printf("%s-%s Copyright (C) 2002, 2003 Victor Antonovich <avmlink@vlink.ru>\n\n"
+  printf("%s-%s Copyright (C) 2002-2003, 2013 Victor Antonovich <avmlink@vlink.ru>\n\n"
 	 "Usage: %s [-h] [-d] [-v level] [-L name] [-p name] [-s value] [-P number]\n"
    "             [-C number] [-N number] [-R value] [-W value] [-T value]\n\n"
 	 "  -h             this help\n"
@@ -144,7 +144,7 @@ main(int argc, char *argv[])
 {
   int err = 0, rc;
   char *exename;
-  
+
   sig_init();
   cfg_init();
 
@@ -152,7 +152,7 @@ main(int argc, char *argv[])
     exename = argv[0];
   else
     exename++;
-    
+
   /* command line argument list parsing */
   while ((rc = getopt(argc, argv,
                "dh"
@@ -218,7 +218,7 @@ main(int argc, char *argv[])
         break;
 #endif
       case 'p':
-        if (*optarg != '/') 
+        if (*optarg != '/')
         { /* concatenate given port name with default
              path to devices mountpoint */
           strncpy(cfg.ttyport, "/dev/", INTBUFSIZE);
@@ -280,6 +280,7 @@ main(int argc, char *argv[])
         break;
       case 'h':
         usage(exename);
+        break;
     }
   }
 
@@ -308,7 +309,7 @@ main(int argc, char *argv[])
   if (isdaemon && (rc = daemon(TRUE, FALSE)))
   {
 #ifdef LOG
-    log(0, "Can't be daemonized (%s), exiting...", strerror(errno));
+    log(0, "Can't daemonize (%s), exiting...", strerror(errno));
 #endif
     exit(rc);
   }

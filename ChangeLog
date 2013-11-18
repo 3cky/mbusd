@@ -8,3 +8,11 @@
 
 * Compilation under CYGWIN now is possible.
 
+0.1.3
+-----------
+18-nov-2013  Project fixes and updates:
+
+* Updated build infrastructure (x86_64 build fixed);
+* Fixed serial interface initialization under Linux;
+* Default RTU client response wait timeout increased to 50 ms;
++ Added Eclipse CDT project files.

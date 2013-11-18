@@ -3,19 +3,19 @@
  *
  * tty.h - terminal I/O related procedures
  *
- * Copyright (c) 2002-2003, Victor Antonovich (avmlink@vlink.ru)
- * 
+ * Copyright (c) 2002-2003, 2013, Victor Antonovich (avmlink@vlink.ru)
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * - Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
- * 
+ *
  * - Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: tty.h,v 1.2 2003/09/27 13:22:52 kapyar Exp $
+ * $Id: tty.h,v 1.3 2013/11/18 08:57:01 kapyar Exp $
  */
 
 #ifndef _TTY_H
@@ -38,7 +38,7 @@
 #include "cfg.h"
 
 /*
- * Delay value calculation macros  
+ * Delay value calculation macros
  */
 #define	DV(x, y) (x * 10000000l / y)
 
@@ -61,10 +61,10 @@
  */
 #define TTY_BUFSIZE 256
 
-/* 
+/*
  * TRX control types
  */
-#ifdef  TRX_CTL
+#ifdef  TRXCTL
 #  define TRX_ADDC 0
 #  define TRX_RTS  !TRX_ADDC
 #endif
@@ -76,7 +76,7 @@
 #define TTY_READY 1
 #define TTY_RQST  2
 #define TTY_RESP  3
- 
+
 /*
  * TTY related data storage structure
  */

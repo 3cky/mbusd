@@ -3,7 +3,7 @@
  *
  * crc16.h - Cyclic Redundant Checks calculating
  *
- * Copyright (c) 2002-2003, Victor Antonovich (avmlink@vlink.ru)
+ * Copyright (c) 2002-2003, 2013, Victor Antonovich (avmlink@vlink.ru)
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: crc16.h,v 1.1 2003/09/13 20:38:45 kapyar Exp $
+ * $Id: crc16.h,v 1.2 2013/11/18 08:57:01 kapyar Exp $
  */
  
 #ifndef _CRC_H
