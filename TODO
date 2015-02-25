@@ -3,7 +3,5 @@ To do:
 * Configuration file loading
 * Signals processing (HUP, USR1, etc).
 * Client addresses restriction
-* RS-485 transmit/receive control by RTS
 * Broadcast MODBUS messaging implementation
-* Response receiving by length (currently by timeout)
 * SSL secure connection implementation

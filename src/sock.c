@@ -3,7 +3,7 @@
  *
  * sock.c - socket manipulation routines
  *
- * Copyright (c) 2002-2003, 2013, Victor Antonovich (avmlink@vlink.ru)
+ * Copyright (c) 2002-2003, 2013, Victor Antonovich (v.antonovich@gmail.com)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: sock.c,v 1.2 2013/11/18 08:57:01 kapyar Exp $
+ * $Id: sock.c,v 1.3 2015/02/25 10:33:57 kapyar Exp $
  */
 
 #include "sock.h"
@@ -66,7 +66,7 @@ sock_create(int blkmode)
          socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
   {
 #ifdef LOG
-    log(0, "sock_create(): unable to create socket (%s)",
+    logw(0, "sock_create(): unable to create socket (%s)",
         strerror(errno));
 #endif
     return RC_ERR;
@@ -76,7 +76,7 @@ sock_create(int blkmode)
   if (sock_set_blkmode(sock, blkmode) == -1)
   {
 #ifdef LOG
-    log(0, "sock_create(): unable to set "
+    logw(0, "sock_create(): unable to set "
            "server socket to nonblocking (%s)",
            strerror(errno));
 #endif
@@ -109,7 +109,7 @@ sock_create_server(char *server_ip,
   if (fcntl(server_s, F_SETFD, 1) == -1)
   {
 #ifdef LOG
-    log(0, "sock_create_server():"
+    logw(0, "sock_create_server():"
            " can't set close-on-exec on socket (%s)",
            strerror(errno));
 #endif
@@ -121,7 +121,7 @@ sock_create_server(char *server_ip,
 		          sizeof(sock_opt)) == -1)
   {
 #ifdef LOG
-    log(0, "sock_create_server():"
+    logw(0, "sock_create_server():"
            " can't set socket to SO_REUSEADDR (%s)",
            strerror(errno));
 #endif
@@ -137,7 +137,7 @@ sock_create_server(char *server_ip,
 		          sizeof(sock_opt)) == -1))
   {
 #ifdef LOG
-    log(0, "sock_create_server():"
+    logw(0, "sock_create_server():"
            " can't set socket TRX buffers sizes (%s)",
            strerror(errno));
 #endif
@@ -158,7 +158,7 @@ sock_create_server(char *server_ip,
 	   sizeof(server_sockaddr)) == -1)
   {
 #ifdef LOG
-    log(0, "sock_create_server():"
+    logw(0, "sock_create_server():"
            " unable to bind() socket (%s)",
            strerror(errno));
 #endif
@@ -169,7 +169,7 @@ sock_create_server(char *server_ip,
   if (listen(server_s, BACKLOG) == -1)
   {
 #ifdef LOG
-    log(0, "sock_create_server():"
+    logw(0, "sock_create_server():"
            " unable to listen() on socket (%s)",
            strerror(errno));
 #endif
@@ -199,7 +199,7 @@ sock_accept(int server_sd, struct sockaddr_in *rmt_addr, int blkmode)
     if (errno != EAGAIN && errno != EWOULDBLOCK)
       /* some errors caused */
 #ifdef LOG
-      log(0, "sock_accept(): error in accept() (%s)", strerror(errno));
+      logw(0, "sock_accept(): error in accept() (%s)", strerror(errno));
 #endif
     return RC_ERR;
   }
@@ -207,7 +207,7 @@ sock_accept(int server_sd, struct sockaddr_in *rmt_addr, int blkmode)
   if (sock_set_blkmode(sd, blkmode) == RC_ERR)
   {
 #ifdef LOG
-    log(0, "sock_accept(): can't set socket blocking mode (%s)",
+    logw(0, "sock_accept(): can't set socket blocking mode (%s)", 
            strerror(errno));
 #endif
     close(sd);
@@ -222,7 +222,7 @@ sock_accept(int server_sd, struct sockaddr_in *rmt_addr, int blkmode)
 		          sizeof(sock_opt)) == -1))
   {
 #ifdef LOG
-    log(0, "sock_accept():"
+    logw(0, "sock_accept():"
            " can't set socket TRX buffer sizes (%s)",
            strerror(errno));
 #endif

@@ -3,7 +3,7 @@
  *
  * tty.c - terminal I/O related procedures
  *
- * Copyright (c) 2002-2003, 2013, Victor Antonovich (avmlink@vlink.ru)
+ * Copyright (c) 2002-2003, 2013, Victor Antonovich (v.antonovich@gmail.com)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: tty.c,v 1.3 2013/11/18 08:57:01 kapyar Exp $
+ * $Id: tty.c,v 1.4 2015/02/25 10:33:58 kapyar Exp $
  */
 
 #include "tty.h"
@@ -103,14 +103,14 @@ tty_open(ttydata_t *mod)
   {
     buferr = errno;
 #ifdef LOG
-    log(0, "uu_lock(): can't lock tty device %s (%s)",
+    logw(0, "uu_lock(): can't lock tty device %s (%s)",
         ttyname, uu_lockerr(uuerr));
 #endif
     errno = buferr;
     return RC_ERR;
   }
 #endif
-  mod->fd = open(mod->port, O_RDWR | O_NONBLOCK);
+  mod->fd = open(mod->port, O_RDWR | O_NONBLOCK | O_NOCTTY);
   if (mod->fd < 0)
     return RC_ERR;          /* attempt failed */
   return tty_set_attr(mod);
@@ -123,6 +123,7 @@ int
 tty_set_attr(ttydata_t *mod)
 {
   int flag;
+  speed_t tspeed = tty_transpeed(mod->speed);
 
   memset(&mod->savedtios, 0, sizeof(struct termios));
   if (tcgetattr(mod->fd, &mod->savedtios))
@@ -140,10 +141,10 @@ tty_set_attr(ttydata_t *mod)
   mod->tios.c_cc[VTIME] = 0;
   mod->tios.c_cc[VMIN] = 1;
 #ifdef HAVE_CFSETSPEED
-  cfsetspeed(&mod->tios, tty_transpeed(mod->speed));
+  cfsetspeed(&mod->tios, tspeed);
 #else
-  cfsetispeed(&mod->tios, tty_transpeed(mod->speed));
-  cfsetospeed(&mod->tios, tty_transpeed(mod->speed));
+  cfsetispeed(&mod->tios, tspeed);
+  cfsetospeed(&mod->tios, tspeed);
 #endif
   if (tcsetattr(mod->fd, TCSANOW, &mod->tios))
     return RC_ERR;
@@ -320,7 +321,7 @@ tty_close(ttydata_t *mod)
   {
     buferr = errno;
 #ifdef LOG
-    log(0, "uu_lock(): can't unlock tty device %s",
+    logw(0, "uu_lock(): can't unlock tty device %s",
         ttyname);
 #endif
     errno = buferr;

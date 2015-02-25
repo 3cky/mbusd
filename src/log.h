@@ -3,19 +3,19 @@
  *
  * log.h - debug logging facility
  *
- * Copyright (c) 2002-2003, 2013, Victor Antonovich (avmlink@vlink.ru)
- * 
+ * Copyright (c) 2002-2003, 2013, Victor Antonovich (v.antonovich@gmail.com)
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * - Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
- * 
+ *
  * - Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: log.h,v 1.3 2013/11/18 08:57:01 kapyar Exp $
+ * $Id: log.h,v 1.4 2015/02/25 10:33:57 kapyar Exp $
  */
 
 #ifndef _LOG_H
@@ -45,7 +45,7 @@ extern int isdaemon;
 #ifdef LOG
 int log_init(char *logname);
 int log_app(char *logname, char *string);
-void log(int level, char *fmt, ...);
+void logw(int level, char *fmt, ...);
 #endif
 
 #endif /* _LOG_H */

@@ -3,7 +3,7 @@
  *
  * queue.c - �onnections queue management procedures
  *
- * Copyright (c) 2002-2003, 2013, Victor Antonovich (avmlink@vlink.ru)
+ * Copyright (c) 2002-2003, 2013, Victor Antonovich (v.antonovich@gmail.com)
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: queue.c,v 1.2 2013/11/18 08:57:01 kapyar Exp $
+ * $Id: queue.c,v 1.3 2015/02/25 10:33:57 kapyar Exp $
  */
 
 #include "queue.h"
@@ -54,7 +54,7 @@ queue_new_elem(queue_t *queue)
   if (!newconn)
   { /* Aborting program execution */
 #ifdef LOG
-    log(0, "queue_new_elem(): out of memory for new element (%s)",
+    logw(0, "queue_new_elem(): out of memory for new element (%s)",
            strerror(errno));
 #endif
     exit(errno);
@@ -67,7 +67,7 @@ queue_new_elem(queue_t *queue)
   queue->end = newconn;
   queue->len++;
 #ifdef DEBUG
-  log(5, "queue_new_elem(): length now is %d", queue->len);
+  logw(5, "queue_new_elem(): length now is %d", queue->len);
 #endif
   return newconn;
 }
@@ -81,7 +81,7 @@ queue_delete_elem(queue_t *queue, conn_t *conn)
   if (queue->len <= 0)
   { /* queue is empty */
 #ifdef LOG
-    log(1, "queue_delete_elem(): queue empty!");
+    logw(1, "queue_delete_elem(): queue empty!");
 #endif
     return;
   }
@@ -102,7 +102,7 @@ queue_delete_elem(queue_t *queue, conn_t *conn)
   queue->len--;
   free((void *)conn);
 #ifdef DEBUG  
-  log(5, "queue_delete_elem(): length now is %d", queue->len);
+  logw(5, "queue_delete_elem(): length now is %d", queue->len);
 #endif
   return;
 }

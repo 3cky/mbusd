@@ -3,7 +3,7 @@
  *
  * sig.c - signals management procedures
  *
- * Copyright (c) 2002-2003, 2013, Victor Antonovich (avmlink@vlink.ru)
+ * Copyright (c) 2002-2003, 2013, Victor Antonovich (v.antonovich@gmail.com)
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: sig.c,v 1.2 2013/11/18 08:57:01 kapyar Exp $
+ * $Id: sig.c,v 1.3 2015/02/25 10:33:57 kapyar Exp $
  */
  
 #include "sig.h"
@@ -146,7 +146,7 @@ sig_exec(void)
   static char *signames[] = { 
     "", "HUP", "INT", "QUIT", "ILL", "TRAP", "IOT", "BUS", "FPE",
     "KILL", "USR1", "SEGV", "USR2", "PIPE", "ALRM", "TERM" };
-  log(2, "Terminated by signal: SIG%s", signames[sig_flag]);
+  logw(2, "Terminated by signal: SIG%s", signames[sig_flag]);
 #endif
   /* currently simply exit the program */
   exit(1);

@@ -1,79 +1,77 @@
-.TH "mbusd" 8 "18 November 2013" "mbusd @VERSION@"
+.TH "mbusd" 8 "23 February 2015" "mbusd @VERSION@"
 .SH NAME
-mbusd \- MODBUS/TCP to MODBUS/RTU gateway server
+mbusd \- MODBUS/TCP to MODBUS/RTU gateway.
 .SH SYNOPSIS
 .B mbusd
 .RB [ -h ]
 .RB [ -d ]
+.RB [ -t ]
 .RB [ -v
 .IR level ]
 .RB [ -L
-.IR name ]
+.IR logfile ]
 .RB [ -p
-.IR name ]
+.IR device ]
 .RB [ -s
-.IR value ]
+.IR speed ]
 .RB [ -P
-.IR number ]
+.IR port ]
 .RB [ -C
-.IR number ]
+.IR maxconn ]
 .RB [ -N
-.IR number ]
+.IR retries ]
 .RB [ -R
-.IR value ]
+.IR pause ]
 .RB [ -W
-.IR value ]
+.IR wait ]
 .RB [ -T
-.IR value ]
+.IR timeout ]
 .SH DESCRIPTION
-\fImbusd\fR is MODBUS/TCP to MODBUS/RTU gateway server (currently master mode only is supported).
+\fImbusd\fR is MODBUS/TCP to MODBUS/RTU gateway. Currently only master mode is implemented.
 .SH OPTIONS
 .IP \fB-h\fR
 Usage help.
 .IP \fB-d\fR
 Instruct \fImbusd\fR not to fork itself (non-daemonize).
+.IP \fB-t\fR
+Enable RTS RS-485 data direction control (if not disabled while compile).
 .IP "\fB-v \fIlevel\fR"
 Specifies log verbosity level. 0 enables logging of errors only,
 1 also enables warnings and 2 enables information messages.
 If \fImbusd\fR was compiled in debug mode, valid log levels is up to 9,
 where log levels above 2 forces logging of information about additional
 internal events.
-.IP "\fB-L \fIname\fR"
-Specifies log file name. Value '-' forces log data output to STDOUT only if \fB-d\fR switch was given.
-.IP "\fB-p \fIname\fR"
+.IP "\fB-L \fIlogfile\fR"
+Specifies log file name ('-' for logging to STDOUT only, default /var/log/mbusd.log).
+.IP "\fB-p \fIdevice\fR"
 Specifies serial port device name.
-.IP "\fB-s \fIvalue\fR"
+.IP "\fB-s \fIspeed\fR"
 Specifies serial port speed.
-.IP "\fB-P \fInumber\fR"
+.IP "\fB-P \fIport\fR"
 Specifies TCP port number.
-.IP "\fB-C \fInumber\fR"
-Specifies maximum number of simultaneous connections.
-.IP "\fB-N \fInumber\fR"
-Specifies maximum number of request retries. 0 - no retries.
-.IP "\fB-R \fIvalue\fR"
+.IP "\fB-C \fImaxconn\fR"
+Specifies maximum number of simultaneous TCP connections.
+.IP "\fB-N \fIretries\fR"
+Specifies maximum number of request retries (0 - disable retries).
+.IP "\fB-R \fIpause\fR"
 Specifies pause between requests in milliseconds.
-.IP "\fB-W \fIvalue\fR"
+.IP "\fB-W \fIwait\fR"
 Specifies response wait time in milliseconds.
-.IP "\fB-T \fIvalue\fR"
-Specifies connection timeout value in seconds. 0 - no timeout.
+.IP "\fB-T \fItimeout\fR"
+Specifies connection timeout value in seconds (0 - disable timeout).
 .SH NOTES
-Because MODBUS RTU protocol have situations which can't straightforwardly
-translated into MODBUS/TCP protocol entities, \fImbusd\fR extends standard exception codes set.
 In case of situation when \fImbusd\fR received response with invalid CRC and can't correct
-error by re-request, it return MODBUS/TCP packet with exception code 128. In case of situation
+error by re-request, it return MODBUS/TCP packet with exception code 04. In case of situation
 when \fImbusd\fR can't receive response from MODBUS RTU device (e.g. addressed controller
-is not present on the network), it return MODBUS/TCP packet with exception code 129.
-.SH FILES
-.PP
-The default location of the \fImbusd\fR log file is:
-.PP
-/var/log/mbusd.log
+is not present on the network), it return MODBUS/TCP packet with exception code 0x0B.
 .SH BUGS
 Broadcast messaging on MODBUS network isn't supported.
 
 Please send bug reports to author.
-.SH AUTHOR
-Victor Antonovich <avmlink@vlink.ru>.
+.SH AUTHORS
+Victor Antonovich <v.antonovich@gmail.com>
+
+Andrew Denysenko <nitr0@seti.kr.ua>
 .SH LICENSE
 This program is distributed under the BSD-like license, included in
 each source file. See also COPYING file in the installation directory.

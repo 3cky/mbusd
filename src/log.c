@@ -3,19 +3,19 @@
  *
  * log.c - debug logging facility
  *
- * Copyright (c) 2002-2003, 2013, Victor Antonovich (avmlink@vlink.ru)
- * 
+ * Copyright (c) 2002-2003, 2013, Victor Antonovich (v.antonovich@gmail.com)
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * - Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
- * 
+ *
  * - Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: log.c,v 1.5 2013/11/18 08:57:01 kapyar Exp $
+ * $Id: log.c,v 1.6 2015/02/25 10:33:57 kapyar Exp $
  */
 
 #include "log.h"
@@ -39,7 +39,7 @@
 /* log file full name */
 char logfullname[INTBUFSIZE + 1];
 
-int 
+int
 log_init(char *logname)
 {
   FILE *logfile;
@@ -48,7 +48,7 @@ log_init(char *logname)
   /* checking log file name */
   if (*logname == '/')
     strncpy(logfullname, logname, maxlen);
-  else 
+  else
   {
     if (!*logname)
     {
@@ -72,7 +72,7 @@ log_init(char *logname)
 }
 
 /* Append message STRING to log file LOGNAME */
-int 
+int
 log_app(char *logname, char *string)
 {
   FILE *logfile;
@@ -87,8 +87,8 @@ log_app(char *logname, char *string)
 }
 
 /* Put message with format FMT with errorlevel LEVEL to log file */
-void 
-log(int level, char *fmt, ...)
+void
+logw(int level, char *fmt, ...)
 {
 #ifdef HRDATE
   time_t tt;

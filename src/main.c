@@ -3,7 +3,7 @@
  *
  * main.c - main module
  *
- * Copyright (c) 2002-2003, 2013, Victor Antonovich (avmlink@vlink.ru)
+ * Copyright (c) 2002-2003, 2013, Victor Antonovich (v.antonovich@gmail.com)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: main.c,v 1.5 2013/11/18 08:57:01 kapyar Exp $
+ * $Id: main.c,v 1.6 2015/02/25 10:33:57 kapyar Exp $
  */
 
 #include "globals.h"
@@ -99,37 +99,42 @@ daemon(nochdir, noclose)
 void
 usage(char *exename)
 {
-  printf("%s-%s Copyright (C) 2002-2003, 2013 Victor Antonovich <avmlink@vlink.ru>\n\n"
-	 "Usage: %s [-h] [-d] [-v level] [-L name] [-p name] [-s value] [-P number]\n"
-   "             [-C number] [-N number] [-R value] [-W value] [-T value]\n\n"
-	 "  -h             this help\n"
-	 "  -d             don't daemonize\n"
+  printf("%s-%s Copyright (C) 2002-2003, 2011, 2013, 2015 Victor Antonovich <v.antonovich@gmail.com>, "
+   "Andrew Denysenko <nitr0@seti.kr.ua>\n\n"
+   "Usage: %s [-h] [-d] "
+#ifdef TRXCTL
+   "[-t] "
+#endif
+   "[-v level] [-L logfile] [-p device] [-s speed] [-P port]\n"
+   "             [-C maxconn] [-N retries] [-R pause] [-W wait] [-T timeout]\n\n"
+   "Options:\n"
+   "  -h         : this help\n"
+   "  -d         : don't daemonize\n"
+#ifdef TRXCTL
+   "  -t         : enable RTS RS-485 data direction control\n"
+#endif
 #ifdef LOG
 #ifdef DEBUG
-   "  -v<level>      set log level (0-9, default %d, 0 - errors only)\n"
+   "  -v level   : set log level (0-9, default %d, 0 - errors only)\n"
 #else
-   "  -v<level>      set log level (0-2, default %d, 0 - errors only)\n"
+   "  -v level   : set log level (0-2, default %d, 0 - errors only)\n"
 #endif
-   "  -L<name>       set log file name (default %s%s, \n"
-   "                 value '-' forces log data output to STDOUT only\n"
-   "                 if '-d' switch was given)\n"
+   "  -L logfile : set log file name (default %s%s, \n"
+   "               '-' for logging to STDOUT only)\n"
 #endif
-	 "  -p<name>       set serial port device name (default %s)\n"
-	 "  -s<value>      set serial port speed (default %d)\n"
-#ifdef TRXCTL
-	 "  -t             force RTS RS-485 transmitting/receiving control\n"
-#endif
-	 "  -P<number>     set TCP server port number (default %d)\n"
-   "  -C<number>     set maximum number of simultaneous connections\n"
-   "                 (1-128, default %d)\n"
-   "  -N<number>     set maximum number of request retries\n"
-   "                 (0-15, default %d, 0 - without retries)\n"
-   "  -R<value>      set pause between requests in milliseconds\n"
-   "                 (1-10000, default %lu)\n"
-   "  -W<value>      set response wait time in milliseconds\n"
-   "                 (1-10000, default %lu)\n"
-   "  -T<value>      set connection timeout value in seconds\n"
-   "                 (0-1000, default %d, 0 - no timeout)"
+   "  -p device  : set serial port device name (default %s)\n"
+   "  -s speed   : set serial port speed (default %d)\n"
+   "  -P port    : set TCP server port number (default %d)\n"
+   "  -C maxconn : set maximum number of simultaneous TCP connections\n"
+   "               (1-128, default %d)\n"
+   "  -N retries : set maximum number of request retries\n"
+   "               (0-15, default %d, 0 - without retries)\n"
+   "  -R pause   : set pause between requests in milliseconds\n"
+   "               (1-10000, default %lu)\n"
+   "  -W wait    : set response wait time in milliseconds\n"
+   "               (1-10000, default %lu)\n"
+   "  -T timeout : set connection timeout value in seconds\n"
+   "               (0-1000, default %d, 0 - no timeout)"
    "\n", PACKAGE, VERSION, exename,
 #ifdef LOG
       cfg.dbglvl, LOGPATH, LOGNAME,
@@ -198,13 +203,7 @@ main(int argc, char *argv[])
         {
           if (*optarg == '-')
           {
-            if (isdaemon)
-            {
-               printf("%s: -L: '-' value is valid only if "
-                      "-d switch was given\n", exename);
-               exit(-1);
-            }
-            /* logfile isn't needed, doing all output to STDOUT */
+            /* logging to file disabled */
             *cfg.logname = '\0';
           }
           else
@@ -293,14 +292,14 @@ main(int argc, char *argv[])
            strerror(errno));
     exit(-1);
   }
-  log(2, "%s-%s started...", PACKAGE, VERSION);
+  logw(2, "%s-%s started...", PACKAGE, VERSION);
 #endif
 
   if (conn_init())
   {
 #ifdef LOG
     err = errno;
-    log(2, "conn_init() failed, exiting...");
+    logw(2, "conn_init() failed, exiting...");
 #endif
     exit(err);
   }
@@ -309,7 +308,7 @@ main(int argc, char *argv[])
   if (isdaemon && (rc = daemon(TRUE, FALSE)))
   {
 #ifdef LOG
-    log(0, "Can't daemonize (%s), exiting...", strerror(errno));
+    logw(0, "Can't be daemonized (%s), exiting...", strerror(errno));
 #endif
     exit(rc);
   }
@@ -317,7 +316,7 @@ main(int argc, char *argv[])
   conn_loop();
   err = errno;
 #ifdef LOG
-  log(2, "%s-%s exited...", PACKAGE, VERSION);
+  logw(2, "%s-%s exited...", PACKAGE, VERSION);
 #endif
   return (err);
 }

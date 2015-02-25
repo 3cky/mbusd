@@ -16,3 +16,11 @@
 * Fixed serial interface initialization under Linux;
 * Default RTU client response wait timeout increased to 50 ms;
 + Added Eclipse CDT project files.
+
+0.2.0
+-----------
+24-feb-2015 Merged changes by Andrew Denysenko <nitr0@seti.kr.ua>:
+
++ RTS RS-485 transmit/receive control
+* RTU response receiving by length
+* Standard error codes for receive error (04) and timeout (0x0B)

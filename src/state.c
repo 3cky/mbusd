@@ -3,7 +3,7 @@
  *
  * state.c - state management procedures
  *
- * Copyright (c) 2002-2003, 2013, Victor Antonovich (avmlink@vlink.ru)
+ * Copyright (c) 2002-2003, 2013, Victor Antonovich (v.antonovich@gmail.com)
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,7 +28,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: state.c,v 1.2 2013/11/18 08:57:01 kapyar Exp $
+ * $Id: state.c,v 1.3 2015/02/25 10:33:57 kapyar Exp $
  */
 
 #include "state.h"
@@ -75,31 +75,31 @@ state_conn_set(conn_t *conn, int state)
     case CONN_HEADER:
       conn->ctr = 0;
 #ifdef DEBUG
-      log(5, "conn[%s]: state now is CONN_HEADER",
+      logw(5, "conn[%s]: state now is CONN_HEADER",
              inet_ntoa(conn->sockaddr.sin_addr));
 #endif
       break;
 #ifdef DEBUG
     case CONN_RQST:
-      log(5, "conn[%s]: state now is CONN_RQST",
+      logw(5, "conn[%s]: state now is CONN_RQST",
              inet_ntoa(conn->sockaddr.sin_addr));
     break;
     case CONN_TTY:
-      log(5, "conn[%s]: state now is CONN_TTY",
+      logw(5, "conn[%s]: state now is CONN_TTY",
              inet_ntoa(conn->sockaddr.sin_addr));
       break;
 #endif
     case CONN_RESP:
       conn->ctr = 0;
 #ifdef DEBUG
-      log(5, "conn[%s]: state now is CONN_RESP",
+      logw(5, "conn[%s]: state now is CONN_RESP",
              inet_ntoa(conn->sockaddr.sin_addr));
 #endif
       break;
     default:
       /* unknown state, exiting */
 #ifdef DEBUG
-      log(5, "conn_set_state([%s]) - invalid state (%d)",
+      logw(5, "conn_set_state([%s]) - invalid state (%d)",
              inet_ntoa(conn->sockaddr.sin_addr), state);
 #endif
       exit (-1);
@@ -121,14 +121,14 @@ state_tty_set(ttydata_t *mod, int state)
       mod->trynum = 0;
       mod->timer = (unsigned long)cfg.rqstpause * 1000l;
 #ifdef DEBUG
-      log(5, "tty: state now is TTY_PAUSE");
+      logw(5, "tty: state now is TTY_PAUSE");
 #endif
       break;
     case TTY_READY:
       mod->trynum = 0;
       mod->timer = 0l;
 #ifdef DEBUG
-      log(5, "tty: state now is TTY_READY");
+      logw(5, "tty: state now is TTY_READY");
 #endif
       break;
     case TTY_RQST:
@@ -136,7 +136,7 @@ state_tty_set(ttydata_t *mod, int state)
       mod->timer = 0l;
       mod->trynum = mod->trynum ? mod->trynum - 1 : (unsigned)cfg.maxtry;
 #ifdef DEBUG
-      log(5, "tty: state now is TTY_RQST");
+      logw(5, "tty: state now is TTY_RQST");
 #endif
 #ifndef NOSILENT
       tty_delay(DV(2, cfg.ttyspeed));
@@ -144,17 +144,23 @@ state_tty_set(ttydata_t *mod, int state)
       break;
     case TTY_RESP:
       mod->ptrbuf = 0;
+      mod->rxoffset = 0;
       /* XXX need real recv length? */
       mod->rxlen = TTY_BUFSIZE;
       mod->timer = cfg.respwait * 1000l + DV(mod->txlen, mod->speed);
 #ifdef DEBUG
-      log(5, "tty: state now is TTY_RESP");
+      logw(5, "tty: state now is TTY_RESP");
+#endif
+      break;
+    case TTY_PROC:
+#ifdef DEBUG
+      logw(5, "tty: state now is TTY_PROC");
 #endif
       break;
     default:
       /* unknown state, exiting */
 #ifdef DEBUG
-      log(5, "tty_set_state() - invalid state (%d)", state);
+      logw(5, "tty_set_state() - invalid state (%d)", state);
 #endif
       exit (-1);
   }
