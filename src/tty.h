@@ -56,6 +56,8 @@
 #define DEFAULT_SPEED 19200
 #define DEFAULT_BSPEED B19200
 
+#define DEFAULT_MODE "8N1"
+
 /*
  * Maximum tty buffer size
  */

@@ -136,7 +136,35 @@ tty_set_attr(ttydata_t *mod)
   mod->tios.c_oflag &= ~OPOST;
   mod->tios.c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
   mod->tios.c_cflag &= ~(CSIZE | CSTOPB | PARENB | PARODD | CRTSCTS);
-  mod->tios.c_cflag |= CS8 | CREAD | CLOCAL ;
+  mod->tios.c_cflag |= CREAD | CLOCAL ;
+  switch (cfg.ttymode[0])
+  {
+    case '5':
+      mod->tios.c_cflag |= CS5;
+      break;
+    case '6':
+      mod->tios.c_cflag |= CS6;
+      break;
+    case '7':
+      mod->tios.c_cflag |= CS7;
+      break;
+    case '8':
+      mod->tios.c_cflag |= CS8;
+      break;
+  }
+  switch (toupper(cfg.ttymode[1]))
+  {
+    case 'E':
+      mod->tios.c_cflag |= PARENB;
+      break;
+    case 'O':
+      mod->tios.c_cflag |= (PARENB | PARODD);
+      break;
+  }
+  if (cfg.ttymode[2] == '2')
+  {
+      mod->tios.c_cflag |= CSTOPB;
+  }
 #endif
   mod->tios.c_cc[VTIME] = 0;
   mod->tios.c_cc[VMIN] = 1;

@@ -1,4 +1,4 @@
-.TH "mbusd" 8 "23 February 2015" "mbusd @VERSION@"
+.TH "mbusd" 8 "8 June 2015" "mbusd @VERSION@"
 .SH NAME
 mbusd \- MODBUS/TCP to MODBUS/RTU gateway.
 .SH SYNOPSIS
@@ -14,6 +14,8 @@ mbusd \- MODBUS/TCP to MODBUS/RTU gateway.
 .IR device ]
 .RB [ -s
 .IR speed ]
+.RB [ -m
+.IR mode ]
 .RB [ -P
 .IR port ]
 .RB [ -C
@@ -47,6 +49,8 @@ Specifies log file name ('-' for logging to STDOUT only, default /var/log/mbusd.
 Specifies serial port device name.
 .IP "\fB-s \fIspeed\fR"
 Specifies serial port speed.
+.IP "\fB-m \fIspeed\fR"
+Specifies serial port mode (like 8N1).
 .IP "\fB-P \fIport\fR"
 Specifies TCP port number.
 .IP "\fB-C \fImaxconn\fR"

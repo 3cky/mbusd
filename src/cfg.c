@@ -4,18 +4,18 @@
  * cfg.c - configuration related procedures
  *
  * Copyright (c) 2002-2003, 2013, Victor Antonovich (v.antonovich@gmail.com)
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * - Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
- * 
+ *
  * - Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -39,7 +39,7 @@ cfg_t cfg;
 /*
  * Setting up config defaults
  */
-void 
+void
 cfg_init(void)
 {
 #ifdef LOG
@@ -48,6 +48,7 @@ cfg_init(void)
 #endif
   strncpy(cfg.ttyport, DEFAULT_PORT, INTBUFSIZE);
   cfg.ttyspeed = DEFAULT_SPEED;
+  cfg.ttymode = DEFAULT_MODE;
 #ifdef  TRXCTL
   cfg.trxcntl = TRX_ADDC;
 #endif

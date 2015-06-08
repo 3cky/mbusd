@@ -99,13 +99,14 @@ daemon(nochdir, noclose)
 void
 usage(char *exename)
 {
+  cfg_init();
   printf("%s-%s Copyright (C) 2002-2003, 2011, 2013, 2015 Victor Antonovich <v.antonovich@gmail.com>, "
    "Andrew Denysenko <nitr0@seti.kr.ua>\n\n"
    "Usage: %s [-h] [-d] "
 #ifdef TRXCTL
    "[-t] "
 #endif
-   "[-v level] [-L logfile] [-p device] [-s speed] [-P port]\n"
+   "[-v level] [-L logfile] [-p device] [-s speed] [-m mode] [-P port]\n"
    "             [-C maxconn] [-N retries] [-R pause] [-W wait] [-T timeout]\n\n"
    "Options:\n"
    "  -h         : this help\n"
@@ -124,6 +125,7 @@ usage(char *exename)
 #endif
    "  -p device  : set serial port device name (default %s)\n"
    "  -s speed   : set serial port speed (default %d)\n"
+   "  -m mode    : set serial port mode (default %s)\n"
    "  -P port    : set TCP server port number (default %d)\n"
    "  -C maxconn : set maximum number of simultaneous TCP connections\n"
    "               (1-128, default %d)\n"
@@ -139,7 +141,7 @@ usage(char *exename)
 #ifdef LOG
       cfg.dbglvl, LOGPATH, LOGNAME,
 #endif
-      cfg.ttyport, cfg.ttyspeed, cfg.serverport, cfg.maxconn,
+      cfg.ttyport, cfg.ttyspeed, cfg.ttymode, cfg.serverport, cfg.maxconn,
       cfg.maxtry, cfg.rqstpause, cfg.respwait, cfg.conntimeout);
   exit(0);
 }
@@ -149,6 +151,7 @@ main(int argc, char *argv[])
 {
   int err = 0, rc;
   char *exename;
+  char ttyparity;
 
   sig_init();
   cfg_init();
@@ -167,7 +170,7 @@ main(int argc, char *argv[])
 #ifdef LOG
                "v:L:"
 #endif
-               "p:s:P:C:N:R:W:T:")) != RC_ERR)
+               "p:s:m:P:C:N:R:W:T:")) != RC_ERR)
   {
     switch (rc)
     {
@@ -229,6 +232,35 @@ main(int argc, char *argv[])
       case 's':
         cfg.ttyspeed = strtoul(optarg, NULL, 0);
         break;
+      case 'm':
+	cfg.ttymode = optarg;
+	/* tty mode sanity checks */
+	if (strlen(cfg.ttymode) != 3)
+	{
+	  printf("%s: -m: invalid serial port mode ('%s')\n", exename, cfg.ttymode);
+	  exit(-1);
+	}
+	if (cfg.ttymode[0] < '5' || cfg.ttymode[0] > '8')
+	{
+	  printf("%s: -m: invalid serial port character size "
+	      "(%c, must be 5, 6, 7 or 8)\n",
+	      exename, cfg.ttymode[0]);
+	  exit(-1);
+	}
+	ttyparity = toupper(cfg.ttymode[1]);
+	if (ttyparity != 'N' && ttyparity != 'E' && ttyparity != 'O')
+	{
+	  printf("%s: -m: invalid serial port parity "
+	      "(%c, must be N, E or O)\n", exename, ttyparity);
+	  exit(-1);
+	}
+	if (cfg.ttymode[2] != '1' && cfg.ttymode[2] != '2')
+	{
+	  printf("%s: -m: invalid serial port stop bits "
+	      "(%c, must be 1 or 2)\n", exename, cfg.ttymode[2]);
+	  exit(-1);
+	}
+	break;
       case 'P':
         cfg.serverport = strtoul(optarg, NULL, 0);
         break;
