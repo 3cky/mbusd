@@ -1,0 +1,11 @@
+/autom4te.cache
+/config.cache
+/config.h
+/config.status
+/.settings/
+/src/.deps/
+/src/*.o
+/src/mbusd
+/doc/mbusd.8
+Makefile
+*.log
