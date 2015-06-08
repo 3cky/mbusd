@@ -1,7 +1,7 @@
 #! /bin/sh
 
 # libtool - Provide generalized library-building support services.
-# Generated automatically by config.status (mbusd) 0.2.0
+# Generated automatically by config.status (mbusd) 0.2.1
 # Libtool was configured on host 3cky.office.mobileap.ru:
 # NOTE: Changes made to this file will be lost: look at ltmain.sh.
 #
@@ -275,7 +275,7 @@ hardcode_into_libs=yes
 sys_lib_search_path_spec="/usr/lib/gcc/x86_64-redhat-linux/4.9.2 /usr/lib64 /lib64 "
 
 # Run-time system search path for libraries.
-sys_lib_dlsearch_path_spec="/lib64 /usr/lib64 /lib /usr/lib /usr/lib64/R/lib /usr/lib64/atlas /usr/lib64/dyninst /usr/lib64/iscsi /usr/lib/llvm /usr/lib64/llvm /usr/lib64/mysql /usr/lib64/OGRE /usr/lib64/qt-3.3/lib /opt/Samsung/PSU/share/lib64 /usr/lib64/tcl8.6 /usr/lib64/vtk /usr/lib/xulrunner /usr/lib64/xulrunner "
+sys_lib_dlsearch_path_spec="/lib64 /usr/lib64 /lib /usr/lib /usr/lib64/R/lib /usr/lib64/atlas /usr/lib64/dyninst /usr/lib64/iscsi /usr/lib/llvm /usr/lib64/llvm /usr/lib64/mysql /usr/lib64/OGRE /usr/lib64/qt-3.3/lib /opt/Samsung/PSU/share/lib64 /usr/lib64/tcl8.6 /usr/lib64/vtk /usr/lib/wine/ /usr/lib64/wine/ /usr/lib/xulrunner /usr/lib64/xulrunner "
 
 # Whether dlopen is supported.
 dlopen_support=unknown

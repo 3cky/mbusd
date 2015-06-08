@@ -24,3 +24,9 @@
 + RTS RS-485 transmit/receive control
 * RTU response receiving by length
 * Standard error codes for receive error (04) and timeout (0x0B)
+
+0.2.1
+-----------
+08-jun-2015:
+
++ Added serial port mode configuration option (-m).
