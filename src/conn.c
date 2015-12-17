@@ -624,6 +624,9 @@ conn_loop(void)
               case 4:
                 i = 5 + tty.rxbuf[tty.rxoffset + 2];
                 break;
+              default:
+        	i = tty.rxlen;
+        	break;
             }
             if (i + tty.rxoffset > TTY_BUFSIZE)
               i = TTY_BUFSIZE - tty.rxoffset;
