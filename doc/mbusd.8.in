@@ -49,7 +49,7 @@ Specifies log file name ('-' for logging to STDOUT only, default /var/log/mbusd.
 Specifies serial port device name.
 .IP "\fB-s \fIspeed\fR"
 Specifies serial port speed.
-.IP "\fB-m \fIspeed\fR"
+.IP "\fB-m \fImode\fR"
 Specifies serial port mode (like 8N1).
 .IP "\fB-P \fIport\fR"
 Specifies TCP port number.
