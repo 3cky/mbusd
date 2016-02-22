@@ -240,10 +240,10 @@ main(int argc, char *argv[])
 	  printf("%s: -m: invalid serial port mode ('%s')\n", exename, cfg.ttymode);
 	  exit(-1);
 	}
-	if (cfg.ttymode[0] < '5' || cfg.ttymode[0] > '8')
+	if (cfg.ttymode[0] != '8')
 	{
 	  printf("%s: -m: invalid serial port character size "
-	      "(%c, must be 5, 6, 7 or 8)\n",
+	      "(%c, must be 8)\n",
 	      exename, cfg.ttymode[0]);
 	  exit(-1);
 	}
