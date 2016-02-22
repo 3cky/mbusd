@@ -135,8 +135,9 @@ tty_set_attr(ttydata_t *mod)
   mod->tios.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL | IXON);
   mod->tios.c_oflag &= ~OPOST;
   mod->tios.c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
-  mod->tios.c_cflag &= ~(CSIZE | CSTOPB | PARENB | PARODD | CRTSCTS);
   mod->tios.c_cflag |= CREAD | CLOCAL ;
+#endif
+  mod->tios.c_cflag &= ~(CSIZE | CSTOPB | PARENB | PARODD | CRTSCTS);
   switch (cfg.ttymode[0])
   {
     case '5':
@@ -165,7 +166,6 @@ tty_set_attr(ttydata_t *mod)
   {
       mod->tios.c_cflag |= CSTOPB;
   }
-#endif
   mod->tios.c_cc[VTIME] = 0;
   mod->tios.c_cc[VMIN] = 1;
 #ifdef HAVE_CFSETSPEED
