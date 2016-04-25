@@ -190,8 +190,8 @@ ETAGS = etags
 CTAGS = ctags
 CSCOPE = cscope
 DIST_SUBDIRS = $(SUBDIRS)
-am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in AUTHORS \
-	COPYING ChangeLog INSTALL NEWS README TODO compile \
+am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
+	LICENSE CHANGELOG.md README.md compile \
 	config.guess config.sub depcomp install-sh ltconfig ltmain.sh \
 	missing mkinstalldirs
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -364,13 +364,9 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = src doc
 mbusddocdir = ${prefix}/doc/mbusd
 mbusddoc_DATA = \
-	README\
-	COPYING\
-	AUTHORS\
-	ChangeLog\
-	INSTALL\
-	NEWS\
-	TODO
+	README.md\
+	CHANGELOG.md\
+	LICENSE
 
 EXTRA_DIST = $(mbusddoc_DATA)
 all: config.h

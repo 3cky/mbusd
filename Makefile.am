@@ -6,13 +6,9 @@ SUBDIRS = src doc
 
 mbusddocdir = ${prefix}/doc/mbusd
 mbusddoc_DATA = \
-	README\
-	COPYING\
-	AUTHORS\
-	ChangeLog\
-	INSTALL\
-	NEWS\
-	TODO
+	README.md\
+	CHANGELOG.md\
+	LICENSE
 
 EXTRA_DIST = $(mbusddoc_DATA)
 
