@@ -50,7 +50,7 @@
 #define DEFAULT_MAXCONN 32
 #define DEFAULT_MAXTRY 3
 #define DEFAULT_RQSTPAUSE 100
-#define DEFAULT_RESPWAIT 50
+#define DEFAULT_RESPWAIT 500
 #define DEFAULT_CONNTIMEOUT 60
 
 #define CRCSIZE 2       /* size (in bytes) of CRC */
