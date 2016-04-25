@@ -1,4 +1,4 @@
-.TH "mbusd" 8 "18 Dec 2015" "mbusd @VERSION@"
+.TH "mbusd" 8 "25 Apr 2016" "mbusd @VERSION@"
 .SH NAME
 mbusd \- MODBUS/TCP to MODBUS/RTU gateway.
 .SH SYNOPSIS

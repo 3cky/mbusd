@@ -1,5 +1,13 @@
 # Change Log
 
+## [0.2.3] - 2016-04-25
+### Fixed
+- tty mode setup on platforms with cfmakeraw available (fixes #7).
+
+### Changed
+- RTU response wait time raised to 500 ms.
+- Allow 8 bit only character size in tty mode string.
+
 ## [0.2.2] - 2015-12-18
 ### Fixed
 - Function code 6 response reading error #3.
@@ -34,4 +42,5 @@
 ## 0.1.1 - 2003-09-13
 ### Initial release
 
+[0.2.3]: https://github.com/3cky/mbusd/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/3cky/mbusd/compare/v0.2.1...v0.2.2
