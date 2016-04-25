@@ -1,7 +1,0 @@
-To do:
-------
-* Configuration file loading
-* Signals processing (HUP, USR1, etc).
-* Client addresses restriction
-* Broadcast MODBUS messaging implementation
-* SSL secure connection implementation
