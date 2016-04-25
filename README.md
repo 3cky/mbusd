@@ -1,7 +1,7 @@
 About mbusd
 ===========
 
-**mbusd** is open-source [Modbus](https://en.wikipedia.org/wiki/Modbus) TCP to Modbus RTU (RS-232/485) gateway.
+**mbusd** is open-source [Modbus TCP to Modbus RTU (RS-232/485)](https://en.wikipedia.org/wiki/Modbus) gateway.
 
 Features:
 ---------
@@ -98,16 +98,16 @@ Contributing:
 Author:
 -------
 
-Victor Antonovich (v.antonovich@gmail.com)
+Victor Antonovich (<v.antonovich@gmail.com>)
 
 Credits:
 --------
 
-Andrew Denysenko <nitr0@seti.kr.ua>:
+Andrew Denysenko (<nitr0@seti.kr.ua>):
  - RTS RS-485 data direction control
  - RTU response receiving by length
 
 License:
 --------
 
-This project is distributed under the BSD license. See the [LICENSE](https://github.com/3cky/mbusd/blob/master/LICENSE) file for the full license text.
+This project is distributed under the BSD license. See the [LICENSE](LICENSE) file for the full license text.
