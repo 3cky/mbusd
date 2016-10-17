@@ -1,7 +1,7 @@
 /*
  * OpenMODBUS/TCP to RS-232/485 MODBUS RTU gateway
  *
- * queue.h - �onnections queue management procedures
+ * queue.h - connections queue management procedures
  *
  * Copyright (c) 2002-2003, 2013, Victor Antonovich (v.antonovich@gmail.com)
  * 
