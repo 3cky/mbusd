@@ -37,6 +37,12 @@ Usage help.
 Instruct \fImbusd\fR not to fork itself (non-daemonize).
 .IP \fB-t\fR
 Enable RTS RS-485 data direction control (if not disabled while compile).
+.IP "\fB-y \fIfile\fR"
+Enable RS-485 direction data direction control by writing '1' to file
+for transmitter enable and '0' to file for transmitter disable
+.IP "\fB-Y \fIfile\fR"
+Enable RS-485 direction data direction control by writing '0' to file
+for transmitter enable and '1' to file for transmitter disable
 .IP "\fB-v \fIlevel\fR"
 Specifies log verbosity level. 0 enables logging of errors only,
 1 also enables warnings and 2 enables information messages.
