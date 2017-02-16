@@ -6,6 +6,10 @@ mbusd \- MODBUS/TCP to MODBUS/RTU gateway.
 .RB [ -h ]
 .RB [ -d ]
 .RB [ -t ]
+.RB [ -y
+.IR file ]
+.RB [ -Y
+.IR file ]
 .RB [ -v
 .IR level ]
 .RB [ -L
