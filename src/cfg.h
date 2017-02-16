@@ -54,7 +54,7 @@ typedef struct
   int ttyspeed;
   /* tty mode */
   char *ttymode;
-  /* trx control type (0 - ADDC, 1 - by RTS) */
+  /* trx control type (0 - ADDC, 1 - by RTS, 2 - by sysfs GPIO with 1 activating transmit, 3 - by sysfs GPIO with 0 activating transmit) */
   int trxcntl;
   /* TCP server port number */
   int serverport;

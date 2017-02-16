@@ -67,8 +67,10 @@
  * TRX control types
  */
 #ifdef  TRXCTL
-#define TRX_ADDC 0
-#define TRX_RTS  1
+#define TRX_ADDC    0
+#define TRX_RTS     1
+#define TRX_SYSFS_1 2
+#define TRX_SYSFS_0 3
 #endif
 
 /*
@@ -89,7 +91,7 @@ typedef struct
   int speed;                    /* serial port speed */
   char *port;                   /* serial port device name */
 #ifdef TRXCTL
-  int trxcntl;                  /* trx control type (0 - Automatic Data Direction Control (ADDC), 1 - by RTS) */
+  int trxcntl;                  /* trx control type (enum - see values in config.h) */
 #endif
   struct termios tios;          /* working termios structure */
   struct termios savedtios;     /* saved termios structure */

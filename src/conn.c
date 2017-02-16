@@ -248,7 +248,7 @@ conn_write(int d, void *buf, size_t nbytes, int istty)
   long delay;
 #ifdef TRXCTL
   if (istty) {
-    if (cfg.trxcntl == TRX_RTS)
+    if (cfg.trxcntl != TRX_ADDC )
       tty_set_rts(d);
     usleep(35000000l/cfg.ttyspeed);
   }
@@ -278,7 +278,7 @@ conn_write(int d, void *buf, size_t nbytes, int istty)
     usleep(delay);
 #endif
 /*    tcdrain(d); - hangs sometimes, so make calculated delay */
-    if (cfg.trxcntl == TRX_RTS) {
+    if (cfg.trxcntl != TRX_ADDC ) {
       tty_clr_rts(d);
     }
   }

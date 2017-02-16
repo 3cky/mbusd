@@ -104,7 +104,7 @@ usage(char *exename)
    "Andrew Denysenko <nitr0@seti.kr.ua>\n\n"
    "Usage: %s [-h] [-d] "
 #ifdef TRXCTL
-   "[-t] "
+   "[-t] [-y sysfsfile] [-Y sysfsfile]\n"
 #endif
    "[-v level] [-L logfile] [-p device] [-s speed] [-m mode] [-P port]\n"
    "             [-C maxconn] [-N retries] [-R pause] [-W wait] [-T timeout]\n\n"
@@ -112,7 +112,9 @@ usage(char *exename)
    "  -h         : this help\n"
    "  -d         : don't daemonize\n"
 #ifdef TRXCTL
-   "  -t         : enable RTS RS-485 data direction control\n"
+   "  -t         : enable RTS RS-485 data direction control using RTS\n"
+   "  -y         : enable RTS RS-485 data direction control using sysfs file, active transmit\n"
+   "  -Y         : enable RTS RS-485 data direction control using sysfs file, active receive\n"
 #endif
 #ifdef LOG
 #ifdef DEBUG
@@ -165,7 +167,7 @@ main(int argc, char *argv[])
   while ((rc = getopt(argc, argv,
                "dh"
 #ifdef TRXCTL
-               "t"
+               "ty:Y:"
 #endif
 #ifdef LOG
                "v:L:"
@@ -183,6 +185,14 @@ main(int argc, char *argv[])
       case 't':
         cfg.trxcntl = TRX_RTS;
         break;
+      case 'y':
+	cfg.trxcntl = TRX_SYSFS_1;
+        strncpy(cfg.trxcntl_file, optarg, INTBUFSIZE);
+	break;
+      case 'Y':
+	cfg.trxcntl = TRX_SYSFS_0;
+        strncpy(cfg.trxcntl_file, optarg, INTBUFSIZE);
+	break;
 #endif
 #ifdef LOG
       case 'v':
