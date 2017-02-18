@@ -48,6 +48,12 @@ Usage:
        -h     Usage help.
        -d     Instruct mbusd not to fork itself (non-daemonize).
        -t     Enable RTS RS-485 data direction control (if not disabled while compile).
+       -y file
+              Enable RS-485 direction data direction control by writing '1' to file
+              for transmitter enable and '0' to file for transmitter disable
+       -Y file
+              Enable RS-485 direction data direction control by writing '0' to file
+              for transmitter enable and '1' to file for transmitter disable
        -v level
               Specifies  log  verbosity level (0 for errors only, 1 for warnings
               and 2 for also information messages.) If mbusd was compiled in debug mode,
@@ -106,6 +112,9 @@ Credits:
 Andrew Denysenko (<nitr0@seti.kr.ua>):
  - RTS RS-485 data direction control
  - RTU response receiving by length
+
+James Jarvis (<jj@aprsworld.com>):
+ - file based RS-485 data direction control
 
 License:
 --------

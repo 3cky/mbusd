@@ -362,20 +362,44 @@ tty_close(ttydata_t *mod)
 }
 
 #ifdef  TRXCTL
+void sysfs_gpio_set(char *filename, char *value) {
+	int fd;
+
+	fd = open(filename, O_WRONLY);
+	/* write first byte. Should only be 0 or 1 */
+	write(fd, value, 1);
+	close(fd);
+
+	logw(9, "tty: sysfs_gpio_set(%s,%s)\n",filename,value);
+
+}
+
 /* Set RTS line to active state */
 void
 tty_set_rts(int fd)
 {
-  int mstat = TIOCM_RTS;
-  ioctl(fd, TIOCMBIS, &mstat);
+	if ( TRX_RTS == cfg.trxcntl ) {
+		int mstat = TIOCM_RTS;
+		ioctl(fd, TIOCMBIS, &mstat);
+	} else if ( TRX_SYSFS_1 == cfg.trxcntl) {
+		sysfs_gpio_set(cfg.trxcntl_file,"1");
+	} else if ( TRX_SYSFS_0 == cfg.trxcntl) {
+		sysfs_gpio_set(cfg.trxcntl_file,"0");
+	}
 }
 
 /* Set RTS line to passive state */
 void
 tty_clr_rts(int fd)
 {
-  int mstat = TIOCM_RTS;
-  ioctl(fd, TIOCMBIC, &mstat);
+	if ( TRX_RTS == cfg.trxcntl ) {
+		int mstat = TIOCM_RTS;
+		ioctl(fd, TIOCMBIC, &mstat);
+	} else if ( TRX_SYSFS_1 == cfg.trxcntl) {
+		sysfs_gpio_set(cfg.trxcntl_file,"0");
+	} else if ( TRX_SYSFS_0 == cfg.trxcntl) {
+		sysfs_gpio_set(cfg.trxcntl_file,"1");
+	}
 }
 #endif
 
