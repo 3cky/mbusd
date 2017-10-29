@@ -20,3 +20,12 @@ dist-hook:
 		fi \
 	done
 
+# systemd
+AM_DISTCHECK_CONFIGURE_FLAGS = \
+    --with-systemdsystemunitdir='$$(prefix)/$(systemdsystemunitdir)'
+
+if HAVE_SYSTEMD
+systemdsystemunit_DATA = \
+	systemd-units/mbusd@.service
+endif
+
