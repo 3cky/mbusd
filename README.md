@@ -85,10 +85,18 @@ Please note running **mbusd** on default Modbus TCP port (502) requires root pri
 systemd:
 ---------------
 
-**mbusd** has [systemd](https://wiki.archlinux.org/index.php/systemd) support. (`sudo make install`) installs the (`mbusd@.service`) file on systems running systemd. 
+**mbusd** has [systemd](https://wiki.archlinux.org/index.php/systemd) support. The build system detects whether the system has systemd after which `sudo make install` installs the `mbusd@.service` file on systems with systemd active. 
 The **mbusd** service can be started via:
 
 	# sudo systemctl start mbusd@<serial port>.service
+
+To see the **mbusd** service status:
+
+	# sudo systemctl status mbusd@<serial port>.service
+
+To monitor the **mbusd** service:
+
+	# sudo journalctl -u mbusd@<serial port>.service -f -n 10
 
 To start the **mbusd** service on system boot:
 
@@ -96,7 +104,7 @@ To start the **mbusd** service on system boot:
 
 Please check systemd documentation for other usefull systemd [commands](https://wiki.archlinux.org/index.php/systemd)
 
-The checked in (`mbusd@.service`) starts **mbusd** equivalent to the following command:
+The checked in `mbusd@.service` starts **mbusd** equivalent to the following command:
 
 	# /usr/local/bin/mbusd -p /dev/<serial port> -s 9600 -m 8N1 -P 502 -d -v2
 
