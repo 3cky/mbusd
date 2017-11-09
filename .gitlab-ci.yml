@@ -1,0 +1,6 @@
+---
+build:
+ script:
+   - "./configure"
+   - "autoreconfig -i"
+   - "make"
