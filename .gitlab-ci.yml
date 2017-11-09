@@ -1,5 +1,11 @@
 ---
+image: debian:unstable
+ 
 build:
+ before_script:
+   - apt update -qq
+   - apt install -y -qq build-essential autoconf automake pkg-config libtool m4 autoconf-archive gtk-doc-tools libxml2-utils gobject-introspection libgirepository1.0-dev libglib2.0-dev libjson-glib-dev
+ 
  script:
    - "./configure"
    - "autoreconfig -i"
