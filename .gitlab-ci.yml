@@ -3,7 +3,6 @@ image: debian:unstable
 
 stages:
  - build_release
- - package 
 
 build:
  stage: build_release
@@ -15,12 +14,9 @@ build:
    - "./configure"
    - "autoreconf -i"
    - "make"
- 
-package:
- stage: package
- # The files which are to be made available in GitLab
- script:
-   - "true"
+
  artifacts:
   paths:
    - src/mbusd
+   - doc/mbusd.8
+ 
