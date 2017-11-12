@@ -19,6 +19,8 @@ build:
 package:
  stage: package
  # The files which are to be made available in GitLab
+ script:
+   - "true"
  artifacts:
   paths:
    - src/mbusd
