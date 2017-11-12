@@ -1,7 +1,12 @@
 ---
 image: debian:unstable
- 
+
+stages:
+ - build
+ - package 
+
 build:
+ stage: build_release
  before_script:
    - apt update -qq
    - apt install -y -qq build-essential autoconf automake pkg-config libtool m4 autoconf-archive
@@ -11,6 +16,8 @@ build:
    - "autoreconf -i"
    - "make"
  
+package:
+ stage: package
  # The files which are to be made available in GitLab
  artifacts:
   paths:
