@@ -2,7 +2,7 @@
 image: debian:unstable
 
 stages:
- - build
+ - build_release
  - package 
 
 build:
