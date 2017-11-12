@@ -9,10 +9,11 @@ build:
  before_script:
    - apt update -qq
    - apt install -y -qq build-essential autoconf automake pkg-config libtool m4 autoconf-archive
+   - apt install -y gcc-arm-linux-gnueabihf
  
  script:
-   - "./configure"
    - "autoreconf -i"
+   - "./configure --host=arm-linux-gnueabihf -prefix=${CSTOOL_DIR}/linux_arm_tool"
    - "make"
 
  artifacts:
