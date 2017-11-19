@@ -12,7 +12,7 @@ stages:
   artifacts:
    # create an archive with a name of the current stage and branch name
    name: "${CI_BUILD_STAGE}_${CI_BUILD_REF_NAME}"
-   imtracled: true
+   untracked: true
    paths:
     - src/mbusd
     - doc/mbusd.8
