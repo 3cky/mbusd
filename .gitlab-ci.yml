@@ -13,6 +13,8 @@ stages:
    # create an archive with a name of the current stage and branch name
    name: "${CI_BUILD_STAGE}_${CI_BUILD_REF_NAME}"
    untracked: true
+   expire_in: 12 mos
+
    paths:
     - src/mbusd
     - doc/mbusd.8
