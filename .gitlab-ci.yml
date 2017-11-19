@@ -1,23 +1,38 @@
 ---
-image: debian:unstable
-
 stages:
- - build_release
+ - build
 
-build:
- stage: build_release
- before_script:
+.mbusd_job_template: &mbusd_job_template # Hidden key that defines an anchor
+  image: debian:stable
+  before_script:
    - apt update -qq
    - apt install -y -qq build-essential autoconf automake pkg-config libtool m4 autoconf-archive
    - apt install -y gcc-arm-linux-gnueabihf
+
+  artifacts:
+   # create an archive with a name of the current stage and branch name
+   name: "${CI_BUILD_STAGE}_${CI_BUILD_REF_NAME}"
+   imtracled: true
+   paths:
+    - src/mbusd
+    - doc/mbusd.8
+
+
+build:linux_x86:
+ <<: *mbusd_job_template
+ stage: build
+ script:
+   - "autoreconf -i"
+   - "./configure"
+   - "make"
+
+
+build:deb_armhf:
+ <<: *mbusd_job_template
+ stage: build
  
  script:
    - "autoreconf -i"
    - "./configure --host=arm-linux-gnueabihf -prefix=${CSTOOL_DIR}/linux_arm_tool"
    - "make"
-
- artifacts:
-  paths:
-   - src/mbusd
-   - doc/mbusd.8
  
