@@ -46,6 +46,8 @@ extern int isdaemon;
 int log_init(char *logname);
 int log_app(char *logname, char *string);
 void logw(int level, char *fmt, ...);
+#else
+    #define logw(fmt, ...) {}
 #endif
 
 #endif /* _LOG_H */
