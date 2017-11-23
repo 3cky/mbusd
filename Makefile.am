@@ -27,5 +27,11 @@ AM_DISTCHECK_CONFIGURE_FLAGS = \
 if HAVE_SYSTEMD
 systemdsystemunit_DATA = \
 	systemd-units/mbusd@.service
+
+$(systemdsystemunit_DATA):
+	-$(SED) -e 's,@bindir\@,$(bindir),g' '$@.in' >'$@'
+
+distclean-local::
+	-$(RM) $(systemdsystemunit_DATA)
 endif
 
