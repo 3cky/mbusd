@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.2)
 include(CPack)
 include(CheckFunctionExists)
+include(CheckLibraryExists)
+include(GNUInstallDirs)
 
 project(mbusd VERSION 0.2.4)
 
@@ -43,7 +45,6 @@ if(HAVE_TIME AND HAVE_LOCALTIME)
     add_definitions(-DHRDATE)
 endif()
 
-include(CheckLibraryExists)
 find_library(LIB_UTIL NAMES libutil util)
 check_library_exists(util tty_get_name LIB_UTIL HAVE_TTY_GET_NAME)
 check_library_exists(util uu_lock LIB_UTIL HAVE_UU_LOCK)
@@ -67,3 +68,7 @@ set(mbusd_SOURCES
     src/sock.c
 )
 add_executable(mbusd ${mbusd_SOURCES})
+
+# add make install capabilites
+install(TARGETS mbusd DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}/)
+install(FILES doc/mbusd.8 DESTINATION ${CMAKE_INSTALL_FULL_MANDIR}/man8/)
