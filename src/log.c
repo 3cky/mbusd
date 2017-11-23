@@ -114,7 +114,7 @@ logw(int level, char *fmt, ...)
   strsize += vsnprintf(p, INTBUFSIZE - strsize, fmt, args);
   va_end(args);
   strcpy(str + strsize++, "\n");
-  if (!isdaemon) printf("%s", str);
+  if (!isdaemon) fprintf(stderr, "%s", str);
   if (*logfullname == '\0') return;
   log_app(logfullname, str);
 }
