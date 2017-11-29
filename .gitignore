@@ -20,3 +20,5 @@ CPackSourceConfig.cmake
 cmake_install.cmake
 .idea
 *~
+.project
+.cproject
