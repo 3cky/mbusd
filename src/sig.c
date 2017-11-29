@@ -149,5 +149,12 @@ sig_exec(void)
   logw(2, "Terminated by signal: SIG%s", signames[sig_flag]);
 #endif
   /* currently simply exit the program */
-  exit(1);
+  switch(sig_flag)
+  {
+  case SIGINT:
+  case SIGTERM: // fall-through
+    exit(0);
+  default:
+    exit(1);
+  }
 }

@@ -158,8 +158,9 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-am__installdirs = "$(DESTDIR)$(mbusddocdir)"
-DATA = $(mbusddoc_DATA)
+am__installdirs = "$(DESTDIR)$(mbusdconfdir)" \
+	"$(DESTDIR)$(mbusddocdir)" "$(DESTDIR)$(systemdsystemunitdir)"
+DATA = $(mbusdconf_DATA) $(mbusddoc_DATA) $(systemdsystemunit_DATA)
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 am__recursive_targets = \
@@ -191,8 +192,8 @@ CTAGS = ctags
 CSCOPE = cscope
 DIST_SUBDIRS = $(SUBDIRS)
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in compile \
-	config.guess config.sub depcomp install-sh ltconfig ltmain.sh \
-	missing mkinstalldirs
+	config.guess config.sub install-sh ltconfig ltmain.sh missing \
+	mkinstalldirs
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -274,6 +275,7 @@ LIBTOOL = @LIBTOOL@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
+LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
@@ -301,6 +303,9 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PKG_CONFIG = @PKG_CONFIG@
+PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
+PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 RANLIB = @RANLIB@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
@@ -355,19 +360,32 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
 sysconfdir = @sysconfdir@
+systemdsystemunitdir = @systemdsystemunitdir@
 target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = src doc
-mbusddocdir = ${prefix}/doc/mbusd
+mbusddocdir = ${docdir}
 mbusddoc_DATA = \
 	README.md\
 	CHANGELOG.md\
 	LICENSE
 
-EXTRA_DIST = $(mbusddoc_DATA)
+mbusdconfdir = ${mbusddocdir}
+mbusdconf_DATA = \
+	conf/mbusd.conf.example
+
+EXTRA_DIST = $(mbusddoc_DATA) $(mbusdconf_DATA)
+
+# systemd
+AM_DISTCHECK_CONFIGURE_FLAGS = \
+    --with-systemdsystemunitdir='$$(prefix)/$(systemdsystemunitdir)'
+
+@HAVE_SYSTEMD_TRUE@systemdsystemunit_DATA = \
+@HAVE_SYSTEMD_TRUE@	systemd-units/mbusd@.service
+
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -429,6 +447,27 @@ clean-libtool:
 
 distclean-libtool:
 	-rm -f libtool config.lt
+install-mbusdconfDATA: $(mbusdconf_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(mbusdconf_DATA)'; test -n "$(mbusdconfdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(mbusdconfdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(mbusdconfdir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(mbusdconfdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(mbusdconfdir)" || exit $$?; \
+	done
+
+uninstall-mbusdconfDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(mbusdconf_DATA)'; test -n "$(mbusdconfdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(mbusdconfdir)'; $(am__uninstall_files_from_dir)
 install-mbusddocDATA: $(mbusddoc_DATA)
 	@$(NORMAL_INSTALL)
 	@list='$(mbusddoc_DATA)'; test -n "$(mbusddocdir)" || list=; \
@@ -450,6 +489,27 @@ uninstall-mbusddocDATA:
 	@list='$(mbusddoc_DATA)'; test -n "$(mbusddocdir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	dir='$(DESTDIR)$(mbusddocdir)'; $(am__uninstall_files_from_dir)
+install-systemdsystemunitDATA: $(systemdsystemunit_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(systemdsystemunit_DATA)'; test -n "$(systemdsystemunitdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(systemdsystemunitdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(systemdsystemunitdir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(systemdsystemunitdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(systemdsystemunitdir)" || exit $$?; \
+	done
+
+uninstall-systemdsystemunitDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(systemdsystemunit_DATA)'; test -n "$(systemdsystemunitdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(systemdsystemunitdir)'; $(am__uninstall_files_from_dir)
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run 'make' without going through this Makefile.
@@ -625,7 +685,7 @@ distdir: $(DISTFILES)
 	  ! -type d ! -perm -444 -exec $(install_sh) -c -m a+r {} {} \; \
 	|| chmod -R a+r "$(distdir)"
 dist-gzip: distdir
-	tardir=$(distdir) && $(am__tar) | GZIP=$(GZIP_ENV) gzip -c >$(distdir).tar.gz
+	tardir=$(distdir) && $(am__tar) | eval GZIP= gzip $(GZIP_ENV) -c >$(distdir).tar.gz
 	$(am__post_remove_distdir)
 
 dist-bzip2: distdir
@@ -651,7 +711,7 @@ dist-shar: distdir
 	@echo WARNING: "Support for shar distribution archives is" \
 	               "deprecated." >&2
 	@echo WARNING: "It will be removed altogether in Automake 2.0" >&2
-	shar $(distdir) | GZIP=$(GZIP_ENV) gzip -c >$(distdir).shar.gz
+	shar $(distdir) | eval GZIP= gzip $(GZIP_ENV) -c >$(distdir).shar.gz
 	$(am__post_remove_distdir)
 
 dist-zip: distdir
@@ -669,7 +729,7 @@ dist dist-all:
 distcheck: dist
 	case '$(DIST_ARCHIVES)' in \
 	*.tar.gz*) \
-	  GZIP=$(GZIP_ENV) gzip -dc $(distdir).tar.gz | $(am__untar) ;;\
+	  eval GZIP= gzip $(GZIP_ENV) -dc $(distdir).tar.gz | $(am__untar) ;;\
 	*.tar.bz2*) \
 	  bzip2 -dc $(distdir).tar.bz2 | $(am__untar) ;;\
 	*.tar.lz*) \
@@ -679,7 +739,7 @@ distcheck: dist
 	*.tar.Z*) \
 	  uncompress -c $(distdir).tar.Z | $(am__untar) ;;\
 	*.shar.gz*) \
-	  GZIP=$(GZIP_ENV) gzip -dc $(distdir).shar.gz | unshar ;;\
+	  eval GZIP= gzip $(GZIP_ENV) -dc $(distdir).shar.gz | unshar ;;\
 	*.zip*) \
 	  unzip $(distdir).zip ;;\
 	esac
@@ -753,7 +813,7 @@ check: check-recursive
 all-am: Makefile $(DATA) config.h
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(mbusddocdir)"; do \
+	for dir in "$(DESTDIR)$(mbusdconfdir)" "$(DESTDIR)$(mbusddocdir)" "$(DESTDIR)$(systemdsystemunitdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-recursive
@@ -786,6 +846,7 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+@HAVE_SYSTEMD_FALSE@distclean-local:
 clean: clean-recursive
 
 clean-am: clean-generic clean-libtool mostlyclean-am
@@ -794,7 +855,7 @@ distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -f Makefile
 distclean-am: clean-am distclean-generic distclean-hdr \
-	distclean-libtool distclean-tags
+	distclean-libtool distclean-local distclean-tags
 
 dvi: dvi-recursive
 
@@ -808,7 +869,8 @@ info: info-recursive
 
 info-am:
 
-install-data-am: install-mbusddocDATA
+install-data-am: install-mbusdconfDATA install-mbusddocDATA \
+	install-systemdsystemunitDATA
 
 install-dvi: install-dvi-recursive
 
@@ -854,7 +916,8 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am: uninstall-mbusddocDATA
+uninstall-am: uninstall-mbusdconfDATA uninstall-mbusddocDATA \
+	uninstall-systemdsystemunitDATA
 
 .MAKE: $(am__recursive_targets) all install-am install-strip
 
@@ -864,17 +927,19 @@ uninstall-am: uninstall-mbusddocDATA
 	dist-all dist-bzip2 dist-gzip dist-hook dist-lzip dist-shar \
 	dist-tarZ dist-xz dist-zip distcheck distclean \
 	distclean-generic distclean-hdr distclean-libtool \
-	distclean-tags distcleancheck distdir distuninstallcheck dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-mbusddocDATA \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	installdirs-am maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
-	ps ps-am tags tags-am uninstall uninstall-am \
-	uninstall-mbusddocDATA
+	distclean-local distclean-tags distcleancheck distdir \
+	distuninstallcheck dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-mbusdconfDATA install-mbusddocDATA install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	install-systemdsystemunitDATA installcheck installcheck-am \
+	installdirs installdirs-am maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-am uninstall \
+	uninstall-am uninstall-mbusdconfDATA uninstall-mbusddocDATA \
+	uninstall-systemdsystemunitDATA
 
 .PRECIOUS: Makefile
 
@@ -886,6 +951,12 @@ dist-hook:
 			cp -p $$specfile $(distdir); \
 		fi \
 	done
+
+@HAVE_SYSTEMD_TRUE@$(systemdsystemunit_DATA):
+@HAVE_SYSTEMD_TRUE@	-$(SED) -e 's,@bindir\@,$(bindir),g' '$@.in' >'$@'
+
+@HAVE_SYSTEMD_TRUE@distclean-local::
+@HAVE_SYSTEMD_TRUE@	-$(RM) $(systemdsystemunit_DATA)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
