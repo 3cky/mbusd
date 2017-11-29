@@ -17,6 +17,7 @@ build:linux_armhf:
  <<: *mbusd_job_template
  stage: build
  before_script:
+   - apt update -qq
    - apt install -y -qq build-essential pkg-config cmake
  script:
    - mkdir output.dir/
@@ -28,6 +29,7 @@ build:linux_x86:
  <<: *mbusd_job_template
  stage: build
  before_script:
+   - apt update -qq
    - apt install -y -qq build-essential pkg-config cmake gcc-arm-linux-gnueabihf
  script:
    - mkdir output.dir/
@@ -40,6 +42,7 @@ test_x86:
   image: debian:stable
   #https://forum.gitlab.com/t/testing-copy-yaml-file-to-build-folder/8309
   before_script:
+    - apt update -qq
     - apt install -y -qq build-essential pkg-config cmake
     - apt install -y -qq python-dev python-pip python-setuptools socat
     - python -m pip install pymodbus service_identity
