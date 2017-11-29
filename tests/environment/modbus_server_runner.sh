@@ -2,7 +2,8 @@
 
 MBUS_SERVER_PID=/tmp/modbus_server.pid
 
-. ./subprocess_helper.sh
+CURRENT_DIR="$(dirname "$(realpath "$0")")"
+. $CURRENT_DIR/subprocess_helper.sh
 
 check_preconditions() {
     #TODO check if python module 'pymodbus' is installed
@@ -21,7 +22,6 @@ check_preconditions
 case "$1" in
     up|start)
         #TOOO obtain current directory
-        CURRENT_DIR="$(dirname "$(realpath "$0")")"
         CMD="python ${CURRENT_DIR}/modbus_server_mock.py &"
         run_cmd_save_pid "$CMD" $MBUS_SERVER_PID
         ;;
