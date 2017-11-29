@@ -9,3 +9,11 @@
 /doc/mbusd.8
 Makefile
 *.log
+*.pyc
+CMakeCache.txt
+CMakeFiles
+CPackConfig.cmake
+CPackSourceConfig.cmake
+cmake_install.cmake
+.idea
+*~

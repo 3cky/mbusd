@@ -1,6 +1,7 @@
 ---
 stages:
  - build
+ - test
 
 .mbusd_job_template: &mbusd_job_template # Hidden key that defines an anchor
   image: debian:stable
@@ -13,28 +14,44 @@ stages:
    # create an archive with a name of the current stage and branch name
    name: "${CI_BUILD_STAGE}_${CI_BUILD_REF_NAME}"
    untracked: true
-   expire_in: 12 mos
+   expire_in: 1 mos
 
    paths:
-    - src/mbusd
+    - output.dir/mbusd
     - doc/mbusd.8
 
+build:linux_armhf:
+ <<: *mbusd_job_template
+ stage: build
+ script:
+   - mkdir output.dir/
+   - cd output.dir
+   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=../arm_linux_gnueabihf.cmake ../
+   - make
 
 build:linux_x86:
  <<: *mbusd_job_template
  stage: build
  script:
-   - "autoreconf -i"
-   - "./configure"
-   - "make"
+   - mkdir output.dir/
+   - cd output.dir
+   - cmake -D CMAKE_BUILD_TYPE=Debug ../
+   - make
 
+test_x86:
+  stage: test
+  #https://forum.gitlab.com/t/testing-copy-yaml-file-to-build-folder/8309
+  before_script:
+    - apt-get install --fix-missing -y python3-dev python3-pip python3-setuptools socat
+    - python -m pip install pymodbus service_identity
 
-build:deb_armhf:
- <<: *mbusd_job_template
- stage: build
- 
- script:
-   - "autoreconf -i"
-   - "./configure --host=arm-linux-gnueabihf -prefix=${CSTOOL_DIR}/linux_arm_tool"
-   - "make"
- 
+  dependencies:
+    - build:linux_x86
+  script:
+    - mkdir -p output.dir/
+    - cd output.dir
+    - cmake -DTESTS=True ../
+    - make VERBOSE=1
+
+    # execute all tests
+    - ./test_*

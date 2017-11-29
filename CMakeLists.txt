@@ -72,3 +72,8 @@ add_executable(mbusd ${mbusd_SOURCES})
 # add make install capabilites
 install(TARGETS mbusd DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}/)
 install(FILES doc/mbusd.8 DESTINATION ${CMAKE_INSTALL_FULL_MANDIR}/man8/)
+
+option(TESTS "Enable unittests" OFF)
+if(TESTS)
+    add_executable(test_basic tests/test_basics.c)
+endif()
