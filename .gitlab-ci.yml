@@ -7,7 +7,7 @@ stages:
   image: debian:stable
   before_script:
    - apt update -qq
-   - apt install -y -qq build-essential autoconf automake pkg-config libtool m4 autoconf-archive
+   - apt install -y -qq build-essential pkg-config cmake
    - apt install -y gcc-arm-linux-gnueabihf
 
   artifacts:
