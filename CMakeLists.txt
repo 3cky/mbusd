@@ -53,16 +53,7 @@ if(LIB_UTIL AND HAVE_TTY_GET_NAME AND HAVE_UU_LOCK)
     add_definitions(-DHAVE_LIBUTIL)
 endif()
 
-find_program(HAVE_SYSTEMD NAMES systemd)
-if(HAVE_SYSTEMD)
-    set(bindir ${CMAKE_INSTALL_FULL_BINDIR})
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/systemd-units/mbusd@.service.in  mbusd@service)
-
-    install(FILES mbusd.service DESTINATION /lib/systemd/system)
-    #TODO install a default ${CMAKE_CURRENT_SOURCE_DIR}/conf/mbusd.conf ??
-endif()
-
-
+# add the main application
 set(mbusd_SOURCES
     src/main.c
     src/tty.c
@@ -77,11 +68,22 @@ set(mbusd_SOURCES
     src/sock.c
 )
 add_executable(mbusd ${mbusd_SOURCES})
-
-# add make install capabilites
 install(TARGETS mbusd DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}/)
-install(FILES doc/mbusd.8 DESTINATION ${CMAKE_INSTALL_FULL_MANDIR}/man8/)
 
+# aggregate the man page template
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/mbusd.8.in mbusd.8)
+install(FILES mbusd.8 DESTINATION ${CMAKE_INSTALL_FULL_MANDIR}/man8/)
+
+# aggregate mbusd@.service from its template
+find_program(HAVE_SYSTEMD NAMES systemd)
+if(HAVE_SYSTEMD)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/systemd-units/mbusd@.service.in  mbusd@.service)
+
+    install(FILES mbusd@.service DESTINATION /lib/systemd/system/)
+    #TODO install a default ${CMAKE_CURRENT_SOURCE_DIR}/conf/mbusd.conf ??
+endif()
+
+# unittest target
 option(TESTS "Enable unittests" OFF)
 if(TESTS)
     add_executable(test_basic tests/test_basics.c)

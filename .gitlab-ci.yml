@@ -11,8 +11,9 @@ stages:
     expire_in: 1 day
     paths:
       - output.dir/mbusd
-      - doc/mbusd.8
+      - output.dir/mbusd.8
       - conf/mbusd.conf.example
+      - output.dir/mbusd@.service
 
 build:linux_armhf:
  <<: *mbusd_job_template
