@@ -100,62 +100,70 @@ void
 usage(char *exename)
 {
   cfg_init();
-  printf("%s-%s Copyright (C) 2002-2003, 2011, 2013-2016 Victor Antonovich <v.antonovich@gmail.com>, "
+  printf("%s-%s Copyright (C) 2002-2003, 2011, 2013-2017 Victor Antonovich <v.antonovich@gmail.com>, "
    "Andrew Denysenko <nitr0@seti.kr.ua>\n\n"
    "Usage: %s [-h] [-d] "
-#ifdef TRXCTL
-   "[-t] [-y sysfsfile] [-Y sysfsfile]\n"
+#ifdef LOG
+   "[-L logfile] [-v level] "
 #endif
-   "[-v level] [-L logfile] [-p device] [-s speed] [-m mode] [-P port]\n"
-   "             [-C maxconn] [-N retries] [-R pause] [-W wait] [-T timeout]\n\n"
+   "[-c cfgfile] \n"
+   "             [-p device] [-s speed] [-m mode]\n"
+#ifdef TRXCTL
+   "             [-t] [-y sysfsfile] [-Y sysfsfile]\n"
+#endif
+   "             [-P port] [-C maxconn] [-N retries] [-R pause] [-W wait] [-T timeout]\n\n"
    "Options:\n"
    "  -h         : this help\n"
    "  -d         : don't daemonize\n"
-#ifdef TRXCTL
-   "  -t         : enable RTS RS-485 data direction control using RTS\n"
-   "  -y         : enable RTS RS-485 data direction control using sysfs file, active transmit\n"
-   "  -Y         : enable RTS RS-485 data direction control using sysfs file, active receive\n"
-#endif
 #ifdef LOG
+   "  -L logfile : set log file name (default %s%s, \n"
+   "               '-' for logging to STDOUT only)\n"
 #ifdef DEBUG
    "  -v level   : set log level (0-9, default %d, 0 - errors only)\n"
 #else
    "  -v level   : set log level (0-2, default %d, 0 - errors only)\n"
 #endif
-   "  -L logfile : set log file name (default %s%s, \n"
-   "               '-' for logging to STDOUT only)\n"
 #endif
+   "  -c cfgfile : read configuration from cfgfile\n"
    "  -p device  : set serial port device name (default %s)\n"
    "  -s speed   : set serial port speed (default %d)\n"
    "  -m mode    : set serial port mode (default %s)\n"
    "  -P port    : set TCP server port number (default %d)\n"
+#ifdef TRXCTL
+   "  -t         : enable RTS RS-485 data direction control using RTS\n"
+   "  -y         : enable RTS RS-485 data direction control using sysfs file, active transmit\n"
+   "  -Y         : enable RTS RS-485 data direction control using sysfs file, active receive\n"
+#endif
    "  -C maxconn : set maximum number of simultaneous TCP connections\n"
-   "               (1-128, default %d)\n"
+   "               (1-%d, default %d)\n"
    "  -N retries : set maximum number of request retries\n"
-   "               (0-15, default %d, 0 - without retries)\n"
+   "               (0-%d, default %d, 0 - without retries)\n"
    "  -R pause   : set pause between requests in milliseconds\n"
-   "               (1-10000, default %lu)\n"
+   "               (1-%d, default %lu)\n"
    "  -W wait    : set response wait time in milliseconds\n"
-   "               (1-10000, default %lu)\n"
+   "               (1-%d, default %lu)\n"
    "  -T timeout : set connection timeout value in seconds\n"
-   "               (0-1000, default %d, 0 - no timeout)"
+   "               (0-%d, default %d, 0 - no timeout)"
    "\n", PACKAGE, VERSION, exename,
 #ifdef LOG
-      cfg.dbglvl, LOGPATH, LOGNAME,
+      LOGPATH, LOGNAME, cfg.dbglvl,
 #endif
-      cfg.ttyport, cfg.ttyspeed, cfg.ttymode, cfg.serverport, cfg.maxconn,
-      cfg.maxtry, cfg.rqstpause, cfg.respwait, cfg.conntimeout);
+      cfg.ttyport, cfg.ttyspeed, cfg.ttymode, cfg.serverport,
+      MAX_MAXCONN, cfg.maxconn, MAX_MAXTRY, cfg.maxtry,
+      MAX_RQSTPAUSE, cfg.rqstpause, MAX_RESPWAIT, cfg.respwait,
+      MAX_CONNTIMEOUT, cfg.conntimeout);
   exit(0);
 }
 
 int
 main(int argc, char *argv[])
 {
-  int err = 0, rc;
+  int err = 0, rc, err_line;
   char *exename;
   char ttyparity;
 
   sig_init();
+
   cfg_init();
 
   if ((exename = strrchr(argv[0], '/')) == NULL)
@@ -172,7 +180,7 @@ main(int argc, char *argv[])
 #ifdef LOG
                "v:L:"
 #endif
-               "p:s:m:P:C:N:R:W:T:")) != RC_ERR)
+               "p:s:m:P:C:N:R:W:T:c:")) != RC_ERR)
   {
     switch (rc)
     {
@@ -181,16 +189,28 @@ main(int argc, char *argv[])
       case 'd':
         isdaemon = FALSE;
         break;
+      case 'c':
+        if ((err_line = cfg_read_file(optarg)) != 0)
+        {
+          if (err_line > 0)
+            printf("%s: can't read config file %s: error at line %d: %s\n",
+                   exename, optarg, err_line, cfg_err);
+          else
+            printf("%s: can't read config file %s: %s\n",
+                   exename, optarg, strerror(errno));
+          exit(-1);
+        }
+        break;
 #ifdef TRXCTL
       case 't':
         cfg.trxcntl = TRX_RTS;
         break;
       case 'y':
-	cfg.trxcntl = TRX_SYSFS_1;
+        cfg.trxcntl = TRX_SYSFS_1;
         strncpy(cfg.trxcntl_file, optarg, INTBUFSIZE);
 	break;
       case 'Y':
-	cfg.trxcntl = TRX_SYSFS_0;
+        cfg.trxcntl = TRX_SYSFS_0;
         strncpy(cfg.trxcntl_file, optarg, INTBUFSIZE);
 	break;
 #endif
@@ -222,8 +242,7 @@ main(int argc, char *argv[])
           else
           { /* concatenate given log file name with default path */
             strncpy(cfg.logname, LOGPATH, INTBUFSIZE);
-            strncat(cfg.logname, optarg,
-                    INTBUFSIZE - strlen(cfg.logname));
+            strncat(cfg.logname, optarg, INTBUFSIZE - strlen(cfg.logname));
           }
         }
         else strncpy(cfg.logname, optarg, INTBUFSIZE);
@@ -234,8 +253,7 @@ main(int argc, char *argv[])
         { /* concatenate given port name with default
              path to devices mountpoint */
           strncpy(cfg.ttyport, "/dev/", INTBUFSIZE);
-          strncat(cfg.ttyport, optarg,
-                  INTBUFSIZE - strlen(cfg.ttyport));
+          strncat(cfg.ttyport, optarg, INTBUFSIZE - strlen(cfg.ttyport));
         }
         else strncpy(cfg.ttyport, optarg, INTBUFSIZE);
         break;
@@ -243,79 +261,80 @@ main(int argc, char *argv[])
         cfg.ttyspeed = strtoul(optarg, NULL, 0);
         break;
       case 'm':
-	cfg.ttymode = optarg;
-	/* tty mode sanity checks */
-	if (strlen(cfg.ttymode) != 3)
-	{
-	  printf("%s: -m: invalid serial port mode ('%s')\n", exename, cfg.ttymode);
-	  exit(-1);
-	}
-	if (cfg.ttymode[0] != '8')
-	{
-	  printf("%s: -m: invalid serial port character size "
-	      "(%c, must be 8)\n",
-	      exename, cfg.ttymode[0]);
-	  exit(-1);
-	}
-	ttyparity = toupper(cfg.ttymode[1]);
-	if (ttyparity != 'N' && ttyparity != 'E' && ttyparity != 'O')
-	{
-	  printf("%s: -m: invalid serial port parity "
-	      "(%c, must be N, E or O)\n", exename, ttyparity);
-	  exit(-1);
-	}
-	if (cfg.ttymode[2] != '1' && cfg.ttymode[2] != '2')
-	{
-	  printf("%s: -m: invalid serial port stop bits "
-	      "(%c, must be 1 or 2)\n", exename, cfg.ttymode[2]);
-	  exit(-1);
-	}
-	break;
+        strncpy(cfg.ttymode, optarg, INTBUFSIZE);
+        /* tty mode sanity checks */
+        if (strlen(cfg.ttymode) != 3)
+        {
+          printf("%s: -m: invalid serial port mode ('%s')\n",
+                 exename, cfg.ttymode);
+          exit(-1);
+        }
+        if (cfg.ttymode[0] != '8')
+        {
+          printf("%s: -m: invalid serial port character size "
+              "(%c, must be 8)\n",
+              exename, cfg.ttymode[0]);
+          exit(-1);
+        }
+        ttyparity = toupper(cfg.ttymode[1]);
+        if (ttyparity != 'N' && ttyparity != 'E' && ttyparity != 'O')
+        {
+          printf("%s: -m: invalid serial port parity "
+              "(%c, must be N, E or O)\n", exename, ttyparity);
+          exit(-1);
+        }
+        if (cfg.ttymode[2] != '1' && cfg.ttymode[2] != '2')
+        {
+          printf("%s: -m: invalid serial port stop bits "
+              "(%c, must be 1 or 2)\n", exename, cfg.ttymode[2]);
+          exit(-1);
+        }
+        break;
       case 'P':
         cfg.serverport = strtoul(optarg, NULL, 0);
         break;
       case 'C':
         cfg.maxconn = strtoul(optarg, NULL, 0);
-        if (cfg.maxconn < 1 || cfg.maxconn > 128)
+        if (cfg.maxconn < 1 || cfg.maxconn > MAX_MAXCONN)
         { /* report about invalid max conn number */
           printf("%s: -C: invalid maxconn value"
-                 " (%d, must be 1-128)\n", exename, cfg.maxconn);
+                 " (%d, must be 1-%d)\n", exename, cfg.maxconn, MAX_MAXCONN);
           exit(-1);
         }
         break;
       case 'N':
         cfg.maxtry = strtoul(optarg, NULL, 0);
-        if (cfg.maxtry > 15)
+        if (cfg.maxtry > MAX_MAXTRY)
         { /* report about invalid max try number */
           printf("%s: -N: invalid maxtry value"
-                 " (%d, must be 0-15)\n", exename, cfg.maxtry);
+                 " (%d, must be 0-%d)\n", exename, cfg.maxtry, MAX_MAXTRY);
           exit(-1);
         }
         break;
       case 'R':
         cfg.rqstpause = strtoul(optarg, NULL, 0);
-        if (cfg.rqstpause < 1 || cfg.rqstpause > 10000)
+        if (cfg.rqstpause < 1 || cfg.rqstpause > MAX_RQSTPAUSE)
         { /* report about invalid rqst pause value */
           printf("%s: -R: invalid inter-request pause value"
-                 " (%lu, must be 1-10000)\n", exename, cfg.rqstpause);
+                 " (%lu, must be 1-%d)\n", exename, cfg.rqstpause, MAX_RQSTPAUSE);
           exit(-1);
         }
         break;
       case 'W':
         cfg.respwait = strtoul(optarg, NULL, 0);
-        if (cfg.respwait < 1 || cfg.respwait > 10000)
+        if (cfg.respwait < 1 || cfg.respwait > MAX_RESPWAIT)
         { /* report about invalid resp wait value */
           printf("%s: -W: invalid response wait time value"
-                 " (%lu, must be 1-10000)\n", exename, cfg.respwait);
+                 " (%lu, must be 1-%d)\n", exename, cfg.respwait, MAX_RESPWAIT);
           exit(-1);
         }
         break;
       case 'T':
         cfg.conntimeout = strtoul(optarg, NULL, 0);
-        if (cfg.conntimeout > 1000)
+        if (cfg.conntimeout > MAX_CONNTIMEOUT)
         { /* report about invalid conn timeout value */
           printf("%s: -T: invalid conn timeout value"
-                 " (%d, must be 1-1000)\n", exename, cfg.conntimeout);
+                 " (%d, must be 1-%d)\n", exename, cfg.conntimeout, MAX_CONNTIMEOUT);
           exit(-1);
         }
         break;

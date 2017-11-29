@@ -1,0 +1,44 @@
+#############################################
+#                                           #
+#    Sample configuration file for mbusd    #
+#                                           #
+#############################################
+
+########## Serial port settings #############
+
+# Serial port device name
+device = /dev/ttyS0
+
+# Serial port speed
+speed = 9600
+
+# Serial port mode
+mode = 8n1
+
+# RS-485 data direction control type (addc, rts, sysfs_0, sysfs_1)
+trx_control = addc
+
+# Sysfs file to use to control data direction
+# trx_sysfile =
+
+############# TCP port settings #############
+
+# TCP server port number
+port = 502
+
+# Maximum number of simultaneous TCP connections
+maxconn = 32
+
+# Connection timeout value in seconds
+timeout = 60
+
+######### Request/response settings #########
+
+# Maximum number of request retries
+retries = 3
+
+# Pause between requests in milliseconds
+pause = 100
+
+# Response wait time in milliseconds
+wait = 500

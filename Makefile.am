@@ -4,13 +4,17 @@ ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = src doc
 
-mbusddocdir = ${prefix}/doc/mbusd
+mbusddocdir = ${docdir}
 mbusddoc_DATA = \
 	README.md\
 	CHANGELOG.md\
 	LICENSE
 
-EXTRA_DIST = $(mbusddoc_DATA)
+mbusdconfdir = ${mbusddocdir}
+mbusdconf_DATA = \
+	conf/mbusd.conf.example
+
+EXTRA_DIST = $(mbusddoc_DATA) $(mbusdconf_DATA)
 
 # Copy all the spec files. Of cource, only one is actually used.
 dist-hook:
@@ -34,4 +38,3 @@ $(systemdsystemunit_DATA):
 distclean-local::
 	-$(RM) $(systemdsystemunit_DATA)
 endif
-

@@ -53,6 +53,31 @@
 #define DEFAULT_RESPWAIT 500
 #define DEFAULT_CONNTIMEOUT 60
 
+/* Max simultaneous TCP connections to server */
+#ifndef MAX_MAXCONN
+#  define MAX_MAXCONN 128
+#endif
+
+/* Max RTU device request retries */
+#ifndef MAX_MAXTRY
+#  define MAX_MAXTRY 15
+#endif
+
+/* Max RTU device pause between requests, in msecs */
+#ifndef MAX_RQSTPAUSE
+#  define MAX_RQSTPAUSE 10000
+#endif
+
+/* Max RTU device response wait, in msecs */
+#ifndef MAX_RESPWAIT
+#  define MAX_RESPWAIT 10000
+#endif
+
+/* Max connection timeout, in secs */
+#ifndef MAX_CONNTIMEOUT
+#  define MAX_CONNTIMEOUT 1000
+#endif
+
 #define CRCSIZE 2       /* size (in bytes) of CRC */
 #define HDRSIZE 6       /* size (in bytes) of header */
 #define BUFSIZE 256     /* size (in bytes) of MODBUS data */

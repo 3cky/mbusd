@@ -47,20 +47,15 @@ Usage:
 
        -h     Usage help.
        -d     Instruct mbusd not to fork itself (non-daemonize).
-       -t     Enable RTS RS-485 data direction control (if not disabled while compile).
-       -y file
-              Enable RS-485 direction data direction control by writing '1' to file
-              for transmitter enable and '0' to file for transmitter disable
-       -Y file
-              Enable RS-485 direction data direction control by writing '0' to file
-              for transmitter enable and '1' to file for transmitter disable
+       -L logfile
+              Specifies log file name ('-' for logging to STDOUT only, default is /var/log/mbusd.log).
        -v level
               Specifies  log  verbosity level (0 for errors only, 1 for warnings
               and 2 for also information messages.) If mbusd was compiled in debug mode,
               valid log levels are up to 9, where log levels above 2 forces
               logging of information about additional internal events.
-       -L logfile
-              Specifies log file name ('-' for logging to STDOUT only, default is /var/log/mbusd.log).
+       -c cfgfile
+              Read configuration from cfgfile.
        -p device
               Specifies serial port device name.
        -s speed
@@ -69,6 +64,13 @@ Usage:
               Specifies serial port mode (like 8N1).
        -P port
               Specifies TCP port number (default 502).
+       -t     Enable RTS RS-485 data direction control (if not disabled while compile).
+       -y file
+              Enable RS-485 direction data direction control by writing '1' to file
+              for transmitter enable and '0' to file for transmitter disable
+       -Y file
+              Enable RS-485 direction data direction control by writing '0' to file
+              for transmitter enable and '1' to file for transmitter disable
        -C maxconn
               Specifies maximum number of simultaneous TCP connections.
        -N retries
@@ -82,15 +84,27 @@ Usage:
 
 Please note running **mbusd** on default Modbus TCP port (502) requires root privileges!
 
+Configuration file:
+-------------------
+**mbusd** can read the configuration from a file specified by `-c` command line flag.
+Please see [example configuration file](conf/mbusd.conf.example)
+for complete list of available configuration options.
+
 systemd:
 ---------------
 
-**mbusd** has [systemd](https://wiki.archlinux.org/index.php/systemd) support. The build system detects whether the system has systemd after which `sudo make install` installs the `mbusd@.service` file on systems with systemd active.
+**mbusd** has [systemd](https://wiki.archlinux.org/index.php/systemd) support.
+The build system detects whether the system has systemd after which `sudo make install`
+installs the `mbusd@.service` file on systems with systemd active.
+
 The **mbusd** service can be started via:
 
 	# systemctl start mbusd@<serial port>.service
 
 where `<serial port>` is serial port device name (like `ttyUSB0`).
+
+**mbusd** started by systemd will read its configuration from file named `/etc/mbusd/mbusd-<serial port>.conf`.
+This way it's possible to run multiple **mbusd** instances with different configurations.
 
 To see the **mbusd** service status:
 
@@ -106,12 +120,6 @@ To start the **mbusd** service on system boot:
 
 Please check systemd documentation for other usefull systemd [commands](https://wiki.archlinux.org/index.php/systemd)
 
-The checked in `mbusd@.service` starts **mbusd** equivalent to the following command:
-
-	# $PREFIX/bin/mbusd -p /dev/<serial port> -s 9600 -m 8N1 -P 502 -d -v2
-
-Feel free to modify the service file locally with your own desired configuration.
-
 Reporting bugs:
 ---------------
 
@@ -119,7 +127,8 @@ Please file [issue](https://github.com/3cky/mbusd/issues) with attached debug lo
 
        # mbusd -L/tmp/mbusd.log -p /dev/ttyUSB0 -s 9600 -P 502 -d -v9
 
-Unless you were prompted so or there is another pertinent reason (e.g. GitHub fails to accept the bug report), please do not send bug reports via personal email.
+Unless you were prompted so or there is another pertinent reason (e.g. GitHub fails to accept the bug report),
+please do not send bug reports via personal email.
 
 Contributing:
 -------------
@@ -145,6 +154,9 @@ Andrew Denysenko (<nitr0@seti.kr.ua>):
 
 James Jarvis (<jj@aprsworld.com>):
  - file based RS-485 data direction control
+
+Luuk Loeffen (<luukloeffen@hotmail.com>):
+ - systemd support
 
 License:
 --------

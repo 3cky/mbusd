@@ -53,7 +53,7 @@ typedef struct
   /* tty speed */
   int ttyspeed;
   /* tty mode */
-  char *ttymode;
+  char ttymode[INTBUFSIZE + 1];
   /* trx control type (0 - ADDC, 1 - by RTS, 2 - by sysfs GPIO with 1 activating transmit, 3 - by sysfs GPIO with 0 activating transmit) */
   int trxcntl;
   /* trx control sysfs file */
@@ -76,6 +76,8 @@ typedef struct
 
 /* Prototypes */
 extern cfg_t cfg;
+extern char cfg_err[];
 void cfg_init(void);
+int cfg_read_file(const char *filename);
 
 #endif /* _CFG_H */
