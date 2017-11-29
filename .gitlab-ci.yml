@@ -5,24 +5,19 @@ stages:
 
 .mbusd_job_template: &mbusd_job_template # Hidden key that defines an anchor
   image: debian:stable
-  before_script:
-   - apt update -qq
-   - apt install -y -qq build-essential pkg-config cmake
-   - apt install -y gcc-arm-linux-gnueabihf
-
   artifacts:
-   # create an archive with a name of the current stage and branch name
-   name: "${CI_BUILD_STAGE}_${CI_BUILD_REF_NAME}"
-   untracked: true
-   expire_in: 1 mos
-
-   paths:
-    - output.dir/mbusd
-    - doc/mbusd.8
+    # create an archive with a name of the current stage and branch name
+    name: "${CI_BUILD_STAGE}_${CI_BUILD_REF_NAME}"
+    expire_in: 1 day
+    paths:
+      - output.dir/mbusd
+      - doc/mbusd.8
 
 build:linux_armhf:
  <<: *mbusd_job_template
  stage: build
+ before_script:
+   - apt install -y -qq build-essential pkg-config cmake
  script:
    - mkdir output.dir/
    - cd output.dir
@@ -32,6 +27,8 @@ build:linux_armhf:
 build:linux_x86:
  <<: *mbusd_job_template
  stage: build
+ before_script:
+   - apt install -y -qq build-essential pkg-config cmake gcc-arm-linux-gnueabihf
  script:
    - mkdir output.dir/
    - cd output.dir
@@ -40,9 +37,11 @@ build:linux_x86:
 
 test_x86:
   stage: test
+  image: debian:stable
   #https://forum.gitlab.com/t/testing-copy-yaml-file-to-build-folder/8309
   before_script:
-    - apt-get install --fix-missing -y python3-dev python3-pip python3-setuptools socat
+    - apt install -y -qq build-essential pkg-config cmake
+    - apt install -y -qq python-dev python-pip python-setuptools socat
     - python -m pip install pymodbus service_identity
 
   dependencies:
