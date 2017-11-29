@@ -39,6 +39,15 @@ $ make
 $ make clean
 </pre>
 
+Compilation using cmake
+<pre>
+$ git clone https://github.com/3cky/mbusd.git mbusd.git
+$ cd mbusd.git
+$ mkdir -p output.dir && cd output.dir
+$ cmake ../
+$ make
+</pre>
+
 Usage:
 ------
 

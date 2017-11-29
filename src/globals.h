@@ -64,15 +64,6 @@
 #endif
 
 /*
- * Uncomment this for enabling logging facility
- */
-#define LOG
-#ifdef LOG
-/* uncomment this line for extra debug log info */
-#  define DEBUG
-#endif
-
-/*
  * Useful min/max macroses
  */
 #define MAX(a, b) ( (a > b) ? a : b )
