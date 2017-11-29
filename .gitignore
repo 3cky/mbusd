@@ -9,6 +9,9 @@
 /doc/mbusd.8
 Makefile
 *.log
+*.in~
+systemd-units/mbusd@.service
+*.conf
 *.pyc
 CMakeCache.txt
 CMakeFiles

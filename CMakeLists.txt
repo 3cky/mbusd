@@ -53,6 +53,15 @@ if(LIB_UTIL AND HAVE_TTY_GET_NAME AND HAVE_UU_LOCK)
     add_definitions(-DHAVE_LIBUTIL)
 endif()
 
+find_program(HAVE_SYSTEMD NAMES systemd)
+if(HAVE_SYSTEMD)
+    set(bindir ${CMAKE_INSTALL_FULL_BINDIR})
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/systemd-units/mbusd@.service.in  mbusd@service)
+
+    install(FILES mbusd.service DESTINATION /usr/lib/systemd/user/)
+    #TODO install a default ${CMAKE_CURRENT_SOURCE_DIR}/conf/mbusd.conf ??
+endif()
+
 
 set(mbusd_SOURCES
     src/main.c
