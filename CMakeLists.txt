@@ -58,7 +58,7 @@ if(HAVE_SYSTEMD)
     set(bindir ${CMAKE_INSTALL_FULL_BINDIR})
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/systemd-units/mbusd@.service.in  mbusd@service)
 
-    install(FILES mbusd.service DESTINATION /usr/lib/systemd/user/)
+    install(FILES mbusd.service DESTINATION /lib/systemd/system)
     #TODO install a default ${CMAKE_CURRENT_SOURCE_DIR}/conf/mbusd.conf ??
 endif()
 
