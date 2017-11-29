@@ -12,6 +12,7 @@ stages:
     paths:
       - output.dir/mbusd
       - doc/mbusd.8
+      - conf/mbusd.conf.example
 
 build:linux_armhf:
  <<: *mbusd_job_template
