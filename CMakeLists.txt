@@ -68,20 +68,32 @@ set(mbusd_SOURCES
     src/sock.c
 )
 add_executable(mbusd ${mbusd_SOURCES})
-install(TARGETS mbusd DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}/)
+install(TARGETS mbusd DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # aggregate the man page template
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/mbusd.8.in mbusd.8)
-install(FILES mbusd.8 DESTINATION ${CMAKE_INSTALL_FULL_MANDIR}/man8/)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mbusd.8 DESTINATION ${CMAKE_INSTALL_MANDIR}/man8)
+
+# install example configuration file
+install(
+  FILES ${CMAKE_CURRENT_SOURCE_DIR}/conf/mbusd.conf.example
+  DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/${CMAKE_PROJECT_NAME}
+)
 
 # aggregate mbusd@.service from its template
-find_program(HAVE_SYSTEMD NAMES systemd)
-if(HAVE_SYSTEMD)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/systemd-units/mbusd@.service.in  mbusd@.service)
-
-    install(FILES mbusd@.service DESTINATION /lib/systemd/system/)
-    #TODO install a default ${CMAKE_CURRENT_SOURCE_DIR}/conf/mbusd.conf ??
+if(IS_DIRECTORY /usr/lib/systemd/system)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/systemd-units/mbusd@.service.in mbusd@.service)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mbusd@.service DESTINATION /usr/lib/systemd/system)
 endif()
+
+# uninstall target
+configure_file(
+    ${CMAKE_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake
+@ONLY)
+add_custom_target(uninstall
+    ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake
+)
 
 # unittest target
 option(TESTS "Enable unittests" OFF)
