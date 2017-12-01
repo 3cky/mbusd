@@ -30,15 +30,6 @@ Please note all other function codes (including vendor-specific extensions) are 
 Configuring and compilation:
 ----------------------------
 
-<pre>
-$ git clone https://github.com/3cky/mbusd.git mbusd.git
-$ cd mbusd.git
-$ ./configure
-$ make
-# make install
-$ make clean
-</pre>
-
 Compilation using cmake
 <pre>
 $ git clone https://github.com/3cky/mbusd.git mbusd.git
@@ -47,6 +38,11 @@ $ mkdir -p output.dir && cd output.dir
 $ cmake ../
 $ make
 </pre>
+
+***Compile time options***
+can be altered in many ways, e.g. by using the following tools in the output.dir:
+* ccmake - usually in the package cmake-curses-gui
+* cmake-gui - usually in the package cmake-qt-gui
 
 Usage:
 ------
