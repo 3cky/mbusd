@@ -26,7 +26,7 @@ build:deb_armhf:
  script:
    - mkdir output.dir/
    - cd output.dir
-   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=../arm_linux_gnueabihf.cmake ../
+   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=../cmake/arm_linux_gnueabihf.cmake ../
    - make package
 
 build:deb_x86:
