@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.2)
-include(CPack)
 include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(GNUInstallDirs)
@@ -55,36 +54,38 @@ endif()
 
 # add the main application
 set(mbusd_SOURCES
-    src/main.c
-    src/tty.c
-    src/log.c
-    src/cfg.c
-    src/conn.c
-    src/queue.c
-    src/modbus.c
-    src/crc16.c
-    src/state.c
-    src/sig.c
-    src/sock.c
-)
+        src/main.c
+        src/tty.c
+        src/log.c
+        src/cfg.c
+        src/conn.c
+        src/queue.c
+        src/modbus.c
+        src/crc16.c
+        src/state.c
+        src/sig.c
+        src/sock.c
+        )
 add_executable(mbusd ${mbusd_SOURCES})
-install(TARGETS mbusd DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS mbusd DESTINATION bin)
 
 # aggregate the man page template
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/mbusd.8.in mbusd.8)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mbusd.8 DESTINATION ${CMAKE_INSTALL_MANDIR}/man8)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mbusd.8 DESTINATION share/man/man8)
 
 # install example configuration file
 install(
-  FILES ${CMAKE_CURRENT_SOURCE_DIR}/conf/mbusd.conf.example
-  DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/${CMAKE_PROJECT_NAME}
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/conf/mbusd.conf.example
+        DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/${CMAKE_PROJECT_NAME}
 )
 
-# aggregate mbusd@.service from its template
-if(IS_DIRECTORY /usr/lib/systemd/system)
+find_package(PkgConfig)
+pkg_check_modules(SystemD "systemd")
+if(SystemD_FOUND)
+    # aggregate mbusd@.service from its template
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/systemd-units/mbusd@.service.in mbusd@.service)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mbusd@.service DESTINATION /usr/lib/systemd/system)
 endif()
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mbusd@.service DESTINATION /etc/systemd/system/ OPTIONAL)
 
 # uninstall target
 configure_file(
@@ -94,9 +95,46 @@ configure_file(
 add_custom_target(uninstall
     ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake
 )
-
 # unittest target
 option(TESTS "Enable unittests" OFF)
 if(TESTS)
     add_executable(test_basic tests/test_basics.c)
 endif()
+
+## Please find Packaging stuff following
+#@source http://xit0.org/2013/04/cmake-use-git-branch-and-commit-details-in-project/
+# Get the current working branch
+execute_process(
+        COMMAND git rev-parse --abbrev-ref HEAD
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE GIT_BRANCH
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+# Get the latest abbreviated commit hash of the working branch
+execute_process(
+        COMMAND git log -1 --format=%h
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE GIT_COMMIT_HASH
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+# which infrastructure do we want
+set(CPACK_GENERATOR "DEB")
+pkg_check_modules(rpmBuilder "librpmbuild3")
+if(rpmBuilder_FOUND)
+    set(CPACK_GENERATOR "RPM")
+endif()
+
+set(CPACK_PACKAGE_NAME "modbusd")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Victor Antonovich") #required
+set(CPACK_PACKAGE_CONTACT           "Victor Antonovich <v.antonovich@gmail.com>")
+set(CPACK_PACKAGE_VERSION   ${PROJECT_VERSION}-${GIT_BRANCH}-g${GIT_COMMIT_HASH})
+set(CPACK_PACKAGE_FILE_NAME ${PROJECT_NAME}-${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR}-v${PROJECT_VERSION})
+set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Modbus serial to TCP/UDP transceiver")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+
+set(CPACK_SOURCE_STRIP_FILES TRUE)
+set(CPACK_STRIP_FILES TRUE)
+#the include must be after all the cpack concerning set's
+include(CPack)

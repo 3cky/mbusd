@@ -14,8 +14,10 @@ stages:
       - output.dir/mbusd.8
       - conf/mbusd.conf.example
       - output.dir/mbusd@.service
+      - output.dir/mbusd*.deb
+      - output.dir/mbusd*.rpm
 
-build:linux_armhf:
+build:deb_armhf:
  <<: *mbusd_job_template
  stage: build
  before_script:
@@ -25,9 +27,9 @@ build:linux_armhf:
    - mkdir output.dir/
    - cd output.dir
    - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=../arm_linux_gnueabihf.cmake ../
-   - make
+   - make package
 
-build:linux_x86:
+build:deb_x86:
  <<: *mbusd_job_template
  stage: build
  before_script:
@@ -37,7 +39,8 @@ build:linux_x86:
    - mkdir output.dir/
    - cd output.dir
    - cmake -D CMAKE_BUILD_TYPE=Debug ../
-   - make
+   - make package
+
 
 test_x86:
   stage: test
@@ -50,7 +53,7 @@ test_x86:
     - python -m pip install pymodbus service_identity
 
   dependencies:
-    - build:linux_x86
+    - build:deb_x86
   script:
     - mkdir -p output.dir/
     - cd output.dir
