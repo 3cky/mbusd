@@ -119,6 +119,7 @@ execute_process(
         OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
+## issue the package creation with $make package
 # which infrastructure do we want
 set(CPACK_GENERATOR "DEB")
 pkg_check_modules(rpmBuilder "librpmbuild3")
