@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.2)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/extern_GPL)
 include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(GNUInstallDirs)
+include(FindSystemd)
 
 project(mbusd VERSION 0.2.4)
 
@@ -79,13 +81,12 @@ install(
         DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/${CMAKE_PROJECT_NAME}
 )
 
-find_package(PkgConfig)
-pkg_check_modules(SystemD "systemd")
-if(SystemD_FOUND)
+if(SYSTEMD_FOUND)
+    message("Systemd found at ${SYSTEMD_SERVICES_INSTALL_DIR}")
     # aggregate mbusd@.service from its template
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/systemd-units/mbusd@.service.in mbusd@.service)
 endif()
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mbusd@.service DESTINATION /etc/systemd/system/ OPTIONAL)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mbusd@.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} OPTIONAL)
 
 # uninstall target
 configure_file(
