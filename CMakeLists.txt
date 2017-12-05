@@ -42,7 +42,7 @@ endif()
 check_function_exists(time HAVE_TIME)
 check_function_exists(localtime HAVE_LOCALTIME)
 if(HAVE_TIME AND HAVE_LOCALTIME)
-    message("passing HRDATE to compiler space")
+    message(STATUS "Passing HRDATE to compiler space")
     add_definitions(-DHRDATE)
 endif()
 
@@ -50,7 +50,7 @@ find_library(LIB_UTIL NAMES libutil util)
 check_library_exists(util tty_get_name LIB_UTIL HAVE_TTY_GET_NAME)
 check_library_exists(util uu_lock LIB_UTIL HAVE_UU_LOCK)
 if(LIB_UTIL AND HAVE_TTY_GET_NAME AND HAVE_UU_LOCK)
-    message("passing HAVE_LIBUTIL to compiler space")
+    message(STATUS "Passing HAVE_LIBUTIL to compiler space")
     add_definitions(-DHAVE_LIBUTIL)
 endif()
 
@@ -82,11 +82,11 @@ install(
 )
 
 if(SYSTEMD_FOUND)
-    message("Systemd found at ${SYSTEMD_SERVICES_INSTALL_DIR}")
+    message(STATUS "Systemd service file will be installed to ${SYSTEMD_SERVICES_INSTALL_DIR}")
     # aggregate mbusd@.service from its template
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/systemd-units/mbusd@.service.in mbusd@.service)
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mbusd@.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR})
 endif()
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mbusd@.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} OPTIONAL)
 
 # uninstall target
 configure_file(
@@ -96,6 +96,7 @@ configure_file(
 add_custom_target(uninstall
     ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake
 )
+
 # unittest target
 option(TESTS "Enable unittests" OFF)
 if(TESTS)
@@ -127,13 +128,13 @@ if(rpmBuilder_FOUND)
     set(CPACK_GENERATOR "RPM")
 endif()
 
-set(CPACK_PACKAGE_NAME "modbusd")
+set(CPACK_PACKAGE_NAME "mbusd")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Victor Antonovich") #required
 set(CPACK_PACKAGE_CONTACT           "Victor Antonovich <v.antonovich@gmail.com>")
 set(CPACK_PACKAGE_VERSION   ${PROJECT_VERSION}-${GIT_BRANCH}-g${GIT_COMMIT_HASH})
 set(CPACK_PACKAGE_FILE_NAME ${PROJECT_NAME}-${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR}-v${PROJECT_VERSION})
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Modbus serial to TCP/UDP transceiver")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Modbus TCP to Modbus RTU gateway")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 
 set(CPACK_SOURCE_STRIP_FILES TRUE)

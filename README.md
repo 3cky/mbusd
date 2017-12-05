@@ -27,28 +27,29 @@ Supported function codes:
 
 Please note all other function codes (including vendor-specific extensions) are supported on a "best-effort" basis and most likely will fail.
 
-Configuring and compilation:
+Installation instructions:
 ----------------------------
 
-Compilation using cmake
-<pre>
+```
 $ git clone https://github.com/3cky/mbusd.git mbusd.git
 $ cd mbusd.git
-$ mkdir -p output.dir && cd output.dir
+$ mkdir -p build && cd build
 $ cmake ../
 $ make
-</pre>
+$ sudo make install
+```
 
 ***Compile time options***
-can be altered in many ways, e.g. by using the following tools in the output.dir:
+can be altered in many ways, e.g. by using the following tools in the `build` dir:
 * ccmake - usually in the package cmake-curses-gui
 * cmake-gui - usually in the package cmake-qt-gui
 
 Usage:
 ------
 
-       mbusd [-h] [-d] [-t] [-v level] [-L logfile] [-p device] [-s speed] [-m mode] \
-       	       	[-P port] [-C maxconn] [-N retries] [-R pause] [-W wait] [-T timeout]
+       mbusd [-h] [-d] [-L logfile] [-v level] [-c cfgfile] [-p device] [-s speed] [-m mode]
+       		[-t] [-y file] [-Y file] [-P port] [-C maxconn] [-N retries]
+       		[-R pause] [-W wait] [-T timeout]
 
        -h     Usage help.
        -d     Instruct mbusd not to fork itself (non-daemonize).
@@ -67,8 +68,6 @@ Usage:
               Specifies serial port speed.
        -m mode
               Specifies serial port mode (like 8N1).
-       -P port
-              Specifies TCP port number (default 502).
        -t     Enable RTS RS-485 data direction control (if not disabled while compile).
        -y file
               Enable RS-485 direction data direction control by writing '1' to file
@@ -76,6 +75,8 @@ Usage:
        -Y file
               Enable RS-485 direction data direction control by writing '0' to file
               for transmitter enable and '1' to file for transmitter disable
+       -P port
+              Specifies TCP port number (default 502).
        -C maxconn
               Specifies maximum number of simultaneous TCP connections.
        -N retries
@@ -150,8 +151,8 @@ Author:
 
 Victor Antonovich (<v.antonovich@gmail.com>)
 
-Credits:
---------
+Contributors:
+-------------
 
 Andrew Denysenko (<nitr0@seti.kr.ua>):
  - RTS RS-485 data direction control
@@ -162,6 +163,9 @@ James Jarvis (<jj@aprsworld.com>):
 
 Luuk Loeffen (<luukloeffen@hotmail.com>):
  - systemd support
+
+Nick Mayerhofer (<nick.mayerhofer@enchant.at>):
+ - CMake build system
 
 License:
 --------
