@@ -26,7 +26,7 @@ build:deb_armhf:
  script:
    - mkdir output.dir/
    - cd output.dir
-   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=../cmake/arm_linux_gnueabihf.cmake ../
+   - cmake -DCMAKE_BUILD_TYPE=Release -DSYSTEMD_SERVICES_INSTALL_DIR=/lib/systemd/system -DCMAKE_TOOLCHAIN_FILE=../cmake/arm_linux_gnueabihf.cmake ../
    - make package
 
 build:deb_x86:
@@ -38,7 +38,7 @@ build:deb_x86:
  script:
    - mkdir output.dir/
    - cd output.dir
-   - cmake -D CMAKE_BUILD_TYPE=Debug ../
+   - cmake -DCMAKE_BUILD_TYPE=Release -DSYSTEMD_SERVICES_INSTALL_DIR=/lib/systemd/system ../
    - make package
 
 

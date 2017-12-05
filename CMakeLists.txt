@@ -81,7 +81,7 @@ install(
         DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/${CMAKE_PROJECT_NAME}
 )
 
-if(SYSTEMD_FOUND)
+if(SYSTEMD_SERVICES_INSTALL_DIR)
     message(STATUS "Systemd service file will be installed to ${SYSTEMD_SERVICES_INSTALL_DIR}")
     # aggregate mbusd@.service from its template
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/systemd-units/mbusd@.service.in mbusd@.service)
