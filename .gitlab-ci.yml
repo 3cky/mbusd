@@ -22,7 +22,7 @@ build:fedora_x86:
   image: fedora:latest
   stage: build
   before_script:
-    - yum -y install cmake pkgconfig gcc-c++
+    - yum -y install cmake pkgconfig gcc-c++ rpmbuild
   script:
     - mkdir output.dir/
     - cd output.dir
@@ -46,7 +46,7 @@ build:deb_x86:
  stage: build
  before_script:
    - apt update -qq
-   - apt install -y -qq build-essential pkg-config cmake rpmbuild
+   - apt install -y -qq build-essential pkg-config cmake
  script:
    - mkdir output.dir/
    - cd output.dir
