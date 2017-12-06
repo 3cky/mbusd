@@ -17,6 +17,18 @@ stages:
       - output.dir/mbusd*.deb
       - output.dir/mbusd*.rpm
 
+build:fedora_x86:
+  <<: *mbusd_job_template
+  image: fedora:latest
+  stage: build
+  before_script:
+    - yum -y install cmake gcc-c++
+  script:
+    - mkdir output.dir/
+    - cd output.dir
+    - cmake -D CMAKE_BUILD_TYPE=Debug ../
+    - make package
+
 build:deb_armhf:
  <<: *mbusd_job_template
  stage: build
