@@ -123,7 +123,7 @@ execute_process(
 ## issue the package creation with $make package
 # which infrastructure do we want
 set(CPACK_GENERATOR "DEB")
-pkg_check_modules(rpmBuilder "librpmbuild3")
+pkg_check_modules(rpmBuilder "rpmbuild")
 if(rpmBuilder_FOUND)
     set(CPACK_GENERATOR "RPM")
 endif()

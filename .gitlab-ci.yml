@@ -46,7 +46,7 @@ build:deb_x86:
  stage: build
  before_script:
    - apt update -qq
-   - apt install -y -qq build-essential pkg-config cmake rpmdevtools
+   - apt install -y -qq build-essential pkg-config cmake rpmbuild
  script:
    - mkdir output.dir/
    - cd output.dir
