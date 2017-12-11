@@ -5,7 +5,7 @@ include(CheckLibraryExists)
 include(GNUInstallDirs)
 include(FindSystemd)
 
-project(mbusd VERSION 0.2.4)
+project(mbusd VERSION 0.3.0)
 
 #TODO  ISC_Posix,  prog_libtool
 # single-configuration generator setup
