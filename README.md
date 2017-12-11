@@ -1,6 +1,8 @@
 About mbusd
 ===========
 
+[![Build Status](https://travis-ci.org/3cky/mbusd.svg?branch=master)](https://travis-ci.org/3cky/mbusd)
+
 **mbusd** is open-source [Modbus TCP to Modbus RTU (RS-232/485)](https://en.wikipedia.org/wiki/Modbus) gateway.
 
 Features:
