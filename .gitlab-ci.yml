@@ -8,7 +8,7 @@ stages:
   artifacts:
     # create an archive with a name of the current stage and branch name
     name: "${CI_BUILD_STAGE}_${CI_BUILD_REF_NAME}"
-    expire_in: 1 day
+    expire_in: 6 months
     paths:
       - output.dir/mbusd
       - output.dir/mbusd.8
