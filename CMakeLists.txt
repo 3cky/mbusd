@@ -125,6 +125,8 @@ execute_process(
 set(CPACK_GENERATOR "DEB")
 find_program(rpmBuilder rpmbuild)
 if(rpmBuilder)
+    # @see https://schneide.wordpress.com/2013/02/11/build-a-rpm-package-using-cmake/
+    # @see http://www.g-loaded.eu/2006/04/05/how-to-build-rpm-packages-on-fedora/
     set(CPACK_GENERATOR "RPM")
 endif()
 
