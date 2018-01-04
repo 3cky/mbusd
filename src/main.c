@@ -218,7 +218,7 @@ main(int argc, char *argv[])
       case 'v':
         cfg.dbglvl = (char)strtol(optarg, NULL, 0);
 #  ifdef DEBUG
-        if (cfg.dbglvl < 0 || cfg.dbglvl > 9)
+        if (cfg.dbglvl > 9)
         { /* report about invalid log level */
           printf("%s: -v: invalid loglevel value"
                  " (%d, must be 0-9)\n", exename, cfg.dbglvl);
