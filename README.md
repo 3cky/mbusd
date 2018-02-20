@@ -36,7 +36,7 @@ Installation instructions:
 $ git clone https://github.com/3cky/mbusd.git mbusd.git
 $ cd mbusd.git
 $ mkdir -p build && cd build
-$ cmake ../
+$ cmake -DCMAKE_INSTALL_PREFIX=/usr ..
 $ make
 $ sudo make install
 ```

@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.2)
+
+project(mbusd VERSION 0.3.1)
+
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/extern_GPL)
 include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(GNUInstallDirs)
 include(FindSystemd)
-
-project(mbusd VERSION 0.3.0)
 
 #TODO  ISC_Posix,  prog_libtool
 # single-configuration generator setup
@@ -73,7 +74,7 @@ install(TARGETS mbusd DESTINATION bin)
 
 # aggregate the man page template
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/mbusd.8.in mbusd.8)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mbusd.8 DESTINATION share/man/man8)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mbusd.8 DESTINATION ${CMAKE_INSTALL_FULL_DATADIR}/man/man8)
 
 # install example configuration file
 install(
@@ -85,7 +86,7 @@ if(SYSTEMD_FOUND)
     message(STATUS "Systemd service file will be installed to ${SYSTEMD_SERVICES_INSTALL_DIR}")
     # aggregate mbusd@.service from its template
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/systemd-units/mbusd@.service.in mbusd@.service)
-	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mbusd@.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR})
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mbusd@.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR})
 endif()
 
 # uninstall target
@@ -141,3 +142,8 @@ set(CPACK_SOURCE_STRIP_FILES TRUE)
 set(CPACK_STRIP_FILES TRUE)
 #the include must be after all the cpack concerning set's
 include(CPack)
+
+message(STATUS "Install prefix      ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "Install bindir:     ${CMAKE_INSTALL_FULL_BINDIR}")
+message(STATUS "Install sysconfdir: ${CMAKE_INSTALL_FULL_SYSCONFDIR}")
+message(STATUS "Install datadir:    ${CMAKE_INSTALL_FULL_DATADIR}")
