@@ -82,7 +82,7 @@ install(
         DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/${CMAKE_PROJECT_NAME}
 )
 
-if(SYSTEMD_FOUND)
+if(SYSTEMD_SERVICES_INSTALL_DIR)
     message(STATUS "Systemd service file will be installed to ${SYSTEMD_SERVICES_INSTALL_DIR}")
     # aggregate mbusd@.service from its template
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/systemd-units/mbusd@.service.in mbusd@.service)
@@ -124,8 +124,10 @@ execute_process(
 ## issue the package creation with $make package
 # which infrastructure do we want
 set(CPACK_GENERATOR "DEB")
-pkg_check_modules(rpmBuilder "librpmbuild3")
-if(rpmBuilder_FOUND)
+find_program(rpmBuilder rpmbuild)
+if(rpmBuilder)
+    # @see https://schneide.wordpress.com/2013/02/11/build-a-rpm-package-using-cmake/
+    # @see http://www.g-loaded.eu/2006/04/05/how-to-build-rpm-packages-on-fedora/
     set(CPACK_GENERATOR "RPM")
 endif()
 

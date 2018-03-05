@@ -17,7 +17,7 @@ if (SYSTEMD_FOUND AND "${SYSTEMD_SERVICES_INSTALL_DIR}" STREQUAL "")
     string(REGEX REPLACE "[ \t\n]+" "" SYSTEMD_SERVICES_INSTALL_DIR
         "${SYSTEMD_SERVICES_INSTALL_DIR}")
 elseif (NOT SYSTEMD_FOUND AND SYSTEMD_SERVICES_INSTALL_DIR)
-    message (FATAL_ERROR "Variable SYSTEMD_SERVICES_INSTALL_DIR is\
+    message (INFO "Variable SYSTEMD_SERVICES_INSTALL_DIR is\
         defined, but we can't find systemd using pkg-config")
 endif()
 
