@@ -451,14 +451,13 @@ conn_loop(void)
               { /* received response is correct, make OpenMODBUS response */
 #ifdef DEBUG
                 logw(5, "tty: response is correct");
-		// AG
+		// Optionally print the correct packet data
                 t[0] = '\0';
                 for (i = 0; i < tty.ptrbuf; i++) {
                   sprintf(v,"[%2.2x]", tty.rxbuf[i]);
                   strncat(t, v, 256);
                 }
 		logw(9, "tty: (%s)", t);
-		// AG
 #endif
                 (void)memcpy((void *)(actconn->buf + HDRSIZE),
                              (void *)(tty.rxbuf + tty.rxoffset), tty.ptrbuf - CRCSIZE - tty.rxoffset);
@@ -468,10 +467,6 @@ conn_loop(void)
               {
                 /* received response is incomplete or CRC failed */
 #ifdef DEBUG
-		// AG
-		logw(9, "First");
-		//logw(9, "tty.ptrbuf: %d", tty.rxbuf);
-		// AG
                 t[0] = '\0';
                 for (i = 0; i < tty.ptrbuf; i++) {
                   sprintf(v,"[%2.2x]", tty.rxbuf[i]);
@@ -694,14 +689,13 @@ conn_loop(void)
       { /* received response is correct, make OpenMODBUS response */
 #ifdef DEBUG
         logw(5, "tty: response is correct");
-	 // AG
+	// Optional print the correct packet data
         t[0] = '\0';
         for (i = 0; i < tty.ptrbuf; i++) {
           sprintf(v,"[%2.2x]", tty.rxbuf[i]);
           strncat(t, v, 256);
         }
         logw(9, "(%s)", t);
-	// AG
 #endif
         (void)memcpy((void *)(actconn->buf + HDRSIZE),
                      (void *)(tty.rxbuf + tty.rxoffset), tty.ptrbuf - CRCSIZE - tty.rxoffset);
@@ -713,9 +707,6 @@ conn_loop(void)
       } else {
         /* received response is incomplete or CRC failed */
 #ifdef DEBUG
-	// AG
-	logw(9, "Second");
-	// AG
         t[0] = '\0';
         for (i = 0; i < tty.ptrbuf; i++) {
           sprintf(v,"[%2.2x]", tty.rxbuf[i]);
