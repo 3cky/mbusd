@@ -438,11 +438,26 @@ conn_loop(void)
 #ifdef DEBUG
             logw(5, "tty: response read (total %d bytes, offset %d bytes)", tty.ptrbuf, tty.rxoffset);
 #endif
+	       /* Check if there is enough data for an error response
+                  and if the error flag is set in the function code */
+	      if ((tty.ptrbuf >= MB_ERR_LEN) && (tty.rxbuf[tty.rxoffset+TTY_FCODE_IDX] & TTY_ERR_MASK))
+	      {
+		  /* This is an error response, set the length to 
+		     5 (1 + 1 + 1 + 2) = Slave Address + Function Code + Error Code + CRC */
+		  tty.ptrbuf = MB_ERR_LEN;
+	      }
               if (tty.ptrbuf >= MB_MIN_LEN &&
                      modbus_crc_correct(tty.rxbuf + tty.rxoffset, tty.ptrbuf - tty.rxoffset))
               { /* received response is correct, make OpenMODBUS response */
 #ifdef DEBUG
                 logw(5, "tty: response is correct");
+		// Optionally print the correct packet data
+                t[0] = '\0';
+                for (i = 0; i < tty.ptrbuf; i++) {
+                  sprintf(v,"[%2.2x]", tty.rxbuf[i]);
+                  strncat(t, v, 256);
+                }
+		logw(9, "tty: (%s)", t);
 #endif
                 (void)memcpy((void *)(actconn->buf + HDRSIZE),
                              (void *)(tty.rxbuf + tty.rxoffset), tty.ptrbuf - CRCSIZE - tty.rxoffset);
@@ -661,11 +676,26 @@ conn_loop(void)
 #ifdef DEBUG
       logw(5, "tty: response read (total %d bytes, offset %d bytes)", tty.ptrbuf, tty.rxoffset);
 #endif
+       /* Check if there is enough data for an error response
+          and if the error flag is set in the function code */
+      if ((tty.ptrbuf >= MB_ERR_LEN) && (tty.rxbuf[tty.rxoffset+TTY_FCODE_IDX] & TTY_ERR_MASK))
+      {
+          /* This is an error response, set the length to
+             5 (1 + 1 + 1 + 2) = Slave Address + Function Code + Error Code + CRC */
+          tty.ptrbuf = MB_ERR_LEN;
+      }
       if (tty.ptrbuf >= MB_MIN_LEN &&
          modbus_crc_correct(tty.rxbuf + tty.rxoffset, tty.ptrbuf - tty.rxoffset))
       { /* received response is correct, make OpenMODBUS response */
 #ifdef DEBUG
         logw(5, "tty: response is correct");
+	// Optional print the correct packet data
+        t[0] = '\0';
+        for (i = 0; i < tty.ptrbuf; i++) {
+          sprintf(v,"[%2.2x]", tty.rxbuf[i]);
+          strncat(t, v, 256);
+        }
+        logw(9, "(%s)", t);
 #endif
         (void)memcpy((void *)(actconn->buf + HDRSIZE),
                      (void *)(tty.rxbuf + tty.rxoffset), tty.ptrbuf - CRCSIZE - tty.rxoffset);

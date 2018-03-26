@@ -47,6 +47,7 @@
  */
 #define MB_EX_LEN  3
 #define	MB_MIN_LEN 4
+#define MB_ERR_LEN 5
 #define	MB_MAX_LEN 256
 
 /*
@@ -79,7 +80,10 @@
 #define MB_UNIT_ID    6    /* unit identifier */
 #define MB_FCODE      7    /* function code */
 #define MB_DATA       8    /* MODBUS data */
-                      
+
+#define TTY_FCODE_IDX 1    /* The index of the function code in a RTU packet */
+#define TTY_ERR_MASK  0x80 /* The MSB of the response function code indicates an error response */
+
 /*
  * Exception codes
  */
