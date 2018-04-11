@@ -7,8 +7,14 @@ run_cmd_save_pid() {
     local _PID_FILE=$2
 
     if [[ -e $_PID_FILE ]]; then
-        echo "[D] pid_file ($_PID_FILE) exists, done"
-        return 1
+    	_PID=`cat $_PID_FILE`
+    	if ps -p $_PID > /dev/null; then
+        	echo "[D] PID file ($_PID_FILE) exists, done"
+        	return 1
+    	else
+			echo "[D] removing stale PID file ($_PID_FILE)"
+			rm -f $_PID_FILE
+		fi
     fi
 
     echo "[I] running $_CMD in background..."

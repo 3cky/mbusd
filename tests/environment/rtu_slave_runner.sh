@@ -1,32 +1,28 @@
 #!/usr/bin/env bash
 
-MBUS_SERVER_PID=/tmp/modbus_server.pid
+RTU_SLAVE_PID=/tmp/rtu_slave.pid
 
 CURRENT_DIR="$(dirname "$(realpath "$0")")"
 . $CURRENT_DIR/subprocess_helper.sh
 
 check_preconditions() {
-    #TODO check if python module 'pymodbus' is installed
-    #python -c "import foo"
-    true
+    python -c "import pymodbus" || exit 1
 }
 
 # check argument count
 ## https://stackoverflow.com/questions/4341630/checking-for-the-correct-number-of-arguments
 if [ "$#" -ne 1 ]; then
-  echo "Usage: $0 up|down" >&2
+  echo "[E] usage: $0 <start|stop>" >&2
   exit 1
 fi
 
 check_preconditions
 case "$1" in
     up|start)
-        #TOOO obtain current directory
-        CMD="python ${CURRENT_DIR}/modbus_server_mock.py &"
-        run_cmd_save_pid "$CMD" $MBUS_SERVER_PID
+        CMD="python ${CURRENT_DIR}/rtu_slave.py &"
+        run_cmd_save_pid "$CMD" $RTU_SLAVE_PID
         ;;
     down|stop)
-        kill_pid $MBUS_SERVER_PID
+        kill_pid $RTU_SLAVE_PID
         ;;
 esac
-

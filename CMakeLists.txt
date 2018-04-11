@@ -6,6 +6,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/extern_GPL)
 include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(GNUInstallDirs)
+include(FindUnixCommands)
 include(FindSystemd)
 
 #TODO  ISC_Posix,  prog_libtool
@@ -98,11 +99,12 @@ add_custom_target(uninstall
     ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake
 )
 
-# unittest target
-option(TESTS "Enable unittests" OFF)
-if(TESTS)
-    add_executable(test_basic tests/test_basics.c)
-endif()
+# integration tests target
+enable_testing()
+add_test(
+	NAME itests
+	COMMAND ${BASH} -c "cd ${CMAKE_CURRENT_SOURCE_DIR}/tests && ./run_itests.sh $<TARGET_FILE:mbusd>"
+)
 
 ## Please find Packaging stuff following
 #@source http://xit0.org/2013/04/cmake-use-git-branch-and-commit-details-in-project/

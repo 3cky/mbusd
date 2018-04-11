@@ -89,10 +89,11 @@ class ModbusSerialServer:
         #     store = ModbusSlaveContext(..., zero_mode=True)
         #---------------------------------------------------------------------------#
         store = ModbusSlaveContext(
-            di = ModbusSequentialDataBlock(0, [12]*100), # discrete input
-            co = ModbusSequentialDataBlock(0, [13]*100), # coils
-            hr = ModbusSequentialDataBlock(0, [14]*100), # holding reg
-            ir = ModbusSequentialDataBlock(0, [15]*100)) #
+            di = ModbusSequentialDataBlock(0, [True]*8), # discrete inputs
+            co = ModbusSequentialDataBlock(0, [False]*8), # coils
+            hr = ModbusSequentialDataBlock(0, [0]*8), # holding regs
+            ir = ModbusSequentialDataBlock(0, list(range(8))), # input regs
+            zero_mode=True) # request(0-7) will map to the address (0-7)
         context = ModbusServerContext(slaves=store, single=True)
 
         #---------------------------------------------------------------------------#
@@ -127,7 +128,7 @@ class ModbusSerialServer:
 
 
     def kill(self):
-        print("Going to terminat the process, this could throw exceptins")
+        print("Going to terminate the process, this could throw exceptions")
         if self.p is not None:
             self.p.terminate()
 

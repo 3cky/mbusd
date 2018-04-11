@@ -19,7 +19,7 @@ check_preconditions() {
 # check argument count
 ## https://stackoverflow.com/questions/4341630/checking-for-the-correct-number-of-arguments
 if [ "$#" -ne 1 ]; then
-  echo "Usage: $0 up|down" >&2
+  echo "[E] usage: $0 <start|stop>" >&2
   exit 1
 fi
 
