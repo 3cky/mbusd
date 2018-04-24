@@ -763,6 +763,13 @@ conn_loop(void)
                   curconn = conn_close(curconn);
                   break;
                 }
+                if (curconn->buf[MB_LENGTH_L] != (curconn->ctr - HDRSIZE))
+                {/* Gracefully handling incorrect Modbus header length */
+#ifdef DEBUG
+                    logw(5, "conn: correcting length as modbus length header (%i) does not match actual length (%i)", curconn->buf[MB_LENGTH_L], (curconn->ctr - HDRSIZE));
+#endif
+                    curconn->buf[MB_LENGTH_L] = (curconn->ctr - HDRSIZE);
+                }
                 state_conn_set(curconn, CONN_RQST);
               }
             if (curconn->state == CONN_RQST)
