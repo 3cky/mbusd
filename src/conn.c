@@ -48,9 +48,7 @@ int max_sd; /* major descriptor in the select() sets */
 void conn_tty_start(ttydata_t *tty, conn_t *conn);
 ssize_t conn_read(int d, void *buf, size_t nbytes);
 ssize_t conn_write(int d, void *buf, size_t nbytes, int istty);
-int conn_select(int nfds,
-                fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
-                struct timeval *timeout);
+void conn_fix_request_header_len(conn_t *conn, unsigned char len);
 
 #define FD_MSET(d, s) do { FD_SET(d, s); max_sd = MAX(d, max_sd); } while (0);
 
@@ -207,9 +205,9 @@ conn_tty_start(ttydata_t *tty, conn_t *conn)
 {
   (void)memcpy((void *)tty->txbuf,
                (void *)(conn->buf + HDRSIZE),
-               MB_HDR(conn->buf, MB_LENGTH_L));
-  modbus_crc_write(tty->txbuf, MB_HDR(conn->buf, MB_LENGTH_L));
-  tty->txlen = MB_HDR(conn->buf, MB_LENGTH_L) + CRCSIZE;
+               MB_FRAME(conn->buf, MB_LENGTH_L));
+  modbus_crc_write(tty->txbuf, MB_FRAME(conn->buf, MB_LENGTH_L));
+  tty->txlen = MB_FRAME(conn->buf, MB_LENGTH_L) + CRCSIZE;
   state_tty_set(tty, TTY_RQST);
   actconn = conn;
 }
@@ -341,7 +339,9 @@ conn_loop(void)
       switch (curconn->state)
       {
         case CONN_HEADER:
-        case CONN_RQST:
+        case CONN_RQST_FUNC:
+        case CONN_RQST_NVAL:
+        case CONN_RQST_TAIL:
           FD_MSET(curconn->sd, &sdsetrd);
           break;
         case CONN_RESP:
@@ -607,7 +607,7 @@ conn_loop(void)
           /* we received more than 3 bytes from header - address, request id and bytes count */
           if (!tty.rxoffset) {
             /* offset is unknown */
-        	unsigned char i;
+            unsigned char i;
             for (i = 0; i < tty.ptrbuf - tty.rxoffset + rc - 1; i++) {
               if (tty.rxbuf[i] == tty.txbuf[0] && tty.rxbuf[i+1] == tty.txbuf[1]) {
 #ifdef DEBUG
@@ -625,8 +625,8 @@ conn_loop(void)
                 i = 5 + tty.rxbuf[tty.rxoffset + 2];
                 break;
               default:
-        	i = tty.rxlen;
-        	break;
+                i = tty.rxlen;
+                break;
             }
             if (i + tty.rxoffset > TTY_BUFSIZE)
               i = TTY_BUFSIZE - tty.rxoffset;
@@ -713,7 +713,9 @@ conn_loop(void)
       switch (curconn->state)
       {
         case CONN_HEADER:
-        case CONN_RQST:
+        case CONN_RQST_FUNC:
+        case CONN_RQST_NVAL:
+        case CONN_RQST_TAIL:
           if (FD_ISSET(curconn->sd, &sdsetrd))
           {
             rc = conn_read(curconn->sd,
@@ -726,19 +728,75 @@ conn_loop(void)
             }
             curconn->ctr += rc;
             if (curconn->state == CONN_HEADER)
-              if (curconn->ctr >= HDRSIZE)
+              if (curconn->ctr >= MB_UNIT_ID)
               { /* header received completely */
                 if (modbus_check_header(curconn->buf) != RC_OK)
                 { /* header is damaged, drop connection */
                   curconn = conn_close(curconn);
                   break;
                 }
-                state_conn_set(curconn, CONN_RQST);
+                state_conn_set(curconn, CONN_RQST_FUNC);
               }
-            if (curconn->state == CONN_RQST)
-              if (curconn->ctr >=
-                    HDRSIZE + MB_HDR(curconn->buf, MB_LENGTH_L))
-              { /* ### packet received completely ### */
+            if (curconn->state == CONN_RQST_FUNC)
+              if (curconn->ctr >= MB_DATA)
+              {
+                /* check request function code */
+                unsigned char fc = MB_FRAME(curconn->buf, MB_FCODE);
+#ifdef DEBUG
+                logw(7, "conn[%s]: read request fc %d",
+                     inet_ntoa(curconn->sockaddr.sin_addr), fc);
+#endif
+                switch (fc)
+                {
+                  case 1: /* Read Coil Status */
+                  case 2: /* Read Input Status */
+                  case 3: /* Read Holding Registers */
+                  case 4: /* Read Input Registers */
+                  case 5: /* Force Single Coil */
+                  case 6: /* Preset Single Register */
+                  {
+                    /* set data length for requests with fixed length */
+                    conn_fix_request_header_len(curconn, 6);
+                    state_conn_set(curconn, CONN_RQST_TAIL);
+                  }
+                    break;
+                  case 15: /* Force Multiple Coils */
+                  case 16: /* Preset Multiple Registers */
+                    /* will read number of registers/coils to compute request data length */
+                    state_conn_set(curconn, CONN_RQST_NVAL);
+                    break;
+                  default:
+                    /* unknown function code, will rely on data length from header */
+                    state_conn_set(curconn, CONN_RQST_TAIL);
+                    break;
+                }
+              }
+            if (curconn->state == CONN_RQST_NVAL)
+              if (curconn->ctr >= MB_DATA_NBYTES)
+              {
+                /* compute request data length for fc 15/16 */
+                unsigned int len;
+                switch (MB_FRAME(curconn->buf, MB_FCODE))
+                {
+                  case 15: /* Force Multiple Coils */
+                    len = 7 + (MB_FRAME(curconn->buf, MB_DATA_NVAL_H) * 256 +
+                        MB_FRAME(curconn->buf, MB_DATA_NVAL_L) + 7) / 8;
+                    break;
+                  case 16: /* Preset Multiple Registers */
+                    len = 7 + MB_FRAME(curconn->buf, MB_DATA_NVAL_L) * 2;
+                    break;
+                }
+                if (len == 0 || len > BUFSIZE - 2)
+                { /* invalid request data length, drop connection */
+                  curconn = conn_close(curconn);
+                  break;
+                }
+                conn_fix_request_header_len(curconn, len);
+                state_conn_set(curconn, CONN_RQST_TAIL);
+              }
+            if (curconn->state == CONN_RQST_TAIL)
+              if (curconn->ctr >= HDRSIZE + MB_FRAME(curconn->buf, MB_LENGTH_L))
+              { /* ### frame received completely ### */
                 state_conn_set(curconn, CONN_TTY);
                 if (tty.state == TTY_READY)
                   conn_tty_start(&tty, curconn);
@@ -751,7 +809,7 @@ conn_loop(void)
           {
             rc = conn_write(curconn->sd,
                             curconn->buf + curconn->ctr,
-                            MB_HDR(curconn->buf, MB_LENGTH_L) +
+                            MB_FRAME(curconn->buf, MB_LENGTH_L) +
                             HDRSIZE - curconn->ctr, 0);
             if (rc <= 0)
             { /* error - drop this connection and go to next queue element */
@@ -759,7 +817,7 @@ conn_loop(void)
               break;
             }
             curconn->ctr += rc;
-            if (curconn->ctr == (MB_HDR(curconn->buf, MB_LENGTH_L) + HDRSIZE))
+            if (curconn->ctr == (MB_FRAME(curconn->buf, MB_LENGTH_L) + HDRSIZE))
               state_conn_set(curconn, CONN_HEADER);
           }
           curconn = queue_next_elem(&queue, curconn);
@@ -770,3 +828,23 @@ conn_loop(void)
 
   /* XXX some cleanup must be here */
 }
+
+/*
+ * Fix request header length field, if needed
+ * Parameters: CONN - ptr to connection
+ *             LEN - expected request data length
+ * Return: none
+ */
+void
+conn_fix_request_header_len(conn_t *conn, unsigned char len)
+{
+  if (MB_FRAME(conn->buf, MB_LENGTH_L) != len)
+  {
+#ifdef DEBUG
+    logw(5, "conn[%s]: request data len changed from %d to %d",
+         MB_FRAME(conn->buf, MB_LENGTH_L), len);
+#endif
+    MB_FRAME(conn->buf, MB_LENGTH_L) = len;
+  }
+}
+

@@ -79,16 +79,30 @@ state_conn_set(conn_t *conn, int state)
              inet_ntoa(conn->sockaddr.sin_addr));
 #endif
       break;
+    case CONN_RQST_FUNC:
 #ifdef DEBUG
-    case CONN_RQST:
-      logw(5, "conn[%s]: state now is CONN_RQST",
+      logw(5, "conn[%s]: state now is CONN_RQST_FUNC",
              inet_ntoa(conn->sockaddr.sin_addr));
+#endif
+    break;
+    case CONN_RQST_NVAL:
+#ifdef DEBUG
+      logw(5, "conn[%s]: state now is CONN_RQST_NVAL",
+             inet_ntoa(conn->sockaddr.sin_addr));
+#endif
+    break;
+    case CONN_RQST_TAIL:
+#ifdef DEBUG
+      logw(5, "conn[%s]: state now is CONN_RQST_TAIL",
+             inet_ntoa(conn->sockaddr.sin_addr));
+#endif
     break;
     case CONN_TTY:
+#ifdef DEBUG
       logw(5, "conn[%s]: state now is CONN_TTY",
              inet_ntoa(conn->sockaddr.sin_addr));
-      break;
 #endif
+      break;
     case CONN_RESP:
       conn->ctr = 0;
 #ifdef DEBUG

@@ -86,10 +86,12 @@
 /*
  * Client connection FSM states
  */
-#define CONN_HEADER 0
-#define CONN_RQST   1
-#define CONN_TTY    2
-#define CONN_RESP   3
+#define CONN_HEADER    0  /* reading frame header */
+#define CONN_RQST_FUNC 1  /* reading request function code */
+#define CONN_RQST_NVAL 2  /* reading request number of values (registers/coils) */
+#define CONN_RQST_TAIL 3  /* reading request tail */
+#define CONN_TTY       4  /* writing request to TTY */
+#define CONN_RESP      5  /* reading response from TTY */
 
 /*
  * Client connection related data storage structure

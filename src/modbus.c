@@ -4,18 +4,18 @@
  * modbus.c - MODBUS protocol related procedures
  *
  * Copyright (c) 2002-2003, 2013, Victor Antonovich (v.antonovich@gmail.com)
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * - Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
- * 
+ *
  * - Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -67,21 +67,21 @@ modbus_crc_write(unsigned char *frame, unsigned int len)
 void
 modbus_ex_write(unsigned char *packet, unsigned char code)
 {
-  MB_HDR(packet, MB_FCODE) |= 0x80;
-  MB_HDR(packet, MB_DATA) = code;
+  MB_FRAME(packet, MB_FCODE) |= 0x80;
+  MB_FRAME(packet, MB_DATA) = code;
   WORD_WR_BE(packet + MB_LENGTH_H, MB_EX_LEN);
 }
 
 /*
  * Check MODBUS packet header consistency
- * Parameters: HEADER - address of the header
+ * Parameters: PACKET - address of the request packet,
  * Return: RC_OK if (mostly) all is right, RC_ERR otherwise
  */
 int
 modbus_check_header(unsigned char *packet)
 {
-  return (MB_HDR(packet, MB_PROTO_ID_H) == 0 &&
-          MB_HDR(packet, MB_PROTO_ID_L) == 0 &&   
-          MB_HDR(packet, MB_LENGTH_H) == 0   &&
-          MB_HDR(packet, MB_LENGTH_L) > 0) ? RC_OK : RC_ERR;
+  return (MB_FRAME(packet, MB_PROTO_ID_H) == 0 &&
+          MB_FRAME(packet, MB_PROTO_ID_L) == 0 &&
+          MB_FRAME(packet, MB_LENGTH_H) == 0   &&
+          MB_FRAME(packet, MB_LENGTH_L) > 0) ? RC_OK : RC_ERR;
 }
