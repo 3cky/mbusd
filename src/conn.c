@@ -317,7 +317,9 @@ conn_loop(void)
   struct timeval ts, tts, t_out;
   unsigned long tval, tout_sec, tout = 0ul;
   conn_t *curconn = NULL;
-  char t[256], v[8];
+#ifdef DEBUG
+  char t[1025], v[5];
+#endif
 
   while (TRUE)
   {
@@ -436,13 +438,29 @@ conn_loop(void)
             else
             { /* some data received */
 #ifdef DEBUG
-            logw(5, "tty: response read (total %d bytes, offset %d bytes)", tty.ptrbuf, tty.rxoffset);
+              logw(5, "tty: response read (total %d bytes, offset %d bytes)", tty.ptrbuf, tty.rxoffset);
 #endif
+              /* Check if there is enough data for an error response
+                  and if the error flag is set in the function code */
+              if ((tty.ptrbuf >= MB_ERR_LEN) &&
+                  (tty.rxbuf[tty.rxoffset+TTY_FCODE_IDX] & TTY_ERR_MASK))
+              {
+                /* This is an error response, set the length to
+		             5 (1 + 1 + 1 + 2) = Slave Address + Function Code + Error Code + CRC */
+                tty.ptrbuf = MB_ERR_LEN;
+              }
               if (tty.ptrbuf >= MB_MIN_LEN &&
                      modbus_crc_correct(tty.rxbuf + tty.rxoffset, tty.ptrbuf - tty.rxoffset))
               { /* received response is correct, make OpenMODBUS response */
 #ifdef DEBUG
                 logw(5, "tty: response is correct");
+                // Optionally print the correct packet data
+                t[0] = '\0';
+                for (i = 0; i < tty.ptrbuf; i++) {
+                  sprintf(v, "[%2.2x]", tty.rxbuf[i]);
+                  strncat(t, v, 1024-strlen(t));
+                }
+                logw(9, "tty: response: %s", t);
 #endif
                 (void)memcpy((void *)(actconn->buf + HDRSIZE),
                              (void *)(tty.rxbuf + tty.rxoffset), tty.ptrbuf - CRCSIZE - tty.rxoffset);
@@ -454,10 +472,10 @@ conn_loop(void)
 #ifdef DEBUG
                 t[0] = '\0';
                 for (i = 0; i < tty.ptrbuf; i++) {
-                  sprintf(v,"[%2.2x]", tty.rxbuf[i]);
-                  strncat(t, v, 256);
+                  sprintf(v, "[%2.2x]", tty.rxbuf[i]);
+                  strncat(t, v, 1024-strlen(t));
                 }
-                logw(5, "tty: response is incorrect (%s)", t);
+                logw(5, "tty: response is incorrect: %s", t);
 #endif
                 if (!tty.trynum) {
                   modbus_ex_write(actconn->buf, MB_EX_CRC);
@@ -661,11 +679,26 @@ conn_loop(void)
 #ifdef DEBUG
       logw(5, "tty: response read (total %d bytes, offset %d bytes)", tty.ptrbuf, tty.rxoffset);
 #endif
+      /* Check if there is enough data for an error response
+          and if the error flag is set in the function code */
+      if ((tty.ptrbuf >= MB_ERR_LEN) && (tty.rxbuf[tty.rxoffset+TTY_FCODE_IDX] & TTY_ERR_MASK))
+      {
+        /* This is an error response, set the length to
+             5 (1 + 1 + 1 + 2) = Slave Address + Function Code + Error Code + CRC */
+        tty.ptrbuf = MB_ERR_LEN;
+      }
       if (tty.ptrbuf >= MB_MIN_LEN &&
          modbus_crc_correct(tty.rxbuf + tty.rxoffset, tty.ptrbuf - tty.rxoffset))
       { /* received response is correct, make OpenMODBUS response */
 #ifdef DEBUG
         logw(5, "tty: response is correct");
+        // Optionally print the correct packet data
+        t[0] = '\0';
+        for (i = 0; i < tty.ptrbuf; i++) {
+          sprintf(v, "[%2.2x]", tty.rxbuf[i]);
+          strncat(t, v, 1024-strlen(t));
+        }
+        logw(9, "tty: response: %s", t);
 #endif
         (void)memcpy((void *)(actconn->buf + HDRSIZE),
                      (void *)(tty.rxbuf + tty.rxoffset), tty.ptrbuf - CRCSIZE - tty.rxoffset);
@@ -679,10 +712,10 @@ conn_loop(void)
 #ifdef DEBUG
         t[0] = '\0';
         for (i = 0; i < tty.ptrbuf; i++) {
-          sprintf(v,"[%2.2x]", tty.rxbuf[i]);
-          strncat(t, v, 256);
+          sprintf(v, "[%2.2x]", tty.rxbuf[i]);
+          strncat(t, v, 1024-strlen(t));
         }
-        logw(5, "tty: response is incorrect (%s)", t);
+        logw(5, "tty: response is incorrect: %s", t);
 #endif
         if (!tty.trynum) {
           logw(3, "tty: response is incorrect (%d of %d bytes, offset %d), return error", tty.ptrbuf,
@@ -797,6 +830,14 @@ conn_loop(void)
             if (curconn->state == CONN_RQST_TAIL)
               if (curconn->ctr >= HDRSIZE + MB_FRAME(curconn->buf, MB_LENGTH_L))
               { /* ### frame received completely ### */
+#ifdef DEBUG
+                t[0] = '\0';
+                for (i = MB_UNIT_ID; i < curconn->ctr; i++) {
+                  sprintf(v, "[%2.2x]", curconn->buf[i]);
+                  strncat(t, v, 1024-strlen(t));
+                }
+                logw(5, "conn[%s]: request: %s", inet_ntoa(curconn->sockaddr.sin_addr), t);
+#endif
                 state_conn_set(curconn, CONN_TTY);
                 if (tty.state == TTY_READY)
                   conn_tty_start(&tty, curconn);
