@@ -62,7 +62,7 @@ test_x86:
     - apt update -qq
     - apt install -y -qq build-essential pkg-config cmake
     - apt install -y -qq python-dev python-pip python-setuptools socat
-    - python -m pip install pymodbus service_identity
+    - python -m pip install pymodbus service_identity twisted
 
   dependencies:
     - build:deb_x86
