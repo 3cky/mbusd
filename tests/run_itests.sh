@@ -24,7 +24,7 @@ function teardown() {
 }
 trap teardown EXIT
 
-setup || exit 1
+setup || (echo "failed to setup" && exit 1)
 
 $CWD/run_itests.py || exit 1
 

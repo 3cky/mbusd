@@ -69,8 +69,8 @@ test_x86:
   script:
     - mkdir -p output.dir/
     - cd output.dir
-    - cmake -DTESTS=True ../
-    - make VERBOSE=1
+    - cmake ../
+    - make
 
     # execute all tests
-    - ./test_*
+    - make VERBOSE=1 CTEST_OUTPUT_ON_FAILURE=1 test
