@@ -6,6 +6,7 @@ import sys
 import logging
 from subprocess import Popen
 from os.path import isfile
+from time import sleep
 
 from pymodbus.client.sync import ModbusTcpClient
 from pymodbus.pdu import ExceptionResponse
@@ -32,6 +33,8 @@ class TestModbusRequests(unittest.TestCase):
 
         cls.log.debug("3. run mbusd to be tested with the binary:%s" % MBUSD_BINARY)
         cls.mbusd_main = Popen([MBUSD_BINARY, "-d", "-L", "-v9", "-p/tmp/pts0", "-s19200", "-P" + str(MBUSD_PORT)])
+        # wait a little bit for mbusd to come up
+        sleep(5)
 
         cls.log.debug("4. connect the modbus TCP client to mbusd")
         cls.client = ModbusTcpClient('127.0.0.1', port=MBUSD_PORT)
