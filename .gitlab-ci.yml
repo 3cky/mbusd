@@ -1,7 +1,7 @@
 ---
 stages:
- - build
  - test
+ - build
 
 .mbusd_job_template: &mbusd_job_template # Hidden key that defines an anchor
   image: debian:stable
