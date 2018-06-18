@@ -2,25 +2,41 @@
 
 import random
 import unittest
+import sys
 
 from pymodbus.client.sync import ModbusTcpClient
-from pymodbus.pdu import ExceptionResponse, ModbusExceptions
+from pymodbus.pdu import ExceptionResponse
 from pymodbus.bit_read_message import ReadDiscreteInputsResponse, ReadCoilsResponse
 from pymodbus.bit_write_message import WriteMultipleCoilsResponse, WriteSingleCoilResponse
 from pymodbus.register_read_message import ReadInputRegistersResponse, ReadHoldingRegistersResponse
 from pymodbus.register_write_message import WriteMultipleRegistersResponse, WriteSingleRegisterResponse
 
+from environment.rtu_slave import ModbusSerialServer
+
 MBUSD_PORT = 1025
 
+
 class TestModbusRequests(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
+        cls.log = logging.getLogger("TestModbusRequests")
+
+        cls.mbs = ModbusSerialServer()
+        cls.mbs.start()
+
         cls.client = ModbusTcpClient('127.0.0.1', port=MBUSD_PORT)
         cls.client.connect()
 
     @classmethod
     def tearDownClass(cls):
+        cls.log.info("test teardown")
         cls.client.close()
+        try:
+            cls.mbs.kill()
+        except e:
+            cls.log.info("Fetched exception during mbs.kill")
+
 
     def test_coils(self):
         bits = [random.randrange(2)>0 for i in range(8)]
