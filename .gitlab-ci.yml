@@ -34,7 +34,7 @@ build:deb_armhf:
  stage: build
  before_script:
    - apt update -qq
-   - apt install -y -qq --no-install-recommends build-essential pkg-config cmake gcc-arm-linux-gnueabihf
+   - apt install -y -qq build-essential pkg-config cmake gcc-arm-linux-gnueabihf
  script:
    - mkdir output.dir/
    - cd output.dir
