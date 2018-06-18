@@ -8,6 +8,7 @@ The asynchronous server is a high performance implementation using the
 twisted library as its backend.  This allows it to scale to many thousands
 of nodes which can be helpful for testing monitoring software.
 '''
+import logging
 #---------------------------------------------------------------------------#
 # import the various server implementations
 #---------------------------------------------------------------------------#
@@ -26,10 +27,7 @@ class ModbusSerialServer:
     #---------------------------------------------------------------------------#
     # configure the service logging
     #---------------------------------------------------------------------------#
-    import logging
-    logging.basicConfig()
-    log = logging.getLogger()
-    log.setLevel(logging.DEBUG)
+    log = logging.getLogger("ModbusServer")
 
     serialPort = readlink('/tmp/pts1')
 
@@ -126,9 +124,8 @@ class ModbusSerialServer:
         self.p.start()
         print("p.start done")
 
-
     def kill(self):
-        print("Going to terminate the process, this could throw exceptions")
+        self.log.info("Going to terminate the process, this could throw exceptions")
         if self.p is not None:
             self.p.terminate()
 

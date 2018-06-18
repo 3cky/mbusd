@@ -106,4 +106,10 @@ class TestModbusRequests(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    import logging
+    stdout_handler = logging.StreamHandler(sys.stdout)
+    logging.basicConfig(level=logging.DEBUG,
+                        format=u'[%(asctime)s] %(name)-26s-%(levelname)-5s %(funcName)-20s:%(lineno)-4d \033[35m%(message)s\033[0m',
+                        datefmt='%d.%m. %H:%M:%S',
+                        handlers=[stdout_handler])
+    unittest.main(verbosity=2)
