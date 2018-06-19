@@ -1,7 +1,7 @@
 ---
 stages:
- - build
  - test
+ - build
 
 .mbusd_job_template: &mbusd_job_template # Hidden key that defines an anchor
   image: debian:stable
@@ -22,7 +22,7 @@ build:fedora_x86:
   image: fedora:latest
   stage: build
   before_script:
-    - yum -y install cmake pkgconfig gcc-c++ rpmdevtools
+    - yum -y install make cmake pkgconfig gcc-c++ rpmdevtools
   script:
     - mkdir output.dir/
     - cd output.dir
@@ -46,7 +46,7 @@ build:deb_x86:
  stage: build
  before_script:
    - apt update -qq
-   - apt install -y -qq build-essential pkg-config cmake
+   - apt install -y -qq --no-install-recommends build-essential pkg-config cmake
  script:
    - mkdir output.dir/
    - cd output.dir
@@ -60,17 +60,15 @@ test_x86:
   #https://forum.gitlab.com/t/testing-copy-yaml-file-to-build-folder/8309
   before_script:
     - apt update -qq
-    - apt install -y -qq build-essential pkg-config cmake
-    - apt install -y -qq python-dev python-pip python-setuptools socat
-    - python -m pip install pymodbus service_identity
+    - apt install -y -qq --no-install-recommends build-essential pkg-config cmake
+    - apt install -y -qq --no-install-recommends python-dev python-pip python-setuptools socat
+    - python -m pip install pymodbus service_identity twisted
 
-  dependencies:
-    - build:deb_x86
   script:
-    - mkdir -p output.dir/
-    - cd output.dir
-    - cmake -DTESTS=True ../
-    - make VERBOSE=1
+    - mkdir -p output.dir/ && cd $_
+    - cmake ../
+    - make
 
     # execute all tests
-    - ./test_*
+    - (cd ../ && python tests/run_itests.py output.dir/mbusd)
+    #- make VERBOSE=1 CTEST_OUTPUT_ON_FAILURE=1 test
