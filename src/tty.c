@@ -135,8 +135,8 @@ tty_set_attr(ttydata_t *mod)
   mod->tios.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL | IXON);
   mod->tios.c_oflag &= ~OPOST;
   mod->tios.c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
-  mod->tios.c_cflag |= CREAD | CLOCAL ;
 #endif
+  mod->tios.c_cflag |= (CREAD | CLOCAL);
   mod->tios.c_cflag &= ~(CSIZE | CSTOPB | PARENB | PARODD | CRTSCTS);
   switch (cfg.ttymode[0])
   {
