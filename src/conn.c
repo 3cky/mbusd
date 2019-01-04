@@ -52,11 +52,10 @@ void conn_fix_request_header_len(conn_t *conn, unsigned char len);
 
 #define FD_MSET(d, s) do { FD_SET(d, s); max_sd = MAX(d, max_sd); } while (0);
 
-int tty_reinit()
+int tty_reopen()
 {
-  logw(3,"closing tty on error...");
+  logw(3, "tty re-opening...");
   tty_close(&tty);
-  logw(3, "tty closed, re-opening...");
 #ifdef  TRXCTL
   tty_init(&tty, cfg.ttyport, cfg.ttyspeed, cfg.trxcntl);
 #else
@@ -65,16 +64,29 @@ int tty_reinit()
   if (tty_open(&tty) != RC_OK)
   {
 #ifdef LOG
-    logw(0, "conn_init():"
+    logw(0, "tty_reopen():"
            " can't open tty device %s (%s)",
            cfg.ttyport, strerror(errno));
 #endif
     return RC_ERR;
   }
   state_tty_set(&tty, TTY_PAUSE);
-  logw(3, "re-init ok...");
+  logw(3, "tty re-opened.");
   return RC_OK;
 }
+
+void tty_reinit()
+{
+  logw(3, "trying to re-open tty...");
+  long delay = 100000l; /* initial open retry delay, 100 msecs */
+  while (tty_reopen())
+  {
+    usleep(delay);
+    if (sig_flag) sig_exec(); /* check for signals */
+    delay = MIN(delay*2, 3000000l); /* retry delay exponential backoff, up to 3 secs */
+  }
+}
+
 /*
  * Connections startup initialization
  * Parameters: none
@@ -671,7 +683,9 @@ conn_loop(void)
           tty_reinit();
         }
 #ifdef DEBUG
+        else {
           logw(7, "tty: dropped %d bytes", rc);
+        }
 #endif
       }
     }

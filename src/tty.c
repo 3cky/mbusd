@@ -319,8 +319,6 @@ tty_transpeed(int speed)
 int
 tty_cooked(ttydata_t *mod)
 {
-  signal(SIGHUP, SIG_IGN);
-  signal(SIGPIPE, SIG_IGN);
   if (!isatty(mod->fd))
     return RC_ERR;
   if (tcsetattr(mod->fd, TCSAFLUSH, &mod->savedtios))
@@ -340,8 +338,7 @@ tty_close(ttydata_t *mod)
 #endif
   if (mod->fd < 0)
     return RC_ACLOSE;       /* already closed */
-  if (tty_cooked(mod))
-    return RC_ERR;
+  tty_cooked(mod);
 #ifdef HAVE_LIBUTIL
   if (close(mod->fd))
     return RC_ERR;
