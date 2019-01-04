@@ -611,10 +611,10 @@ conn_loop(void)
         }
         rc = conn_read(tty.fd, tty.rxbuf + tty.ptrbuf,
                        tty.rxlen - tty.ptrbuf + tty.rxoffset);
-        if (rc < 0)
+        if (rc <= 0)
         { /* error - make attempt to reinitialize serial port */
 #ifdef LOG
-          logw(0, "tty: error in read() (%s)", strerror(errno));
+          logw(0, "tty: error in read() (%s)", rc ? strerror(errno) : "port closed");
 #endif
           tty_reinit();
         }
@@ -663,10 +663,10 @@ conn_loop(void)
       }
       else if (tty.state != TTY_PROC)
       { /* drop unexpected tty data */
-        if ((rc = conn_read(tty.fd, tty.rxbuf, BUFSIZE)) < 0)
+        if ((rc = conn_read(tty.fd, tty.rxbuf, BUFSIZE)) <= 0)
         { /* error - make attempt to reinitialize serial port */
 #ifdef LOG
-          logw(0, "tty: error in read() (%s)", strerror(errno));
+          logw(0, "tty: error in read() (%s)", rc ? strerror(errno) : "port closed");
 #endif
           tty_reinit();
         }
