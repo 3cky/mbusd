@@ -74,12 +74,14 @@ state_conn_set(conn_t *conn, int state)
   {
     case CONN_HEADER:
       conn->ctr = 0;
+      conn->read_len = HDRSIZE;
 #ifdef DEBUG
       logw(5, "conn[%s]: state now is CONN_HEADER",
              inet_ntoa(conn->sockaddr.sin_addr));
 #endif
       break;
     case CONN_RQST_FUNC:
+      conn->read_len = HDRSIZE + MB_FRAME(conn->buf, MB_LENGTH_L);
 #ifdef DEBUG
       logw(5, "conn[%s]: state now is CONN_RQST_FUNC",
              inet_ntoa(conn->sockaddr.sin_addr));

@@ -32,6 +32,7 @@
  */
 
 #include "modbus.h"
+#include "conn.h"
 
 /*
  * Check CRC of MODBUS frame
@@ -83,5 +84,6 @@ modbus_check_header(unsigned char *packet)
   return (MB_FRAME(packet, MB_PROTO_ID_H) == 0 &&
           MB_FRAME(packet, MB_PROTO_ID_L) == 0 &&
           MB_FRAME(packet, MB_LENGTH_H) == 0   &&
-          MB_FRAME(packet, MB_LENGTH_L) > 0) ? RC_OK : RC_ERR;
+          MB_FRAME(packet, MB_LENGTH_L) > 0    &&
+          MB_FRAME(packet, MB_LENGTH_L) < BUFSIZE - CRCSIZE) ? RC_OK : RC_ERR;
 }

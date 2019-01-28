@@ -767,7 +767,7 @@ conn_loop(void)
           {
             rc = conn_read(curconn->sd,
                            curconn->buf + curconn->ctr,
-                           RQSTSIZE - curconn->ctr);
+                           curconn->read_len - curconn->ctr);
             if (rc <= 0)
             { /* error - drop this connection and go to next queue element */
               curconn = conn_close(curconn);

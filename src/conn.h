@@ -105,6 +105,7 @@ typedef struct conn_t
   int timeout;          /* timeout value, secs */
   struct sockaddr_in sockaddr; /* connection structure */
   int ctr;              /* counter of data in the buffer */
+  int read_len;         /* length of modbus frame to read */
   unsigned char buf[HDRSIZE + BUFSIZE];    /* data buffer */
 } conn_t;
 
