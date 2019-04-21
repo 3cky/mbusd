@@ -62,7 +62,7 @@ test_x86:
     - apt update -qq
     - apt install -y -qq --no-install-recommends build-essential pkg-config cmake
     - apt install -y -qq --no-install-recommends python-dev python-pip python-setuptools socat
-    - python -m pip install pymodbus service_identity twisted
+    - python -m pip install pymodbus==2.2.0 service_identity==18.1.0 twisted==18.9.0
 
   script:
     - mkdir -p output.dir/ && cd $_
