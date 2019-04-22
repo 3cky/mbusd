@@ -14,7 +14,7 @@ import logging
 #---------------------------------------------------------------------------#
 #from pymodbus.server.async import StartTcpServer
 #from pymodbus.server.async import StartUdpServer
-from pymodbus.server.async import StartSerialServer
+from pymodbus.server.asynchronous import StartSerialServer
 
 from pymodbus.device import ModbusDeviceIdentification
 from pymodbus.datastore import ModbusSequentialDataBlock
