@@ -3,7 +3,10 @@ About mbusd
 
 [![Build Status](https://travis-ci.org/3cky/mbusd.svg?branch=master)](https://travis-ci.org/3cky/mbusd)
 
-**mbusd** is open-source [Modbus TCP to Modbus RTU (RS-232/485)](https://en.wikipedia.org/wiki/Modbus) gateway.
+**mbusd** is open-source [Modbus TCP to Modbus RTU (RS-232/485)](https://en.wikipedia.org/wiki/Modbus)
+gateway. It presents a network of RTU slaves as single TCP slave.
+
+That is a TCP-Slave (or server) which acts as a RTU-master to get data from Modbus RTU-slave devices.
 
 Features:
 ---------
@@ -128,8 +131,10 @@ To start the **mbusd** service on system boot:
 
 Please check systemd documentation for other usefull systemd [commands](https://wiki.archlinux.org/index.php/systemd)
 
-Reporting bugs:
----------------
+Contributing:
+-------------
+
+### Reporting bugs
 
 Please file [issue](https://github.com/3cky/mbusd/issues) with attached debug log in verbose (`-v9`) mode, i.e.:
 
@@ -138,8 +143,7 @@ Please file [issue](https://github.com/3cky/mbusd/issues) with attached debug lo
 Unless you were prompted so or there is another pertinent reason (e.g. GitHub fails to accept the bug report),
 please do not send bug reports via personal email.
 
-Contributing:
--------------
+### Workflow for code contributions
 
 1. Fork it and clone forked repository
 2. Create your feature branch (`git checkout -b my-new-feature`)
@@ -147,6 +151,21 @@ Contributing:
 4. Commit your changes (`git commit -am 'Add some feature'`)
 5. Push to the branch (`git push origin my-new-feature`)
 6. Create new Pull Request
+
+### Building and Testing
+
+Dependencies: please see the correct OS-distribution section in the
+ [.gitlab-ci.yml](https://github.com/3cky/mbusd/blob/master/.gitlab-ci.yml)
+
+With all dependencies met, one is able to *build and execute tests*
+issuing the following *bash* commands:
+```
+# build
+mkdir output.dir/ && cd $_
+cmake ../ && make
+# execute all tests
+(cd ../ && python tests/run_itests.py output.dir/mbusd)
+```
 
 Author:
 -------
