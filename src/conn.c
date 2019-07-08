@@ -857,7 +857,6 @@ conn_loop(void)
                   conn_tty_start(&tty, curconn);
               }
           }
-          curconn = queue_next_elem(&queue, curconn);
           break;
         case CONN_RESP:
           if (FD_ISSET(curconn->sd, &sdsetwr))
@@ -875,9 +874,9 @@ conn_loop(void)
             if (curconn->ctr == (MB_FRAME(curconn->buf, MB_LENGTH_L) + HDRSIZE))
               state_conn_set(curconn, CONN_HEADER);
           }
-          curconn = queue_next_elem(&queue, curconn);
           break;
       } /* switch (curconn->state) */
+      curconn = queue_next_elem(&queue, curconn);
     } /* while (len--) */
   } /* while (TRUE) */
 
