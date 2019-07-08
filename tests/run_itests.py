@@ -4,7 +4,7 @@ import random
 import unittest
 import sys
 import logging
-from subprocess import Popen
+from subprocess import Popen, PIPE, STDOUT
 from os.path import isfile
 from time import sleep
 
@@ -24,7 +24,8 @@ class TestModbusRequests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.log.debug("1. run socat")
-        cls.socat = Popen(["socat", "-d", "-d", "pty,raw,echo=0,link=/tmp/pts0", "pty,raw,echo=0,link=/tmp/pts1"])
+        cls.socat = Popen(["socat", "-d", "-d", "pty,raw,echo=0,link=/tmp/pts0", "pty,raw,echo=0,link=/tmp/pts1"],
+                          stdout=PIPE, stderr=STDOUT)
 
         cls.log.debug("2. run rtu_slave")
         from environment.rtu_slave import ModbusSerialServer
@@ -32,7 +33,8 @@ class TestModbusRequests(unittest.TestCase):
         cls.mbs.start()
 
         cls.log.debug("3. run mbusd to be tested with the binary:%s" % MBUSD_BINARY)
-        cls.mbusd_main = Popen([MBUSD_BINARY, "-d", "-L", "-v9", "-p/tmp/pts0", "-s19200", "-P" + str(MBUSD_PORT)])
+        cls.mbusd_main = Popen([MBUSD_BINARY, "-d", "-L", "-v9", "-p/tmp/pts0", "-s19200", "-P" + str(MBUSD_PORT)],
+                               stdout=PIPE, stderr=STDOUT)
         # wait a little bit for mbusd to come up
         # alternatively do a poll for the socket
         #    https://stackoverflow.com/questions/667640/how-to-tell-if-a-connection-is-dead-in-python/667702#667702
