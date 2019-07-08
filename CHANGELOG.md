@@ -1,5 +1,15 @@
 # Change Log
 
+## [0.4.0] - 2019-07-08
+### Added
+- Modbus RTU Exception Forwarding (#29).
+- Handle incorrect Modbus/TCP data length header field (#31).
+- tty reconnect with an exponential backoff.
+
+### Fixed
+- Modbus: read only a single frame at a time (#43).
+- Readable socket never gets read, conn_loop degrades into busy loop (#52).
+
 ## [0.3.0] - 2017-12-11
 ### Added
 - Support for reading configuration from file (-c).
@@ -51,6 +61,7 @@
 ## 0.1.1 - 2003-09-13
 ### Initial release
 
+[0.4.0]: https://github.com/3cky/mbusd/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/3cky/mbusd/compare/v0.2.3...v0.3.0
 [0.2.3]: https://github.com/3cky/mbusd/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/3cky/mbusd/compare/v0.2.1...v0.2.2
