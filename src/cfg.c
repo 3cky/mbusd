@@ -67,6 +67,7 @@ cfg_init(void)
   cfg.trxcntl = TRX_ADDC;
   *cfg.trxcntl_file = '\0';
 #endif
+  strncpy(cfg.serveraddr, DEFAULT_SERVERADDR, INTBUFSIZE);
   cfg.serverport = DEFAULT_SERVERPORT;
   cfg.maxconn = DEFAULT_MAXCONN;
   cfg.maxtry = DEFAULT_MAXTRY;
@@ -121,6 +122,10 @@ cfg_handle_param(char *name, char *value)
       return 0;
     }
     strncpy(cfg.ttymode, value, INTBUFSIZE);
+  }
+  else if (CFG_NAME_MATCH("address"))
+  {
+    strncpy(cfg.serveraddr, value, INTBUFSIZE);
   }
   else if (CFG_NAME_MATCH("port"))
   {

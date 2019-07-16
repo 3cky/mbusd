@@ -22,6 +22,8 @@ mbusd \- MODBUS/TCP to MODBUS/RTU gateway.
 .IR file ]
 .RB [ -Y
 .IR file ]
+.RB [ -A
+.IR address ]
 .RB [ -P
 .IR port ]
 .RB [ -C
@@ -57,6 +59,8 @@ Specifies serial port device name.
 Specifies serial port speed.
 .IP "\fB-m \fImode\fR"
 Specifies serial port mode (like 8N1).
+.IP "\fB-A \fIaddress\fR"
+Specifies TCP address to bind.
 .IP "\fB-P \fIport\fR"
 Specifies TCP port number.
 .IP \fB-t\fR

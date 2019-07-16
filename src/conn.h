@@ -46,6 +46,7 @@
 /*
  * Default values
  */
+#define DEFAULT_SERVERADDR "0.0.0.0"
 #define DEFAULT_SERVERPORT 502
 #define DEFAULT_MAXCONN 32
 #define DEFAULT_MAXTRY 3

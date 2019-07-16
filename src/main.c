@@ -111,7 +111,8 @@ usage(char *exename)
 #ifdef TRXCTL
    "             [-t] [-y sysfsfile] [-Y sysfsfile]\n"
 #endif
-   "             [-P port] [-C maxconn] [-N retries] [-R pause] [-W wait] [-T timeout]\n\n"
+   "             [-A address] [-P port] [-C maxconn] [-N retries]\n"
+   "             [-R pause] [-W wait] [-T timeout]\n\n"
    "Options:\n"
    "  -h         : this help\n"
    "  -d         : don't daemonize\n"
@@ -128,6 +129,7 @@ usage(char *exename)
    "  -p device  : set serial port device name (default %s)\n"
    "  -s speed   : set serial port speed (default %d)\n"
    "  -m mode    : set serial port mode (default %s)\n"
+   "  -A address : set TCP server address to bind (default %s)\n"
    "  -P port    : set TCP server port number (default %d)\n"
 #ifdef TRXCTL
    "  -t         : enable RTS RS-485 data direction control using RTS\n"
@@ -148,7 +150,8 @@ usage(char *exename)
 #ifdef LOG
       LOGPATH, LOGNAME, cfg.dbglvl,
 #endif
-      cfg.ttyport, cfg.ttyspeed, cfg.ttymode, cfg.serverport,
+      cfg.ttyport, cfg.ttyspeed, cfg.ttymode,
+      cfg.serveraddr, cfg.serverport,
       MAX_MAXCONN, cfg.maxconn, MAX_MAXTRY, cfg.maxtry,
       MAX_RQSTPAUSE, cfg.rqstpause, MAX_RESPWAIT, cfg.respwait,
       MAX_CONNTIMEOUT, cfg.conntimeout);
@@ -180,7 +183,7 @@ main(int argc, char *argv[])
 #ifdef LOG
                "v:L:"
 #endif
-               "p:s:m:P:C:N:R:W:T:c:")) != RC_ERR)
+               "p:s:m:A:P:C:N:R:W:T:c:")) != RC_ERR)
   {
     switch (rc)
     {
@@ -289,6 +292,9 @@ main(int argc, char *argv[])
               "(%c, must be 1 or 2)\n", exename, cfg.ttymode[2]);
           exit(-1);
         }
+        break;
+      case 'A':
+        strncpy(cfg.serveraddr, optarg, INTBUFSIZE);
         break;
       case 'P':
         cfg.serverport = strtoul(optarg, NULL, 0);

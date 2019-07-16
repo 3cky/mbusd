@@ -53,8 +53,8 @@ Usage:
 ------
 
        mbusd [-h] [-d] [-L logfile] [-v level] [-c cfgfile] [-p device] [-s speed] [-m mode]
-       		[-t] [-y file] [-Y file] [-P port] [-C maxconn] [-N retries]
-       		[-R pause] [-W wait] [-T timeout]
+             [-t] [-y file] [-Y file] [-A address] [-P port] [-C maxconn] [-N retries]
+             [-R pause] [-W wait] [-T timeout]
 
        -h     Usage help.
        -d     Instruct mbusd not to fork itself (non-daemonize).
@@ -80,6 +80,8 @@ Usage:
        -Y file
               Enable RS-485 direction data direction control by writing '0' to file
               for transmitter enable and '1' to file for transmitter disable
+       -A address
+             Specifies TCP address to bind (default 0.0.0.0).
        -P port
               Specifies TCP port number (default 502).
        -C maxconn

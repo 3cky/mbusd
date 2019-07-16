@@ -94,12 +94,32 @@ sock_create(int blkmode)
  * Return: socket descriptor, otherwise RC_ERR if there some errors
  */
 int
-sock_create_server(char *server_ip,
-  unsigned short server_port, int blkmode)
+sock_create_server(char *server_ip, unsigned short server_port, int blkmode)
 {
   struct sockaddr_in server_sockaddr;
   int sock_opt = 1;
   int server_s;
+
+  memset(&server_sockaddr, 0, sizeof(server_sockaddr));
+  server_sockaddr.sin_family = AF_INET; // FIXME IPv6 support
+
+  /* parse address to bind socket */
+  if (server_ip != NULL)
+  {
+    if (inet_aton(server_ip, &server_sockaddr.sin_addr) == 0)
+    {
+#ifdef LOG
+      logw(0, "sock_create_server():"
+           " can't parse address: %s",
+           server_ip);
+#endif
+      return RC_ERR;
+    }
+  }
+  else
+    server_sockaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+  server_sockaddr.sin_port = htons(server_port);
 
   /* create socket in desired blocking mode */
   server_s = sock_create(blkmode);
@@ -144,18 +164,9 @@ sock_create_server(char *server_ip,
     return RC_ERR;
   }
 
-  memset(&server_sockaddr, 0, sizeof(server_sockaddr));
-  server_sockaddr.sin_family = AF_INET;
-
-  if (server_ip != NULL)
-    inet_aton(server_ip, &server_sockaddr.sin_addr);
-  else
-    server_sockaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-
-  server_sockaddr.sin_port = htons(server_port);
-
+  /* bind socket to given address and port */
   if (bind(server_s, (struct sockaddr *) & server_sockaddr,
-	   sizeof(server_sockaddr)) == -1)
+           sizeof(server_sockaddr)) == -1)
   {
 #ifdef LOG
     logw(0, "sock_create_server():"
@@ -207,7 +218,7 @@ sock_accept(int server_sd, struct sockaddr_in *rmt_addr, int blkmode)
   if (sock_set_blkmode(sd, blkmode) == RC_ERR)
   {
 #ifdef LOG
-    logw(0, "sock_accept(): can't set socket blocking mode (%s)", 
+    logw(0, "sock_accept(): can't set socket blocking mode (%s)",
            strerror(errno));
 #endif
     close(sd);

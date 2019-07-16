@@ -23,6 +23,9 @@ trx_control = addc
 
 ############# TCP port settings #############
 
+# TCP server address to bind
+address = 0.0.0.0
+
 # TCP server port number
 port = 502
 

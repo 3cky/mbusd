@@ -58,6 +58,8 @@ typedef struct
   int trxcntl;
   /* trx control sysfs file */
   char trxcntl_file[INTBUFSIZE + 1];
+  /* TCP server address */
+  char serveraddr[INTBUFSIZE + 1];
   /* TCP server port number */
   int serverport;
   /* maximum number of connections */

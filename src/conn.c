@@ -113,13 +113,12 @@ conn_init(void)
   state_tty_set(&tty, TTY_PAUSE);
 
   /* create server socket */
-  if ((server_sd =
-         sock_create_server("", cfg.serverport, TRUE)) < 0)
+  if ((server_sd = sock_create_server(cfg.serveraddr, cfg.serverport, TRUE)) < 0)
   {
 #ifdef LOG
     logw(0, "conn_init():"
-           " can't create listen() socket (%s)",
-           strerror(errno));
+           " can't create listen socket (%s)",
+           (errno != 0) ? strerror(errno) : "failed");
 #endif
     return RC_ERR;
   }
