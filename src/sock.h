@@ -1,21 +1,21 @@
 /*
  * OpenMODBUS/TCP to RS-232/485 MODBUS RTU gateway
  *
- * sock.h - socket manipulation routines 
+ * sock.h - socket manipulation routines
  *
  * Copyright (c) 2002-2003, 2013, Victor Antonovich (v.antonovich@gmail.com)
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  * - Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimer.
- * 
+ *
  * - Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -44,11 +44,13 @@
 /* Socket buffers size */
 #define SOCKBUFSIZE 512
 
+#define sa_len(sa_ptr) ((sa_ptr)->sa_family == AF_INET \
+    ? sizeof (struct sockaddr_in) : sizeof (struct sockaddr_in6))
+
 int sock_set_blkmode(int sd, int blkmode);
-int sock_create(int blkmode);
-int sock_create_server(char *server_ip,
-  unsigned short server_port, int blkmode);
-int sock_accept(int server_sd,
-  struct sockaddr_in *rmt_addr, int blkmode);
+int sock_create(int blkmode, sa_family_t sa_family);
+int sock_create_server(char *server_ip, unsigned short server_port, int blkmode);
+int sock_accept(int server_sd, struct sockaddr *rmt_addr, socklen_t rmt_len, int blkmode);
+void *sock_addr(struct sockaddr *sa);
 
 #endif

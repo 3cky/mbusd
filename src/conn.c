@@ -139,26 +139,28 @@ conn_open(void)
 {
   int sd;
   conn_t *newconn;
-  struct sockaddr_in rmt_addr;
+  struct sockaddr_storage rmt_addr;
+  char ipstr[INET6_ADDRSTRLEN];
 
-  if ((sd = sock_accept(server_sd, &rmt_addr, TRUE)) == RC_ERR)
+  if ((sd = sock_accept(server_sd, (struct sockaddr *)&rmt_addr,
+                        sizeof(rmt_addr), TRUE)) == RC_ERR)
   { /* error in conn_accept() */
 #ifdef LOG
     logw(0, "conn_open(): error in accept() (%s)", strerror(errno));
 #endif
     return;
   }
+ inet_ntop(rmt_addr.ss_family, sock_addr((struct sockaddr *)&rmt_addr),
+           ipstr, sizeof(ipstr));
 #ifdef LOG
-  logw(2, "conn_open(): accepting connection from %s",
-         inet_ntoa(rmt_addr.sin_addr));
+  logw(2, "conn_open(): accepting connection from %s", ipstr);
 #endif
   /* compare descriptor of connection with FD_SETSIZE */
   if (sd >= FD_SETSIZE)
   {
 #ifdef LOG
     logw(1, "conn_open(): FD_SETSIZE limit reached,"
-           " connection from %s will be dropped",
-           inet_ntoa(rmt_addr.sin_addr));
+           " connection from %s will be dropped", ipstr);
 #endif
     close(sd);
     return;
@@ -168,8 +170,7 @@ conn_open(void)
   {
 #ifdef LOG
     logw(1, "conn_open(): number of connections limit reached,"
-           " connection from %s will be dropped",
-           inet_ntoa(rmt_addr.sin_addr));
+           " connection from %s will be dropped", ipstr);
 #endif
     close(sd);
     return;
@@ -177,8 +178,7 @@ conn_open(void)
   /* enqueue connection */
   newconn = queue_new_elem(&queue);
   newconn->sd = sd;
-  memcpy((void *) &newconn->sockaddr,
-         &rmt_addr, sizeof(struct sockaddr_in));
+  memcpy((void *) &newconn->remote_addr, &ipstr, sizeof(ipstr));
   state_conn_set(newconn, CONN_HEADER);
 }
 
@@ -192,8 +192,7 @@ conn_close(conn_t *conn)
 {
   conn_t *nextconn;
 #ifdef LOG
-  logw(2, "conn_close(): closing connection from %s",
-         inet_ntoa(conn->sockaddr.sin_addr));
+  logw(2, "conn_close(): closing connection from %s", conn->remote_addr);
 #endif
   /* close socket */
   close(conn->sd);
@@ -535,15 +534,13 @@ conn_loop(void)
             if (curconn->state == CONN_TTY)
             { /* deadlock in CONN_TTY state, make attempt to reinitialize serial port */
 #ifdef LOG
-              logw(0, "conn[%s]: state CONN_TTY deadlock.",
-                     inet_ntoa(curconn->sockaddr.sin_addr));
+              logw(0, "conn[%s]: state CONN_TTY deadlock.", curconn->remote_addr);
 #endif
               tty_reinit();
             }
             /* purge connection */
 #ifdef LOG
-            logw(2, "conn[%s]: timeout, closing connection",
-                   inet_ntoa(curconn->sockaddr.sin_addr));
+            logw(2, "conn[%s]: timeout, closing connection", curconn->remote_addr);
 #endif
             curconn = conn_close(curconn);
             continue;
@@ -789,8 +786,7 @@ conn_loop(void)
                 /* check request function code */
                 unsigned char fc = MB_FRAME(curconn->buf, MB_FCODE);
 #ifdef DEBUG
-                logw(7, "conn[%s]: read request fc %d",
-                     inet_ntoa(curconn->sockaddr.sin_addr), fc);
+                logw(7, "conn[%s]: read request fc %d", curconn->remote_addr, fc);
 #endif
                 switch (fc)
                 {
@@ -849,7 +845,7 @@ conn_loop(void)
                   sprintf(v, "[%2.2x]", curconn->buf[i]);
                   strncat(t, v, 1024-strlen(t));
                 }
-                logw(5, "conn[%s]: request: %s", inet_ntoa(curconn->sockaddr.sin_addr), t);
+                logw(5, "conn[%s]: request: %s", curconn->remote_addr, t);
 #endif
                 state_conn_set(curconn, CONN_TTY);
                 if (tty.state == TTY_READY)

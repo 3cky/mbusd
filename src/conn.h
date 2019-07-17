@@ -104,7 +104,7 @@ typedef struct conn_t
   int sd;               /* socket descriptor */
   int state;            /* current state */
   int timeout;          /* timeout value, secs */
-  struct sockaddr_in sockaddr; /* connection structure */
+  char remote_addr[INET6_ADDRSTRLEN]; /* remote client address */
   int ctr;              /* counter of data in the buffer */
   int read_len;         /* length of modbus frame to read */
   unsigned char buf[HDRSIZE + BUFSIZE];    /* data buffer */

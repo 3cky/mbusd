@@ -58,12 +58,11 @@ sock_set_blkmode(int sd, int blkmode)
  * Return: socket descriptor, otherwise RC_ERR if there some errors
  */
 int
-sock_create(int blkmode)
+sock_create(int blkmode, sa_family_t sa_family)
 {
   int sock;
 
-  if ((sock =
-         socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)
+  if ((sock = socket(sa_family, SOCK_STREAM, IPPROTO_TCP)) == -1)
   {
 #ifdef LOG
     logw(0, "sock_create(): unable to create socket (%s)",
@@ -96,17 +95,23 @@ sock_create(int blkmode)
 int
 sock_create_server(char *server_ip, unsigned short server_port, int blkmode)
 {
-  struct sockaddr_in server_sockaddr;
+  struct sockaddr_storage server_sockaddr;
   int sock_opt = 1;
   int server_s;
 
   memset(&server_sockaddr, 0, sizeof(server_sockaddr));
-  server_sockaddr.sin_family = AF_INET; // FIXME IPv6 support
 
   /* parse address to bind socket */
   if (server_ip != NULL)
   {
-    if (inet_aton(server_ip, &server_sockaddr.sin_addr) == 0)
+    /* try first to parse server_ip as IPv6 address, if it fail, try to parse as IPv4 */
+    if (inet_pton(AF_INET6, server_ip,
+                  &(*((struct sockaddr_in6 *)&server_sockaddr)).sin6_addr) != 0)
+      server_sockaddr.ss_family = AF_INET6;
+    else if (inet_pton(AF_INET, server_ip,
+                       &(*((struct sockaddr_in *)&server_sockaddr)).sin_addr) != 0)
+      server_sockaddr.ss_family = AF_INET;
+    else
     {
 #ifdef LOG
       logw(0, "sock_create_server():"
@@ -117,12 +122,23 @@ sock_create_server(char *server_ip, unsigned short server_port, int blkmode)
     }
   }
   else
-    server_sockaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+  {
+    server_sockaddr.ss_family = AF_INET; // TODO AF_INET6/in6addr_any?
+    (*((struct sockaddr_in *)&server_sockaddr)).sin_addr.s_addr = htonl(INADDR_ANY);
+  }
 
-  server_sockaddr.sin_port = htons(server_port);
+  /* parse IP port */
+  switch (server_sockaddr.ss_family) {
+    case AF_INET:
+      (*((struct sockaddr_in *)&server_sockaddr)).sin_port = htons(server_port);
+      break;
+    case AF_INET6:
+      (*((struct sockaddr_in6 *)&server_sockaddr)).sin6_port = htons(server_port);
+      break;
+  }
 
   /* create socket in desired blocking mode */
-  server_s = sock_create(blkmode);
+  server_s = sock_create(blkmode, server_sockaddr.ss_family);
   if (server_s < 0) return server_s;
 
   /* set to close socket on exec() */
@@ -165,8 +181,8 @@ sock_create_server(char *server_ip, unsigned short server_port, int blkmode)
   }
 
   /* bind socket to given address and port */
-  if (bind(server_s, (struct sockaddr *) & server_sockaddr,
-           sizeof(server_sockaddr)) == -1)
+  if (bind(server_s, (struct sockaddr *)&server_sockaddr,
+           sa_len((struct sockaddr *)&server_sockaddr)) == -1)
   {
 #ifdef LOG
     logw(0, "sock_create_server():"
@@ -198,13 +214,11 @@ sock_create_server(char *server_ip, unsigned short server_port, int blkmode)
  *         RMT_ADDR - ptr to connection info structure
  */
 int
-sock_accept(int server_sd, struct sockaddr_in *rmt_addr, int blkmode)
+sock_accept(int server_sd, struct sockaddr *rmt_addr, socklen_t rmt_len, int blkmode)
 {
   int sd, sock_opt = SOCKBUFSIZE;
-  int rmt_len = sizeof(struct sockaddr_in);
 
-  sd = accept(server_sd, (struct sockaddr *) rmt_addr,
-              (socklen_t *) &rmt_len);
+  sd = accept(server_sd, rmt_addr, &rmt_len);
   if (sd == -1)
   {
     if (errno != EAGAIN && errno != EWOULDBLOCK)
@@ -240,4 +254,18 @@ sock_accept(int server_sd, struct sockaddr_in *rmt_addr, int blkmode)
     return RC_ERR;
   }
   return sd;
+}
+
+/*
+ * Return reference to socket address structure according to its family (AF_INET/AF_INET6)
+ */
+void *
+sock_addr(struct sockaddr *sa)
+{
+  if (sa->sa_family == AF_INET)
+  {
+    return &(((struct sockaddr_in*)sa)->sin_addr);
+  }
+
+  return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }

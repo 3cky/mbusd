@@ -76,47 +76,40 @@ state_conn_set(conn_t *conn, int state)
       conn->ctr = 0;
       conn->read_len = HDRSIZE;
 #ifdef DEBUG
-      logw(5, "conn[%s]: state now is CONN_HEADER",
-             inet_ntoa(conn->sockaddr.sin_addr));
+      logw(5, "conn[%s]: state now is CONN_HEADER", conn->remote_addr);
 #endif
       break;
     case CONN_RQST_FUNC:
       conn->read_len = HDRSIZE + MB_FRAME(conn->buf, MB_LENGTH_L);
 #ifdef DEBUG
-      logw(5, "conn[%s]: state now is CONN_RQST_FUNC",
-             inet_ntoa(conn->sockaddr.sin_addr));
+      logw(5, "conn[%s]: state now is CONN_RQST_FUNC", conn->remote_addr);
 #endif
     break;
     case CONN_RQST_NVAL:
 #ifdef DEBUG
-      logw(5, "conn[%s]: state now is CONN_RQST_NVAL",
-             inet_ntoa(conn->sockaddr.sin_addr));
+      logw(5, "conn[%s]: state now is CONN_RQST_NVAL", conn->remote_addr);
 #endif
     break;
     case CONN_RQST_TAIL:
 #ifdef DEBUG
-      logw(5, "conn[%s]: state now is CONN_RQST_TAIL",
-             inet_ntoa(conn->sockaddr.sin_addr));
+      logw(5, "conn[%s]: state now is CONN_RQST_TAIL", conn->remote_addr);
 #endif
     break;
     case CONN_TTY:
 #ifdef DEBUG
-      logw(5, "conn[%s]: state now is CONN_TTY",
-             inet_ntoa(conn->sockaddr.sin_addr));
+      logw(5, "conn[%s]: state now is CONN_TTY", conn->remote_addr);
 #endif
       break;
     case CONN_RESP:
       conn->ctr = 0;
 #ifdef DEBUG
-      logw(5, "conn[%s]: state now is CONN_RESP",
-             inet_ntoa(conn->sockaddr.sin_addr));
+      logw(5, "conn[%s]: state now is CONN_RESP", conn->remote_addr);
 #endif
       break;
     default:
       /* unknown state, exiting */
 #ifdef DEBUG
-      logw(5, "conn_set_state([%s]) - invalid state (%d)",
-             inet_ntoa(conn->sockaddr.sin_addr), state);
+      logw(5, "conn_set_state([%s]) - invalid state (%d)", conn->remote_addr, state);
 #endif
       exit (-1);
   }
