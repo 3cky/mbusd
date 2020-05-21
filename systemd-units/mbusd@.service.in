@@ -1,6 +1,8 @@
 [Unit]
 Description=Modbus TCP to Modbus RTU (RS-232/485) gateway.
 Requires=network.target
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 ExecStart=@CMAKE_INSTALL_FULL_BINDIR@/mbusd -d -v2 -L - -c @CMAKE_INSTALL_FULL_SYSCONFDIR@/mbusd/mbusd-%i.conf -p /dev/%i
