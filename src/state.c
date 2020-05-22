@@ -148,7 +148,7 @@ state_tty_set(ttydata_t *mod, int state)
       logw(5, "tty: state now is TTY_RQST");
 #endif
 #ifndef NOSILENT
-      tty_delay(DV(2, cfg.ttyspeed));
+      tty_delay(DV(2, mod->bpc, cfg.ttyspeed));
 #endif
       break;
     case TTY_RESP:
@@ -156,7 +156,7 @@ state_tty_set(ttydata_t *mod, int state)
       mod->rxoffset = 0;
       /* XXX need real recv length? */
       mod->rxlen = TTY_BUFSIZE;
-      mod->timer = cfg.respwait * 1000l + DV(mod->txlen, mod->speed);
+      mod->timer = cfg.respwait * 1000l + DV(mod->txlen, mod->bpc, mod->speed);
 #ifdef DEBUG
       logw(5, "tty: state now is TTY_RESP");
 #endif

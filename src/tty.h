@@ -38,9 +38,12 @@
 #include "cfg.h"
 
 /*
- * Delay value calculation macros
+ * Delay value calculation macros.
+ * c - number of characters
+ * b - bits per character
+ * s - bits per second
  */
-#define	DV(x, y) (x * 10000000l / y)
+#define	DV(c, b, s) (c * b * 1000000l / s)
 
 /*
  * Default tty port parameters
@@ -57,6 +60,8 @@
 #define DEFAULT_BSPEED B19200
 
 #define DEFAULT_MODE "8N1"
+
+#define DEFAULT_BITS_PER_CHAR 10
 
 /*
  * Maximum tty buffer size
@@ -90,6 +95,7 @@ typedef struct
   int fd;                       /* tty file descriptor */
   int speed;                    /* serial port speed */
   char *port;                   /* serial port device name */
+  int bpc;                      /* bits per character */
 #ifdef TRXCTL
   int trxcntl;                  /* trx control type (enum - see values in config.h) */
 #endif
@@ -108,11 +114,7 @@ typedef struct
 
 /* prototypes */
 void tty_sighup(void);
-#ifdef TRXCTL
-void tty_init(ttydata_t *mod, char *port, int speed, int trxcntl);
-#else
-void tty_init(ttydata_t *mod, char *port, int speed);
-#endif
+void tty_init(ttydata_t *mod);
 int tty_open(ttydata_t *mod);
 int tty_set_attr(ttydata_t *mod);
 speed_t tty_transpeed(int speed);

@@ -48,20 +48,25 @@ tty_sighup(void)
 }
 
 /*
- * Init serial link parameters MOD to PORT name, SPEED and TRXCNTL type
+ * Init serial link parameters
  */
 void
-#ifdef  TRXCTL
-tty_init(ttydata_t *mod, char *port, int speed, int trxcntl)
-#else
-tty_init(ttydata_t *mod, char *port, int speed)
-#endif
+tty_init(ttydata_t *mod)
 {
   mod->fd = -1;
-  mod->port = port;
-  mod->speed = speed;
-#ifdef  TRXCTL
-  mod->trxcntl = trxcntl;
+  mod->port = cfg.ttyport;
+  mod->speed = cfg.ttyspeed;
+  mod->bpc = DEFAULT_BITS_PER_CHAR;
+  if (toupper(cfg.ttymode[1]) != 'N')
+  {
+    mod->bpc++;
+  }
+  if (cfg.ttymode[2] == '2')
+  {
+    mod->bpc++;
+  }
+#ifdef TRXCTL
+  mod->trxcntl = cfg.trxcntl;
 #endif
 }
 
@@ -412,7 +417,7 @@ tty_delay(int usec)
   do
   {
     (void)gettimeofday(&ttv, NULL);
-    ts = 1000000 * (ttv.tv_sec - tv.tv_sec) + (ttv.tv_usec - tv.tv_usec);
+    ts = 1000000l * (ttv.tv_sec - tv.tv_sec) + (ttv.tv_usec - tv.tv_usec);
   } while (ts < usec && !tty_break);
 }
 

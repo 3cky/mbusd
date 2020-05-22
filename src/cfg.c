@@ -73,7 +73,7 @@ cfg_init(void)
   cfg.maxtry = DEFAULT_MAXTRY;
   cfg.rqstpause = DEFAULT_RQSTPAUSE;
   cfg.respwait = DEFAULT_RESPWAIT;
-  cfg.resppause = DV(3, cfg.ttyspeed);
+  cfg.resppause = DV(3, DEFAULT_BITS_PER_CHAR, cfg.ttyspeed);
   cfg.conntimeout = DEFAULT_CONNTIMEOUT;
 }
 

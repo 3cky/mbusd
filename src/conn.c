@@ -56,11 +56,7 @@ int tty_reopen()
 {
   logw(3, "tty re-opening...");
   tty_close(&tty);
-#ifdef  TRXCTL
-  tty_init(&tty, cfg.ttyport, cfg.ttyspeed, cfg.trxcntl);
-#else
-  tty_init(&tty, cfg.ttyport, cfg.ttyspeed);
-#endif
+  tty_init(&tty);
   if (tty_open(&tty) != RC_OK)
   {
 #ifdef LOG
@@ -96,11 +92,7 @@ int
 conn_init(void)
 {
   /* tty device initialization */
-#ifdef  TRXCTL
-  tty_init(&tty, cfg.ttyport, cfg.ttyspeed, cfg.trxcntl);
-#else
-  tty_init(&tty, cfg.ttyport, cfg.ttyspeed);
-#endif
+  tty_init(&tty);
   if (tty_open(&tty) != RC_OK)
   {
 #ifdef LOG
@@ -254,43 +246,30 @@ conn_write(int d, void *buf, size_t nbytes, int istty)
   fd_set fs;
   struct timeval ts, tts;
   long delay;
+
 #ifdef TRXCTL
-  if (istty) {
-    if (cfg.trxcntl != TRX_ADDC )
-      tty_set_rts(d);
-    usleep(35000000l/cfg.ttyspeed);
+  if (istty && cfg.trxcntl != TRX_ADDC)
+  {
+    tty_set_rts(d);
+    tty_delay(35000000l/cfg.ttyspeed);
   }
 #endif
+
   FD_ZERO(&fs);
   FD_SET(d, &fs);
   do
-  { /* trying write to descriptor while breaked by signals */
-    gettimeofday(&ts, NULL);
+  {
     rc = write(d, buf, nbytes);
   } while (rc == -1 && errno == EINTR);
-  gettimeofday(&ts, NULL);
-
 
 #ifdef TRXCTL
-  if (istty) {
-#if 1
-    do {
-      gettimeofday(&tts, NULL);
-      delay = DV(nbytes, cfg.ttyspeed) -
-        ((tts.tv_sec * 1000000l + tts.tv_usec) - (ts.tv_sec * 1000000l + ts.tv_usec));
-    } while (delay > 0);
-#else
-    gettimeofday(&tts, NULL);
-    delay = DV(nbytes, cfg.ttyspeed) -
-      ((tts.tv_sec * 1000000l + tts.tv_usec) - (ts.tv_sec * 1000000l + ts.tv_usec));
-    usleep(delay);
-#endif
-/*    tcdrain(d); - hangs sometimes, so make calculated delay */
-    if (cfg.trxcntl != TRX_ADDC ) {
-      tty_clr_rts(d);
-    }
+  if (istty && cfg.trxcntl != TRX_ADDC )
+  {
+    tty_delay(DV(nbytes, tty.bpc, cfg.ttyspeed));
+    tty_clr_rts(d);
   }
 #endif
+
   return (rc < 0) ? RC_ERR : rc;
 }
 
@@ -601,7 +580,7 @@ conn_loop(void)
           }
           if (tty.rxlen > TTY_BUFSIZE)
             tty.rxlen = TTY_BUFSIZE;
-          tty.timer += DV(tty.rxlen, tty.speed);
+          tty.timer += DV(tty.rxlen, tty.bpc, tty.speed);
 #ifdef DEBUG
           logw(5, "tty: estimated %d bytes, waiting %lu usec", tty.rxlen, tty.timer);
 #endif
@@ -841,7 +820,7 @@ conn_loop(void)
               { /* ### frame received completely ### */
 #ifdef DEBUG
                 t[0] = '\0';
-                for (i = MB_UNIT_ID; i < curconn->ctr; i++) {
+                for (int i = MB_UNIT_ID; i < curconn->ctr; i++) {
                   sprintf(v, "[%2.2x]", curconn->buf[i]);
                   strncat(t, v, 1024-strlen(t));
                 }
