@@ -820,7 +820,8 @@ conn_loop(void)
               { /* ### frame received completely ### */
 #ifdef DEBUG
                 t[0] = '\0';
-                for (int i = MB_UNIT_ID; i < curconn->ctr; i++) {
+                int i;
+                for (i = MB_UNIT_ID; i < curconn->ctr; i++) {
                   sprintf(v, "[%2.2x]", curconn->buf[i]);
                   strncat(t, v, 1024-strlen(t));
                 }
