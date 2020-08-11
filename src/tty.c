@@ -312,7 +312,7 @@ tty_transpeed(int speed)
     break;
 #endif
   default:
-    logw(2, "unsupported baudrate (%d)", speed);
+    logw(2, "unsupported speed (%d)", speed);
     exit (-1);
   }
   return tspeed;
