@@ -72,8 +72,6 @@ typedef struct
   unsigned long rqstpause;
   /* response waiting time (in msec) */
   unsigned long respwait;
-  /* inter-byte response pause (in usec) */
-  unsigned long resppause;
 } cfg_t;
 
 /* Prototypes */
