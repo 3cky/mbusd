@@ -201,7 +201,7 @@ tty_transpeed(int speed)
   switch (speed)
   {
   case 0:
-    tspeed = B0;
+    tspeed = DEFAULT_BSPEED;
     break;
 #if defined(B50)
   case 50:
@@ -377,8 +377,8 @@ tty_transpeed(int speed)
     break;
 #endif
   default:
-    tspeed = DEFAULT_BSPEED;
-    break;
+    logw(2, "unsupported speed (%d)", speed);
+    exit (-1);
   }
   return tspeed;
 }

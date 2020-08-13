@@ -61,7 +61,7 @@ cfg_init(void)
   strncpy(cfg.logname, LOGNAME, INTBUFSIZE);
 #endif
   strncpy(cfg.ttyport, DEFAULT_PORT, INTBUFSIZE);
-  cfg.ttyspeed = DEFAULT_SPEED;
+  cfg.ttyspeed = 0;
   strncpy(cfg.ttymode, DEFAULT_MODE, INTBUFSIZE);
 #ifdef TRXCTL
   cfg.trxcntl = TRX_ADDC;
@@ -73,7 +73,6 @@ cfg_init(void)
   cfg.maxtry = DEFAULT_MAXTRY;
   cfg.rqstpause = DEFAULT_RQSTPAUSE;
   cfg.respwait = DEFAULT_RESPWAIT;
-  cfg.resppause = DV(3, DEFAULT_BITS_PER_CHAR, cfg.ttyspeed);
   cfg.conntimeout = DEFAULT_CONNTIMEOUT;
 }
 
