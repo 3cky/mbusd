@@ -468,8 +468,10 @@ conn_loop(void)
 #endif
                 if (!tty.trynum) {
                   modbus_ex_write(actconn->buf, MB_EX_CRC);
+#ifdef DEBUG
                   logw(3, "tty: response is incorrect (%d of %d bytes, offset %d), return error", tty.ptrbuf,
                     tty.rxoffset + tty.rxlen, tty.rxoffset);
+#endif
                 } else
                 { /* retry request */
 #ifdef DEBUG
@@ -556,34 +558,46 @@ conn_loop(void)
 #ifdef DEBUG
           logw(7, "tty: request written (total %d bytes)", tty.txlen);
 #endif
-          state_tty_set(&tty, TTY_RESP);
-          switch (tty.txbuf[1]) {
-            case 1:
-            case 2:
-              tty.rxlen = 5 + (tty.txbuf[4] * 256 + tty.txbuf[5] + 7)/8;
-              break;
-            case 3:
-            case 4:
-              tty.rxlen = 5 + tty.txbuf[5] * 2;
-              break;
-            case 7:
-              tty.rxlen = 5;
-              break;
-            case 11:
-            case 15:
-            case 16:
-              tty.rxlen = 8;
-              break;
-            default:
-              tty.rxlen = tty.txlen;
-              break;
-          }
-          if (tty.rxlen > TTY_BUFSIZE)
-            tty.rxlen = TTY_BUFSIZE;
-          tty.timer += DV(tty.rxlen, tty.bpc, tty.speed);
+          if (!tty.txbuf[0])
+          {
+            /* broadcast request sent, no reply expected */
+            state_conn_set(actconn, CONN_HEADER);
+            state_tty_set(&tty, TTY_PAUSE);
 #ifdef DEBUG
-          logw(5, "tty: estimated %d bytes, waiting %lu usec", tty.rxlen, tty.timer);
+            logw(5, "conn[%s]: broadcast request sent", curconn->remote_addr);
 #endif
+          }
+          else
+          {
+            state_tty_set(&tty, TTY_RESP);
+            switch (tty.txbuf[1]) {
+              case 1:
+              case 2:
+                tty.rxlen = 5 + (tty.txbuf[4] * 256 + tty.txbuf[5] + 7)/8;
+                break;
+              case 3:
+              case 4:
+                tty.rxlen = 5 + tty.txbuf[5] * 2;
+                break;
+              case 7:
+                tty.rxlen = 5;
+                break;
+              case 11:
+              case 15:
+              case 16:
+                tty.rxlen = 8;
+                break;
+              default:
+                tty.rxlen = tty.txlen;
+                break;
+            }
+            if (tty.rxlen > TTY_BUFSIZE)
+              tty.rxlen = TTY_BUFSIZE;
+            tty.timer += DV(tty.rxlen, tty.bpc, tty.speed);
+#ifdef DEBUG
+            logw(5, "tty: estimated %d bytes, waiting %lu usec", tty.rxlen, tty.timer);
+#endif
+          }
         }
       }
 

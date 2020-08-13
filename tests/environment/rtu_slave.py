@@ -112,7 +112,7 @@ class ModbusSerialServer:
         #---------------------------------------------------------------------------#
         #StartTcpServer(context, identity=identity, address=("localhost", 5020))
         #StartUdpServer(context, identity=identity, address=("localhost", 502))
-        StartSerialServer(context, identity=identity, port=self.serialPort, baudrate=19200, framer=framer)
+        StartSerialServer(context, identity=identity, port=self.serialPort, baudrate=19200, framer=framer, broadcast_enable=True)
         #StartSerialServer(context, identity=identity, port='/dev/pts/3', framer=ModbusAsciiFramer)
 
     p = None
