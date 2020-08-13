@@ -311,6 +311,71 @@ tty_transpeed(int speed)
     tspeed = B115200;
     break;
 #endif
+#if defined(B230400)
+  case 230400:
+    tspeed = B230400;
+    break;
+#endif
+#if defined(B460800)
+  case 460800:
+    tspeed = B460800;
+    break;
+#endif
+#if defined(B500000)
+  case 500000:
+    tspeed = B500000;
+    break;
+#endif
+#if defined(B576000)
+  case 576000:
+    tspeed = B576000;
+    break;
+#endif
+#if defined(B921600)
+  case 921600:
+    tspeed = B921600;
+    break;
+#endif
+#if defined(B1000000)
+  case 1000000:
+    tspeed = B1000000;
+    break;
+#endif
+#if defined(B1152000)
+  case 1152000:
+    tspeed = B1152000;
+    break;
+#endif
+#if defined(B1500000)
+  case 1500000:
+    tspeed = B1500000;
+    break;
+#endif
+#if defined(B2000000)
+  case 2000000:
+    tspeed = B2000000;
+    break;
+#endif
+#if defined(B2500000)
+  case 2500000:
+    tspeed = B2500000;
+    break;
+#endif
+#if defined(B3000000)
+  case 3000000:
+    tspeed = B3000000;
+    break;
+#endif
+#if defined(B3500000)
+  case 3500000:
+    tspeed = B3500000;
+    break;
+#endif
+#if defined(B4000000)
+  case 4000000:
+    tspeed = B4000000;
+    break;
+#endif
   default:
     tspeed = DEFAULT_BSPEED;
     break;
