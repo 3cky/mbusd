@@ -61,7 +61,7 @@ cfg_init(void)
   strncpy(cfg.logname, LOGNAME, INTBUFSIZE);
 #endif
   strncpy(cfg.ttyport, DEFAULT_PORT, INTBUFSIZE);
-  cfg.ttyspeed = 0;
+  cfg.ttyspeed = DEFAULT_SPEED;
   strncpy(cfg.ttymode, DEFAULT_MODE, INTBUFSIZE);
 #ifdef TRXCTL
   cfg.trxcntl = TRX_ADDC;
@@ -103,6 +103,10 @@ cfg_handle_param(char *name, char *value)
   else if (CFG_NAME_MATCH("speed"))
   {
     cfg.ttyspeed = strtoul(value, NULL, 0);
+    if (!cfg.ttyspeed)
+    {
+      cfg.ttyspeed = DEFAULT_SPEED;
+    }
   }
   else if (CFG_NAME_MATCH("mode"))
   {

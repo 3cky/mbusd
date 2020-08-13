@@ -200,9 +200,6 @@ tty_transpeed(int speed)
   speed_t tspeed;
   switch (speed)
   {
-  case 0:
-    tspeed = DEFAULT_BSPEED;
-    break;
 #if defined(B50)
   case 50:
     tspeed = B50;

@@ -262,6 +262,10 @@ main(int argc, char *argv[])
         break;
       case 's':
         cfg.ttyspeed = strtoul(optarg, NULL, 0);
+        if (!cfg.ttyspeed)
+        {
+          cfg.ttyspeed = DEFAULT_SPEED;
+        }
         break;
       case 'm':
         strncpy(cfg.ttymode, optarg, INTBUFSIZE);
