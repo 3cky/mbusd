@@ -164,6 +164,7 @@ main(int argc, char *argv[])
   int err = 0, rc, err_line;
   char *exename;
   char ttyparity;
+  char *end;
 
   sig_init();
 
@@ -261,10 +262,11 @@ main(int argc, char *argv[])
         else strncpy(cfg.ttyport, optarg, INTBUFSIZE);
         break;
       case 's':
-        cfg.ttyspeed = strtoul(optarg, NULL, 0);
-        if (!cfg.ttyspeed)
+        cfg.ttyspeed = strtoul(optarg, &end, 10);
+        if (!cfg.ttyspeed || optarg == end || '\0' != *end)
         {
-          cfg.ttyspeed = DEFAULT_SPEED;
+          printf("%s: -s: invalid serial port speed (%s)\n", exename, optarg);
+          exit(-1);
         }
         break;
       case 'm':

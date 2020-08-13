@@ -102,10 +102,12 @@ cfg_handle_param(char *name, char *value)
   }
   else if (CFG_NAME_MATCH("speed"))
   {
-    cfg.ttyspeed = strtoul(value, NULL, 0);
-    if (!cfg.ttyspeed)
+    char *end;
+    cfg.ttyspeed = strtoul(value, &end, 0);
+    if (!cfg.ttyspeed || value == end || '\0' != *end)
     {
-      cfg.ttyspeed = DEFAULT_SPEED;
+      CFG_ERR("invalid serial port speed: %s", value);
+      return 0;
     }
   }
   else if (CFG_NAME_MATCH("mode"))

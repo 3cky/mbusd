@@ -115,6 +115,9 @@ tty_open(ttydata_t *mod)
     return RC_ERR;
   }
 #endif
+#ifdef LOG
+  logw(2, "tty: trying to open %s (speed %d mode %s)", mod->port, mod->speed, cfg.ttymode);
+#endif
   mod->fd = open(mod->port, O_RDWR | O_NONBLOCK | O_NOCTTY);
   if (mod->fd < 0)
     return RC_ERR;          /* attempt failed */
@@ -374,7 +377,9 @@ tty_transpeed(int speed)
     break;
 #endif
   default:
-    logw(2, "unsupported speed (%d)", speed);
+#ifdef LOG
+    logw(0, "tty: unsupported speed: %d", speed);
+#endif
     exit (-1);
   }
   return tspeed;
