@@ -1,4 +1,16 @@
-# Change Log
+# Changelog
+
+## [0.5.0] - 2020-11-28
+### Added
+- Command-line and config options to set an TCP socket address (#53).
+- IPv6 support (#53).
+- Support for RTU broadcast messages (#61).
+- More baudrates (#62).
+
+### Fixed
+- Added online network requirements to the systemd service file (#58).
+- Take into account tty parity bit in the timing calculations (#59).
+- Show an error when trying to use unsupported baudrate (#63).
 
 ## [0.4.0] - 2019-07-08
 ### Added
@@ -61,7 +73,9 @@
 ## 0.1.1 - 2003-09-13
 ### Initial release
 
+[0.5.0]: https://github.com/3cky/mbusd/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/3cky/mbusd/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/3cky/mbusd/compare/v0.2.3...v0.3.0
 [0.2.3]: https://github.com/3cky/mbusd/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/3cky/mbusd/compare/v0.2.1...v0.2.2
+
