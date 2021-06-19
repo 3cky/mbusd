@@ -45,3 +45,6 @@ pause = 100
 
 # Response wait time in milliseconds
 wait = 500
+
+# Reply on Broadcast
+#replyonbroadcast

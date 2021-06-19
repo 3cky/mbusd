@@ -74,6 +74,7 @@ cfg_init(void)
   cfg.rqstpause = DEFAULT_RQSTPAUSE;
   cfg.respwait = DEFAULT_RESPWAIT;
   cfg.conntimeout = DEFAULT_CONNTIMEOUT;
+  cfg.replyonbroadcast=0;
 }
 
 static char *
@@ -171,6 +172,10 @@ cfg_handle_param(char *name, char *value)
       CFG_ERR("invalid wait value: %s", value);
       return 0;
     }
+  }
+   else if (CFG_NAME_MATCH("replyonbroadcast"))
+  {
+    cfg.replyonbroadcast = 1;
   }
   else if (CFG_NAME_MATCH("timeout"))
   {
