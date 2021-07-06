@@ -560,12 +560,22 @@ conn_loop(void)
 #endif
           if (!tty.txbuf[0])
           {
-            /* broadcast request sent, no reply expected */
-            state_conn_set(actconn, CONN_HEADER);
-            state_tty_set(&tty, TTY_PAUSE);
 #ifdef DEBUG
             logw(5, "conn[%s]: broadcast request sent", curconn->remote_addr);
 #endif
+            /* broadcast request sent, no reply expected from TTY*/
+            state_tty_set(&tty, TTY_PAUSE);
+            if (cfg.replyonbroadcast)
+            {
+                /* switch connection to response state, reply w actconn->buf */
+                state_conn_set(actconn, CONN_RESP);
+            }
+            else
+            {
+                /* Done, ready for next */
+                state_conn_set(actconn, CONN_HEADER);
+            }
+
           }
           else
           {

@@ -36,6 +36,7 @@ mbusd \- MODBUS/TCP to MODBUS/RTU gateway.
 .IR wait ]
 .RB [ -T
 .IR timeout ]
+.RB [ -b ]
 .SH DESCRIPTION
 \fImbusd\fR is MODBUS/TCP to MODBUS/RTU gateway.
 .SH OPTIONS
@@ -81,6 +82,8 @@ Specifies pause between requests in milliseconds.
 Specifies response wait time in milliseconds.
 .IP "\fB-T \fItimeout\fR"
 Specifies connection timeout value in seconds (0 - disable timeout).
+.IP "\fB-b\fR"
+Instruct \fImbusd\fR to reply on a broadcast
 .SH NOTES
 In case of situation when \fImbusd\fR received response with invalid CRC and can't correct
 error by re-request, it return MODBUS/TCP packet with exception code 04. In case of situation

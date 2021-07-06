@@ -112,7 +112,7 @@ usage(char *exename)
    "             [-t] [-y sysfsfile] [-Y sysfsfile]\n"
 #endif
    "             [-A address] [-P port] [-C maxconn] [-N retries]\n"
-   "             [-R pause] [-W wait] [-T timeout]\n\n"
+   "             [-R pause] [-W wait] [-T timeout] [-b]\n\n"
    "Options:\n"
    "  -h         : this help\n"
    "  -d         : don't daemonize\n"
@@ -145,7 +145,8 @@ usage(char *exename)
    "  -W wait    : set response wait time in milliseconds\n"
    "               (1-%d, default %lu)\n"
    "  -T timeout : set connection timeout value in seconds\n"
-   "               (0-%d, default %d, 0 - no timeout)"
+   "               (0-%d, default %d, 0 - no timeout)\n"
+   "  -b         : reply on broadcast (default %d)"   
    "\n", PACKAGE, VERSION, exename,
 #ifdef LOG
       LOGPATH, LOGNAME, cfg.dbglvl,
@@ -154,7 +155,7 @@ usage(char *exename)
       cfg.serveraddr, cfg.serverport,
       MAX_MAXCONN, cfg.maxconn, MAX_MAXTRY, cfg.maxtry,
       MAX_RQSTPAUSE, cfg.rqstpause, MAX_RESPWAIT, cfg.respwait,
-      MAX_CONNTIMEOUT, cfg.conntimeout);
+      MAX_CONNTIMEOUT, cfg.conntimeout, cfg.replyonbroadcast);
   exit(0);
 }
 
@@ -184,7 +185,7 @@ main(int argc, char *argv[])
 #ifdef LOG
                "v:L:"
 #endif
-               "p:s:m:A:P:C:N:R:W:T:c:")) != RC_ERR)
+               "p:s:m:A:P:C:N:R:W:T:c:b")) != RC_ERR)
   {
     switch (rc)
     {
@@ -349,6 +350,9 @@ main(int argc, char *argv[])
                  " (%d, must be 1-%d)\n", exename, cfg.conntimeout, MAX_CONNTIMEOUT);
           exit(-1);
         }
+        break;
+      case 'b':
+        cfg.replyonbroadcast = 1;
         break;
       case 'h':
         usage(exename);

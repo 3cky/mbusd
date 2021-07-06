@@ -72,6 +72,8 @@ typedef struct
   unsigned long rqstpause;
   /* response waiting time (in msec) */
   unsigned long respwait;
+  /* reply to client on broadcast */
+  int replyonbroadcast;
 } cfg_t;
 
 /* Prototypes */
