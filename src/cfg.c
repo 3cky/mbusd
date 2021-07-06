@@ -41,6 +41,7 @@
 
 #define CFG_NAME_MATCH(n) strcmp(n, name) == 0
 #define CFG_VALUE_MATCH(n) strcasecmp(n, value) == 0
+#define CFG_VALUE_BOOL() (strcasecmp("y", value) == 0 || strcasecmp("yes", value) == 0)
 
 /* Global configuration storage variable */
 cfg_t cfg;
@@ -175,7 +176,7 @@ cfg_handle_param(char *name, char *value)
   }
    else if (CFG_NAME_MATCH("replyonbroadcast"))
   {
-    cfg.replyonbroadcast = 1;
+    cfg.replyonbroadcast = CFG_VALUE_BOOL();
   }
   else if (CFG_NAME_MATCH("timeout"))
   {

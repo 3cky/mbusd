@@ -94,8 +94,8 @@ Usage:
               Specifies response wait time in milliseconds.
        -T timeout
               Specifies connection timeout value in seconds (0 disables timeout).
-       -b 
-              Reply on a Broadcast
+       -b
+              Instructs **mbusd** to reply on a broadcast.
 
 Please note running **mbusd** on default Modbus TCP port (502) requires root privileges!
 

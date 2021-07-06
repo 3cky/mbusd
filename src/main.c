@@ -146,7 +146,7 @@ usage(char *exename)
    "               (1-%d, default %lu)\n"
    "  -T timeout : set connection timeout value in seconds\n"
    "               (0-%d, default %d, 0 - no timeout)\n"
-   "  -b         : reply on broadcast (default %d)"   
+   "  -b         : enable reply on broadcast"
    "\n", PACKAGE, VERSION, exename,
 #ifdef LOG
       LOGPATH, LOGNAME, cfg.dbglvl,
@@ -155,7 +155,7 @@ usage(char *exename)
       cfg.serveraddr, cfg.serverport,
       MAX_MAXCONN, cfg.maxconn, MAX_MAXTRY, cfg.maxtry,
       MAX_RQSTPAUSE, cfg.rqstpause, MAX_RESPWAIT, cfg.respwait,
-      MAX_CONNTIMEOUT, cfg.conntimeout, cfg.replyonbroadcast);
+      MAX_CONNTIMEOUT, cfg.conntimeout);
   exit(0);
 }
 

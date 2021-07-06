@@ -47,4 +47,4 @@ pause = 100
 wait = 500
 
 # Reply on Broadcast
-#replyonbroadcast
+replyonbroadcast = no
