@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(mbusd VERSION 0.5.0)
+project(mbusd VERSION 0.5.1)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/extern_GPL)
 include(CheckFunctionExists)
