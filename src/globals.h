@@ -84,6 +84,7 @@
 #define RC_TIMEOUT -3
 #define RC_AOPEN   -4
 #define RC_ACLOSE  -5
+#define RC_EAGAIN  -6
 
 /* Internal string buffers size */
 #if defined(PATH_MAX)

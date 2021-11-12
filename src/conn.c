@@ -227,7 +227,7 @@ conn_read(int d, void *buf, size_t nbytes)
   { /* trying read from descriptor while breaked by signals */
     rc = read(d, buf, nbytes);
   } while (rc == -1 && errno == EINTR);
-  return (rc < 0) ? RC_ERR : rc;
+  return (rc < 0) ? (errno == EAGAIN ? RC_EAGAIN : RC_ERR) : rc;
 }
 
 #include <stdio.h>
@@ -622,59 +622,77 @@ conn_loop(void)
         }
         rc = conn_read(tty.fd, tty.rxbuf + tty.ptrbuf,
                        tty.rxlen - tty.ptrbuf + tty.rxoffset);
-        if (rc <= 0)
+        if (rc == RC_EAGAIN)
+        { /* some tty devices seem to be set as ready to be read by select()
+             while no data is available (see #78) */
+#ifdef LOG
+          logw(5, "tty: read(): no data available");
+#endif
+        }
+        else if (rc <= 0)
         { /* error - make attempt to reinitialize serial port */
 #ifdef LOG
           logw(0, "tty: error in read() (%s)", rc ? strerror(errno) : "port closed");
 #endif
           tty_reinit();
         }
+        else
+        {
 #ifdef DEBUG
           logw(7, "tty: read %d bytes", rc);
 #endif
-        if (tty.ptrbuf - tty.rxoffset < 3 && tty.ptrbuf - tty.rxoffset + rc >= 3) {
-          /* we received more than 3 bytes from header - address, request id and bytes count */
-          if (!tty.rxoffset) {
-            /* offset is unknown */
-            unsigned char i;
-            for (i = 0; i < tty.ptrbuf - tty.rxoffset + rc - 1; i++) {
-              if (tty.rxbuf[i] == tty.txbuf[0] && tty.rxbuf[i+1] == tty.txbuf[1]) {
+          if (tty.ptrbuf - tty.rxoffset < 3 && tty.ptrbuf - tty.rxoffset + rc >= 3) {
+            /* we received more than 3 bytes from header - address, request id and bytes count */
+            if (!tty.rxoffset) {
+              /* offset is unknown */
+              unsigned char i;
+              for (i = 0; i < tty.ptrbuf - tty.rxoffset + rc - 1; i++) {
+                if (tty.rxbuf[i] == tty.txbuf[0] && tty.rxbuf[i+1] == tty.txbuf[1]) {
 #ifdef DEBUG
-                logw(5, "tty: rx offset is %d", i);
+                  logw(5, "tty: rx offset is %d", i);
 #endif
-                tty.rxoffset = i;
-                break;
+                  tty.rxoffset = i;
+                  break;
+                }
+              }
+              switch (tty.txbuf[1]) {
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                  i = 5 + tty.rxbuf[tty.rxoffset + 2];
+                  break;
+                default:
+                  i = tty.rxlen;
+                  break;
+              }
+              if (i + tty.rxoffset > TTY_BUFSIZE)
+                i = TTY_BUFSIZE - tty.rxoffset;
+              if (i != tty.rxlen) {
+#ifdef DEBUG
+                logw(5, "tty: rx len changed from %d to %d", tty.rxlen, i);
+#endif
+                tty.rxlen = i;
               }
             }
-            switch (tty.txbuf[1]) {
-              case 1:
-              case 2:
-              case 3:
-              case 4:
-                i = 5 + tty.rxbuf[tty.rxoffset + 2];
-                break;
-              default:
-                i = tty.rxlen;
-                break;
-            }
-            if (i + tty.rxoffset > TTY_BUFSIZE)
-              i = TTY_BUFSIZE - tty.rxoffset;
-            if (i != tty.rxlen) {
-#ifdef DEBUG
-              logw(5, "tty: rx len changed from %d to %d", tty.rxlen, i);
-#endif
-              tty.rxlen = i;
-            }
           }
+          tty.ptrbuf += rc;
+          logw(5, "tty: read %d bytes of %d, offset %d", tty.ptrbuf, tty.rxlen + tty.rxoffset, tty.rxoffset);
+          if (tty.ptrbuf == tty.rxlen + tty.rxoffset)
+            state_tty_set(&tty, TTY_PROC);
         }
-        tty.ptrbuf += rc;
-        logw(5, "tty: read %d bytes of %d, offset %d", tty.ptrbuf, tty.rxlen + tty.rxoffset, tty.rxoffset);
-        if (tty.ptrbuf == tty.rxlen + tty.rxoffset)
-          state_tty_set(&tty, TTY_PROC);
       }
       else if (tty.state != TTY_PROC)
       { /* drop unexpected tty data */
-        if ((rc = conn_read(tty.fd, tty.rxbuf, BUFSIZE)) <= 0)
+        rc = conn_read(tty.fd, tty.rxbuf, BUFSIZE);
+        if (rc == RC_EAGAIN)
+        { /* some tty devices seem to be set as ready to be read by select()
+             while no data is available (see #78) */
+#ifdef LOG
+          logw(5, "tty: read(): no data available");
+#endif
+        }
+        else if (rc <= 0)
         { /* error - make attempt to reinitialize serial port */
 #ifdef LOG
           logw(0, "tty: error in read() (%s)", rc ? strerror(errno) : "port closed");
