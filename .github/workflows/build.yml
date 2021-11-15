@@ -15,7 +15,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+            
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
@@ -25,8 +29,12 @@ jobs:
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    - name: Test
+    - name: Install test dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel pymodbus
+
+    - name: Run tests
       working-directory: ${{github.workspace}}/build
-      # Execute tests
       run: make test
       
