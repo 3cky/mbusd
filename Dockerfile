@@ -1,6 +1,6 @@
 FROM alpine:latest AS build
 RUN apk add --no-cache alpine-sdk cmake
-RUN git clone https://github.com/3cky/mbusd
+COPY . /mbusd
 WORKDIR /mbusd/build
 RUN cmake -DCMAKE_INSTALL_PREFIX=/usr .. && make && make install
 
