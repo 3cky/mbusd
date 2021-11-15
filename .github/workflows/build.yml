@@ -32,7 +32,7 @@ jobs:
     - name: Install test dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install setuptools wheel pymodbus
+        pip install setuptools wheel twisted pymodbus
         sudo apt-get install -y socat
 
     - name: Run tests
