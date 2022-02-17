@@ -116,7 +116,7 @@ The **mbusd** service can be started via:
 
 	# systemctl start mbusd@<serial port>.service
 
-where `<serial port>` is serial port device name (like `ttyUSB0`).
+where `<serial port>` is escaped serial port device short name (like `ttyUSB0` for `/dev/ttyUSB0` device name or `serial-rs485` for `/dev/serial/rs485` device name).
 
 **mbusd** started by systemd will read its configuration from file named `/etc/mbusd/mbusd-<serial port>.conf`.
 This way it's possible to run multiple **mbusd** instances with different configurations.
