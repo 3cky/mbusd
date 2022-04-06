@@ -913,7 +913,7 @@ conn_fix_request_header_len(conn_t *conn, unsigned char len)
   {
 #ifdef DEBUG
     logw(5, "conn[%s]: request data len changed from %d to %d",
-         MB_FRAME(conn->buf, MB_LENGTH_L), len);
+         conn->remote_addr, MB_FRAME(conn->buf, MB_LENGTH_L), len);
 #endif
     MB_FRAME(conn->buf, MB_LENGTH_L) = len;
   }
