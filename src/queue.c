@@ -115,5 +115,5 @@ queue_delete_elem(queue_t *queue, conn_t *conn)
 conn_t *
 queue_next_elem(queue_t *queue, conn_t *conn)
 {
-  return (conn->next == NULL) ? queue->beg : conn->next;
+  return (conn == NULL || conn->next == NULL) ? queue->beg : conn->next;
 }

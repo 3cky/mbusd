@@ -192,6 +192,7 @@ conn_close(conn_t *conn)
   nextconn = queue_next_elem(&queue, conn);
   /* dequeue connection */
   queue_delete_elem(&queue, conn);
+  if (nextconn == conn) nextconn = NULL;
   if (actconn == conn) actconn = nextconn;
   return nextconn;
 }
