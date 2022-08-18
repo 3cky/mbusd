@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1] - 2022-08-18
+- Add 'reply on broadcast' feature (#75).
+- Fix for "Resource temporarily unavailable" error in tty read() (#78).
+- Add simple Dockerfile for running mbusd containerized (#79).
+- Add support for more complex serial port device names (#81).
+- Do not segfault when closing last connection (#83).
+- Fix crash due to missing logw() argument (#84).
 ## [0.5.0] - 2020-11-28
 ### Added
 - Command-line and config options to set an TCP socket address (#53).
@@ -73,6 +80,7 @@
 ## 0.1.1 - 2003-09-13
 ### Initial release
 
+[0.5.1]: https://github.com/3cky/mbusd/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/3cky/mbusd/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/3cky/mbusd/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/3cky/mbusd/compare/v0.2.3...v0.3.0
