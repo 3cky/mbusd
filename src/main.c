@@ -56,6 +56,20 @@ ttydata_t tty;
 /* Connections queue descriptor */
 queue_t queue;
 
+static int
+main_is_empty(char *s)
+{
+  char *p = s + strlen(s);
+  if (strlen(s) == 0)
+    return 1;
+  while (p > s && isspace((unsigned char )(*--p)))
+  { //no-op
+  }
+  if (p == s && isspace((unsigned char )(*p)))
+    return 1;
+  return 0;
+}
+
 #ifndef HAVE_DAEMON
 #include <fcntl.h>
 #include <unistd.h>
@@ -167,6 +181,7 @@ usage(char *exename)
   exit(0);
 }
 
+
 int
 main(int argc, char *argv[])
 {
@@ -242,21 +257,26 @@ main(int argc, char *argv[])
       case 'v':
         cfg.dbglvl = (char)strtol(optarg, NULL, 0);
 #  ifdef DEBUG
-        if (cfg.dbglvl > 9)
+        if (!(isdigit(*optarg)) || cfg.dbglvl < 0 || cfg.dbglvl > 9)
         { /* report about invalid log level */
           printf("%s: -v: invalid loglevel value"
-                 " (%d, must be 0-9)\n", exename, cfg.dbglvl);
+                 " (%s, must be 0-9)\n", exename, optarg);
 #  else
-        if (cfg.dbglvl < 0 || cfg.dbglvl > 9)
+        if (!(isdigit(*optarg)) || cfg.dbglvl < 0 || cfg.dbglvl > 2)
         { /* report about invalid log level */
           printf("%s: -v: invalid loglevel value"
-                 " (%d, must be 0-2)\n", exename, cfg.dbglvl);
+                 " (%s, must be 0-2)\n", exename, optarg);
 #  endif
           exit(-1);
         }
         break;
       case 'L':
-        if (*optarg != '/')
+        if (main_is_empty(optarg))
+        { /* report about invalid log file */
+          printf("%s: -L: missing logfile value\n", exename, optarg);
+          exit(-1);
+        }
+        else if (*optarg != '/')
         {
           if (*optarg == '-')
           {
