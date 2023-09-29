@@ -100,7 +100,7 @@ void
 usage(char *exename)
 {
   cfg_init();
-  printf("%s-%s Copyright (C) 2002-2003, 2011, 2013-2022 Victor Antonovich <v.antonovich@gmail.com>, "
+  printf("%s-%s Copyright (C) 2002-2003, 2011, 2013-2023 Victor Antonovich <v.antonovich@gmail.com>, "
    "Andrew Denysenko <nitr0@seti.kr.ua>\n\n"
    "Usage: %s [-h] [-d] "
 #ifdef LOG
