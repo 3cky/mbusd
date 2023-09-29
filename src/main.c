@@ -107,7 +107,11 @@ usage(char *exename)
    "[-L logfile] [-v level] "
 #endif
    "[-c cfgfile] \n"
-   "             [-p device] [-s speed] [-m mode]\n"
+   "             [-p device] [-s speed] [-m mode]"
+#ifdef HAVE_TIOCRS485
+   " [-S]"
+#endif
+   "\n"   
 #ifdef TRXCTL
    "             [-t] [-y sysfsfile] [-Y sysfsfile]\n"
 #endif
@@ -129,6 +133,9 @@ usage(char *exename)
    "  -p device  : set serial port device name (default %s)\n"
    "  -s speed   : set serial port speed (default %d)\n"
    "  -m mode    : set serial port mode (default %s)\n"
+#ifdef HAVE_TIOCRS485
+   "  -S         : enable Linux RS-485 support for given serial port device\n"
+#endif   
    "  -A address : set TCP server address to bind (default %s)\n"
    "  -P port    : set TCP server port number (default %d)\n"
 #ifdef TRXCTL
@@ -182,6 +189,9 @@ main(int argc, char *argv[])
 #ifdef TRXCTL
                "ty:Y:"
 #endif
+#ifdef HAVE_TIOCRS485
+               "S"
+#endif
 #ifdef LOG
                "v:L:"
 #endif
@@ -213,11 +223,16 @@ main(int argc, char *argv[])
       case 'y':
         cfg.trxcntl = TRX_SYSFS_1;
         strncpy(cfg.trxcntl_file, optarg, INTBUFSIZE);
-	break;
+	      break;
       case 'Y':
         cfg.trxcntl = TRX_SYSFS_0;
         strncpy(cfg.trxcntl_file, optarg, INTBUFSIZE);
-	break;
+	      break;
+#endif
+#ifdef HAVE_TIOCRS485
+      case 'S':
+        cfg.rs485 = TRUE;
+	      break;
 #endif
 #ifdef LOG
       case 'v':

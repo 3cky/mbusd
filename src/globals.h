@@ -59,6 +59,7 @@
 #include <netdb.h>
 #include <fcntl.h>
 #include <ctype.h>
+#include <stdbool.h>
 #ifdef HAVE_LIBUTIL
 #  include <libutil.h>
 #endif

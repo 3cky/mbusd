@@ -54,10 +54,16 @@ typedef struct
   int ttyspeed;
   /* tty mode */
   char ttymode[INTBUFSIZE + 1];
+#ifdef HAVE_TIOCRS485
+  /* Linux RS-485 support use flag */
+  bool rs485;
+#endif
+#ifdef TRXCTL  
   /* trx control type (0 - ADDC, 1 - by RTS, 2 - by sysfs GPIO with 1 activating transmit, 3 - by sysfs GPIO with 0 activating transmit) */
   int trxcntl;
   /* trx control sysfs file */
   char trxcntl_file[INTBUFSIZE + 1];
+#endif
   /* TCP server address */
   char serveraddr[INTBUFSIZE + 1];
   /* TCP server port number */

@@ -52,8 +52,10 @@ can be altered in many ways, e.g. by using the following tools in the `build` di
 Usage:
 ------
 
-       mbusd [-h] [-d] [-L logfile] [-v level] [-c cfgfile] [-p device] [-s speed] [-m mode]
-             [-t] [-y file] [-Y file] [-A address] [-P port] [-C maxconn] [-N retries]
+       mbusd [-h] [-d] [-L logfile] [-v level] [-c cfgfile] 
+             [-p device] [-s speed] [-m mode] [-S]
+             [-t] [-y sysfsfile] [-Y sysfsfile] 
+             [-A address] [-P port] [-C maxconn] [-N retries]
              [-R pause] [-W wait] [-T timeout]
 
        -h     Usage help.
@@ -73,6 +75,7 @@ Usage:
               Specifies serial port speed.
        -m mode
               Specifies serial port mode (like 8N1).
+       -S     Enable RS-485 support for given serial port device (Linux only)
        -t     Enable RTS RS-485 data direction control (if not disabled while compile).
        -y file
               Enable RS-485 direction data direction control by writing '1' to file
@@ -95,7 +98,7 @@ Usage:
        -T timeout
               Specifies connection timeout value in seconds (0 disables timeout).
        -b
-              Instructs **mbusd** to reply on a broadcast.
+              Instructs mbusd to reply on a broadcast.
 
 Please note running **mbusd** on default Modbus TCP port (502) requires root privileges!
 

@@ -15,6 +15,9 @@ speed = 9600
 # Serial port mode
 mode = 8n1
 
+# Enable RS-485 support for given serial port device (Linux only)
+# enable_rs485 = no
+
 # RS-485 data direction control type (addc, rts, sysfs_0, sysfs_1)
 trx_control = addc
 
