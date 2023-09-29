@@ -14,7 +14,7 @@ import logging
 #---------------------------------------------------------------------------#
 #from pymodbus.server.async import StartTcpServer
 #from pymodbus.server.async import StartUdpServer
-from pymodbus.server.asynchronous import StartSerialServer
+from pymodbus.server import StartSerialServer
 
 from pymodbus.device import ModbusDeviceIdentification
 from pymodbus.datastore import ModbusSequentialDataBlock
@@ -92,7 +92,7 @@ class ModbusSerialServer:
             hr = ModbusSequentialDataBlock(0, [0]*8), # holding regs
             ir = ModbusSequentialDataBlock(0, list(range(8))), # input regs
             zero_mode=True) # request(0-7) will map to the address (0-7)
-        context = ModbusServerContext(slaves=store, single=True)
+        context = ModbusServerContext(slaves={1: store}, single=False)
 
         #---------------------------------------------------------------------------#
         # initialize the server information
@@ -112,7 +112,7 @@ class ModbusSerialServer:
         #---------------------------------------------------------------------------#
         #StartTcpServer(context, identity=identity, address=("localhost", 5020))
         #StartUdpServer(context, identity=identity, address=("localhost", 502))
-        StartSerialServer(context, identity=identity, port=self.serialPort, baudrate=19200, framer=framer, broadcast_enable=True)
+        StartSerialServer(context=context, identity=identity, port=self.serialPort, baudrate=19200, framer=framer, broadcast_enable=True)
         #StartSerialServer(context, identity=identity, port='/dev/pts/3', framer=ModbusAsciiFramer)
 
     p = None

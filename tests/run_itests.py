@@ -8,7 +8,7 @@ from subprocess import Popen, PIPE, STDOUT
 from os.path import isfile
 from time import sleep
 
-from pymodbus.client.sync import ModbusTcpClient
+from pymodbus.client import ModbusTcpClient
 from pymodbus.pdu import ExceptionResponse
 from pymodbus.bit_read_message import ReadDiscreteInputsResponse, ReadCoilsResponse
 from pymodbus.bit_write_message import WriteMultipleCoilsResponse, WriteSingleCoilResponse
@@ -62,35 +62,35 @@ class TestModbusRequests(unittest.TestCase):
         bits = [random.randrange(2)>0 for i in range(8)]
 
         # 15 Write Multiple Coils
-        result = self.client.write_coils(0, bits, unit=1)
+        result = self.client.write_coils(0, bits, slave=1)
         self.assertIsInstance(result, WriteMultipleCoilsResponse, result)
         self.assertEqual(result.address, 0, result)
         self.assertEqual(result.count, 8, result)
 
         # 01 Read Coils
-        result = self.client.read_coils(0, 8, unit=1)
+        result = self.client.read_coils(0, 8, slave=1)
         self.assertIsInstance(result, ReadCoilsResponse, result)
         self.assertEqual(result.bits, bits, result)
 
         # 05 Write Single Coil
         bit1 = not bits[0]
-        result = self.client.write_coil(0, bit1, unit=1)
+        result = self.client.write_coil(0, bit1, slave=1)
         self.assertIsInstance(result, WriteSingleCoilResponse, result)
         self.assertEqual(result.address, 0, result)
         self.assertEqual(result.value, bit1, result)
-        result = self.client.read_coils(0, 1, unit=1)
+        result = self.client.read_coils(0, 1, slave=1)
         self.assertIsInstance(result, ReadCoilsResponse, result)
         self.assertEqual(result.bits[0], bit1, result)
 
     def test_discreteInputs(self):
         # 02 Read Discrete Inputs
-        result = self.client.read_discrete_inputs(0, 8, unit=1)
+        result = self.client.read_discrete_inputs(0, 8, slave=1)
         self.assertIsInstance(result, ReadDiscreteInputsResponse, result)
         self.assertEqual(result.bits, [True]*8, result)
 
     def test_inputRegisters(self):
         # 04 Read Input Registers
-        result = self.client.read_input_registers(0, 8, unit=1)
+        result = self.client.read_input_registers(0, 8, slave=1)
         self.assertIsInstance(result, ReadInputRegistersResponse, result)
         self.assertEqual(result.registers, list(range(8)), result)
 
@@ -98,28 +98,28 @@ class TestModbusRequests(unittest.TestCase):
         registers = [random.randrange(8) for i in range(8)]
 
         # 16 Write Multiple Holding Registers
-        result = self.client.write_registers(0, registers, unit=1)
+        result = self.client.write_registers(0, registers, slave=1)
         self.assertIsInstance(result, WriteMultipleRegistersResponse, result)
         self.assertEqual(result.address, 0, result)
         self.assertEqual(result.count, 8, result)
 
         # 03 Read Multiple Holding Registers
-        result = self.client.read_holding_registers(0, 8, unit=1)
+        result = self.client.read_holding_registers(0, 8, slave=1)
         self.assertIsInstance(result, ReadHoldingRegistersResponse, result)
         self.assertEqual(result.registers, registers, result)
 
         # 06 Write Single Holding Register
         register1 = (registers[0] + 1) % 65535
-        result = self.client.write_register(0, register1, unit=1)
+        result = self.client.write_register(0, register1, slave=1)
         self.assertIsInstance(result, WriteSingleRegisterResponse, result)
         self.assertEqual(result.address, 0, result)
         self.assertEqual(result.value, register1, result)
-        result = self.client.read_holding_registers(0, 1, unit=1)
+        result = self.client.read_holding_registers(0, 1, slave=1)
         self.assertIsInstance(result, ReadHoldingRegistersResponse, result)
         self.assertEqual(result.registers[0], register1, result)
 
     def test_exception(self):
-        result = self.client.write_coil(1000, False, unit=1) # invalid address 1000
+        result = self.client.write_coil(1000, False, slave=1) # invalid address 1000
         self.assertIsInstance(result, ExceptionResponse, result)
         self.assertEqual(result.original_code, 5, result) # fc05 Write Single Coil
         self.assertEqual(result.exception_code, 2, result) # Illegal Data Address
@@ -127,10 +127,10 @@ class TestModbusRequests(unittest.TestCase):
     def test_broadcast(self):
         registers = [random.randrange(8) for i in range(8)]
         # 16 Write Multiple Holding Registers
-        result = self.client.write_registers(0, registers, unit=0)
+        result = self.client.write_registers(0, registers, slave=0)
 
         # 03 Read Multiple Holding Registers
-        result = self.client.read_holding_registers(0, 8, unit=1)
+        result = self.client.read_holding_registers(0, 8, slave=1)
         self.assertIsInstance(result, ReadHoldingRegistersResponse, result)
         self.assertEqual(result.registers, registers, result)
 
