@@ -77,9 +77,10 @@
  */
 #ifdef  TRXCTL
 #define TRX_ADDC    0
-#define TRX_RTS     1
-#define TRX_SYSFS_1 2
-#define TRX_SYSFS_0 3
+#define TRX_RTS_1   1
+#define TRX_RTS_0   2
+#define TRX_SYSFS_1 3
+#define TRX_SYSFS_0 4
 #endif
 
 /*

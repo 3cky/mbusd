@@ -139,7 +139,8 @@ usage(char *exename)
    "  -A address : set TCP server address to bind (default %s)\n"
    "  -P port    : set TCP server port number (default %d)\n"
 #ifdef TRXCTL
-   "  -t         : enable RTS RS-485 data direction control using RTS\n"
+   "  -t         : enable RTS RS-485 data direction control using RTS, active transmit\n"
+   "  -r         : enable RTS RS-485 data direction control using RTS, active receive\n"
    "  -y         : enable RTS RS-485 data direction control using sysfs file, active transmit\n"
    "  -Y         : enable RTS RS-485 data direction control using sysfs file, active receive\n"
 #endif
@@ -218,7 +219,10 @@ main(int argc, char *argv[])
         break;
 #ifdef TRXCTL
       case 't':
-        cfg.trxcntl = TRX_RTS;
+        cfg.trxcntl = TRX_RTS_1;
+        break;
+      case 'r':
+        cfg.trxcntl = TRX_RTS_0;
         break;
       case 'y':
         cfg.trxcntl = TRX_SYSFS_1;
