@@ -40,7 +40,9 @@
 #define CFG_MAX_LINE_LENGTH 200
 
 #define CFG_NAME_MATCH(n) strcmp(n, name) == 0
+#define CFG_NAME_BEGINS(n) strncmp(n, name, strlen(n)) == 0
 #define CFG_VALUE_MATCH(n) strcasecmp(n, value) == 0
+#define CFG_VALUE_BEGINS(n) strncasecmp(n, value, strlen(n)) == 0
 #define CFG_VALUE_BOOL() (strcasecmp("y", value) == 0 || strcasecmp("yes", value) == 0)
 
 /* Global configuration storage variable */
@@ -67,6 +69,13 @@ cfg_init(void)
 #ifdef TRXCTL
   cfg.trxcntl = TRX_ADDC;
   *cfg.trxcntl_file = '\0';
+  cfg.trx_ioctl_req = -1;
+  cfg.trx_ioctl_arg_type = TRX_IOCTL_ARG_LONG;
+  cfg.trx_ioctl_arg_long = 0;
+  cfg.trx_ioctl_arg_struct = NULL;
+  cfg.trx_ioctl_num_values = 0;
+  cfg.trx_ioctl_rts_value_num = 0;
+  cfg.trx_ioctl_rts_value_invert = FALSE;
 #endif
   strncpy(cfg.serveraddr, DEFAULT_SERVERADDR, INTBUFSIZE);
   cfg.serverport = DEFAULT_SERVERPORT;
@@ -203,6 +212,10 @@ cfg_handle_param(char *name, char *value)
     {
       cfg.trxcntl = TRX_SYSFS_1;
     }
+    else if (CFG_VALUE_MATCH("ioctl"))
+    {
+      cfg.trxcntl = TRX_IOCTL;
+    }
     else
     {
       /* Unknown TRX control mode */
@@ -213,12 +226,146 @@ cfg_handle_param(char *name, char *value)
   else if (CFG_NAME_MATCH("trx_sysfile"))
   {
     strncpy(cfg.trxcntl_file, value, INTBUFSIZE);
+  }
+  else if (CFG_NAME_MATCH("trx_ioctl_req"))
+  {
+    char *end;
+    cfg.trx_ioctl_req = strtoul(value, &end, 0);
+    if (value == end || '\0' != *end)
+    {
+      CFG_ERR("invalid IOCTL request number: %s", value);
+      return 0;
+    }
+  }
+  else if (CFG_NAME_MATCH("trx_ioctl_arg_type"))
+  {
+    if (CFG_VALUE_MATCH("long"))
+    {
+      cfg.trx_ioctl_arg_type = TRX_IOCTL_ARG_LONG;
+    }
+    else if (CFG_VALUE_MATCH("struct"))
+    {
+      cfg.trx_ioctl_arg_type = TRX_IOCTL_ARG_STRUCT;
+    }
+    else
+    {
+      /* Unknown IOCTL argument type */
+      CFG_ERR("unknown IOCTL argument type: %s", value);
+      return 0;
+    }
+  }
+  else if (CFG_NAME_MATCH("trx_ioctl_val"))
+  {
+    if (cfg.trx_ioctl_arg_type == TRX_IOCTL_ARG_STRUCT)
+    {
+      CFG_ERR("cannot use \"%s\" with \"struct\" argument type", name);
+      return 0;
+    }
+
+    if (CFG_VALUE_BEGINS("rts"))
+    {
+      cfg.trx_ioctl_rts_value_num = 1;
+      if (value[3] == '\0')
+      {
+        cfg.trx_ioctl_rts_value_invert = FALSE;
+      }
+      else if (strcasecmp("_inv", value + 3) == 0)
+      {
+        cfg.trx_ioctl_rts_value_invert = TRUE;
+      }
+      else
+      {
+        CFG_ERR("invalid IOCTL value: %s", value);
+        return 0;
+      }
+    }
+    else
+    {
+        char *end;
+        cfg.trx_ioctl_arg_long = strtoul(value, &end, 0);
+        if (value == end || '\0' != *end)
+        {
+          CFG_ERR("invalid IOCTL argument: %s", value);
+          return 0;
+        }
+    }
+  }
+  else if (CFG_NAME_BEGINS("trx_ioctl_val_"))
+  {
+    if (cfg.trx_ioctl_arg_type != TRX_IOCTL_ARG_STRUCT)
+    {
+      CFG_ERR("\"%s\" only valid with \"struct\" argument type", name);
+      return 0;
+    }
+
+    char *end;
+    int ioctl_val_num = strtoul(name + 14, &end, 10);
+    if ((name + 14) == end || '\0' != *end)
+    {
+      CFG_ERR("invalid IOCTL value number: %s", name + 14);
+      return 0;
+    }
+
+    if (cfg.trx_ioctl_num_values < ioctl_val_num)
+    {
+      // "reallocarray" not available in uClibc on embedded system, so had to use realloc instead
+      // using overflow-safe implementation like libc - could be considered overkill, but
+      // I really prefer to be cautious when it comes to memory allocation!
+
+      //cfg.trx_ioctl_arg_struct = reallocarray(cfg.trx_ioctl_arg_struct, ioctl_val_num, sizeof(unsigned long));
+      size_t newsize;
+      if(!__builtin_mul_overflow(ioctl_val_num, sizeof(unsigned long), &newsize))
+      {
+        cfg.trx_ioctl_arg_struct = realloc(cfg.trx_ioctl_arg_struct, newsize);
+      }
+      else
+      {
+        free(cfg.trx_ioctl_arg_struct);
+        cfg.trx_ioctl_arg_struct = NULL;
+        errno = ENOMEM;
+      }
+      if (!cfg.trx_ioctl_arg_struct)
+      {
+        CFG_ERR("cannot allocate memory for cfg parameter %s, exiting", name);
+        exit(errno);
+      }
+
+      cfg.trx_ioctl_num_values = ioctl_val_num;
+    }
+
+    if (CFG_VALUE_BEGINS("rts"))
+    {
+      cfg.trx_ioctl_rts_value_num = ioctl_val_num;
+      if (value[3] == '\0')
+      {
+        cfg.trx_ioctl_rts_value_invert = FALSE;
+      }
+      else if (CFG_VALUE_MATCH("rts_inv") == 0)
+      {
+        cfg.trx_ioctl_rts_value_invert = TRUE;
+      }
+      else
+      {
+        CFG_ERR("invalid IOCTL value: %s", value);
+        return 0;
+      }
+    }
+    else
+    {
+        int ioctl_val = strtoul(value, &end, 0);
+        if (value == end || '\0' != *end)
+        {
+          CFG_ERR("invalid IOCTL value: %s", value);
+          return 0;
+        }
+        cfg.trx_ioctl_arg_struct[ioctl_val_num - 1] = ioctl_val;
+    }
 #endif
 #ifdef LOG
   }
   else if (CFG_NAME_MATCH("loglevel"))
   {
-    cfg.dbglvl = (char)strtol(optarg, NULL, 0);
+    cfg.dbglvl = (char)strtol(value, NULL, 0);
 #endif
   }
   else {

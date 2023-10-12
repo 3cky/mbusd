@@ -15,11 +15,42 @@ speed = 9600
 # Serial port mode
 mode = 8n1
 
-# RS-485 data direction control type (addc, rts, sysfs_0, sysfs_1)
+# RS-485 data direction control type (addc, rts, sysfs_0, sysfs_1, ioctl)
 trx_control = addc
 
 # Sysfs file to use to control data direction
 # trx_sysfile =
+
+# Example IOCTL configuration
+
+#trx_control = ioctl
+#trx_sysfile = /dev/gpio_ctl
+
+# IOCTL request number
+
+#trx_ioctl_req = 0x40080004
+
+# IOCTL argument type (long, struct)
+
+# "long" argument example
+
+#trx_ioctl_arg_type = long
+
+# 1 when RTS set, 0 when clear
+# rts_inv for inverse
+#trx_ioctl_val = rts
+
+
+# "struct" argument example
+
+#trx_ioctl_arg_type = struct
+
+#trx_ioctl_val_1 = 0
+
+# 1 when RTS set, 0 when clear
+# rts_inv for inverse
+#trx_ioctl_val_2 = rts
+
 
 ############# TCP port settings #############
 
