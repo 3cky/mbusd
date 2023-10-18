@@ -461,7 +461,51 @@ void sysfs_gpio_set(char *filename, char *value) {
 	write(fd, value, 1);
 	close(fd);
 
+#ifdef LOG
 	logw(9, "tty: sysfs_gpio_set(%s,%s)\n",filename,value);
+#endif
+
+}
+
+void sysfs_gpio_ioctl(char *filename, int set) {
+	int fd;
+
+#ifdef LOG
+	logw(9, "tty: sysfs_gpio_ioctl(%s,%d)\n",filename,set);
+#endif
+
+    if (cfg.trx_ioctl_rts_value_invert)
+      set = !set;
+
+    if (cfg.trx_ioctl_rts_value_num > 0)
+    {
+      if (cfg.trx_ioctl_arg_type == TRX_IOCTL_ARG_STRUCT)
+        cfg.trx_ioctl_arg_struct[cfg.trx_ioctl_rts_value_num - 1] = set;
+      else if (cfg.trx_ioctl_arg_type == TRX_IOCTL_ARG_LONG)
+        cfg.trx_ioctl_arg_long = set;
+    }
+
+	fd = open(filename, O_WRONLY);
+	if (cfg.trx_ioctl_arg_type == TRX_IOCTL_ARG_LONG)
+		ioctl(fd, cfg.trx_ioctl_req, cfg.trx_ioctl_arg_long);
+	else if (cfg.trx_ioctl_arg_type == TRX_IOCTL_ARG_STRUCT)
+		ioctl(fd, cfg.trx_ioctl_req, cfg.trx_ioctl_arg_struct);
+
+	close(fd);
+
+#ifdef LOG
+    logw(9, "tty: ioctl request = 0x%lx\n",cfg.trx_ioctl_req);
+
+    if (cfg.trx_ioctl_arg_type == TRX_IOCTL_ARG_LONG)
+      logw(9, "tty: ioctl arg = 0x%lx\n",cfg.trx_ioctl_arg_long);
+
+    if (cfg.trx_ioctl_arg_type == TRX_IOCTL_ARG_STRUCT)
+    {
+      logw(9, "tty: ioctl struct: %d values\n",cfg.trx_ioctl_num_values);
+      for(int i = 0; i < cfg.trx_ioctl_num_values; i++)
+        logw(9, "tty: ioctl struct value %d = 0x%lx\n",i,cfg.trx_ioctl_arg_struct[i]);
+    }
+#endif
 
 }
 
@@ -476,7 +520,10 @@ tty_set_rts(int fd)
 		sysfs_gpio_set(cfg.trxcntl_file,"1");
 	} else if ( TRX_SYSFS_0 == cfg.trxcntl) {
 		sysfs_gpio_set(cfg.trxcntl_file,"0");
+	} else if ( TRX_IOCTL == cfg.trxcntl) {
+		sysfs_gpio_ioctl(cfg.trxcntl_file,1);
 	}
+
 }
 
 /* Set RTS line to passive state */
@@ -490,7 +537,10 @@ tty_clr_rts(int fd)
 		sysfs_gpio_set(cfg.trxcntl_file,"0");
 	} else if ( TRX_SYSFS_0 == cfg.trxcntl) {
 		sysfs_gpio_set(cfg.trxcntl_file,"1");
+	} else if ( TRX_IOCTL == cfg.trxcntl) {
+		sysfs_gpio_ioctl(cfg.trxcntl_file,0);
 	}
+
 }
 #endif
 

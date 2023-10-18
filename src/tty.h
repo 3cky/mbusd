@@ -80,6 +80,13 @@
 #define TRX_RTS     1
 #define TRX_SYSFS_1 2
 #define TRX_SYSFS_0 3
+#define TRX_IOCTL   4
+
+/*
+ * TRX IOCTL argument types
+ */
+#define TRX_IOCTL_ARG_LONG   0
+#define TRX_IOCTL_ARG_STRUCT 1
 #endif
 
 /*

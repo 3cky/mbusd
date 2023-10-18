@@ -8,4 +8,5 @@
 .cproject
 .pydevproject
 /build
+/build-arm
 build.sh

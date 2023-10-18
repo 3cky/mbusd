@@ -63,6 +63,18 @@ typedef struct
   int trxcntl;
   /* trx control sysfs file */
   char trxcntl_file[INTBUFSIZE + 1];
+  /* trx IOCTL request number */
+  unsigned long trx_ioctl_req;
+  /* trx IOCTL argument type */
+  int trx_ioctl_arg_type;
+  /* trx IOCTL argument */
+  unsigned long trx_ioctl_arg_long;
+  unsigned long *trx_ioctl_arg_struct;
+  int trx_ioctl_rts_value_num;
+  int trx_ioctl_rts_value_invert;
+  /* number of values in IOCTL argument (if struct type) */
+  int trx_ioctl_num_values;
+  /* 
 #endif
   /* TCP server address */
   char serveraddr[INTBUFSIZE + 1];
