@@ -34,6 +34,10 @@
 #ifndef _TTY_H
 #define _TTY_H
 
+#ifdef HAVE_TIOCRS485
+#include <linux/serial.h>
+#endif
+
 #include "globals.h"
 #include "cfg.h"
 
@@ -103,6 +107,9 @@ typedef struct
   int speed;                    /* serial port speed */
   char *port;                   /* serial port device name */
   int bpc;                      /* bits per character */
+#ifdef HAVE_TIOCRS485
+  bool rs485;                   /* use Linux RS-485 support flag */
+#endif
 #ifdef TRXCTL
   int trxcntl;                  /* trx control type (enum - see values in config.h) */
 #endif

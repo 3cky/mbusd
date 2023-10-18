@@ -66,6 +66,9 @@ cfg_init(void)
   strncpy(cfg.ttyport, DEFAULT_PORT, INTBUFSIZE);
   cfg.ttyspeed = DEFAULT_SPEED;
   strncpy(cfg.ttymode, DEFAULT_MODE, INTBUFSIZE);
+#ifdef HAVE_TIOCRS485
+  cfg.rs485 = FALSE;
+#endif  
 #ifdef TRXCTL
   cfg.trxcntl = TRX_ADDC;
   *cfg.trxcntl_file = '\0';
@@ -192,6 +195,12 @@ cfg_handle_param(char *name, char *value)
     cfg.conntimeout = strtoul(value, NULL, 0);
     if (cfg.conntimeout > MAX_CONNTIMEOUT)
       return 0;
+#ifdef HAVE_TIOCRS485
+  }
+  else if (CFG_NAME_MATCH("enable_rs485"))
+  {
+    cfg.rs485 = CFG_VALUE_BOOL();
+#endif
 #ifdef TRXCTL
   }
   else if (CFG_NAME_MATCH("trx_control"))

@@ -65,6 +65,9 @@ tty_init(ttydata_t *mod)
   {
     mod->bpc++;
   }
+#ifdef HAVE_TIOCRS485
+  mod->rs485 = cfg.rs485;
+#endif
 #ifdef TRXCTL
   mod->trxcntl = cfg.trxcntl;
 #endif
@@ -187,6 +190,25 @@ tty_set_attr(ttydata_t *mod)
   tcflush(mod->fd, TCIOFLUSH);
 #ifdef  TRXCTL
   tty_clr_rts(mod->fd);
+#endif
+#ifdef HAVE_TIOCRS485
+  if (mod->rs485)
+  {
+    struct serial_rs485 rs485conf;
+#ifdef LOG
+    logw(2, "tty: trying to enable RS-485 support for %s", mod->port);
+#endif
+    if (ioctl(mod->fd, TIOCGRS485, &rs485conf) < 0) {
+        return RC_ERR;
+    }
+    rs485conf.flags |= SER_RS485_ENABLED;
+    if (ioctl(mod->fd, TIOCSRS485, &rs485conf) < 0) {
+        return RC_ERR;
+    }
+#ifdef LOG
+    logw(2, "tty: enabled RS-485 support for %s", mod->port);
+#endif    
+  }
 #endif
   flag = fcntl(mod->fd, F_GETFL, 0);
   if (flag < 0)
