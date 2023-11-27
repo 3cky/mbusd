@@ -200,7 +200,7 @@ cfg_handle_param(char *name, char *value)
     {
       cfg.trxcntl = TRX_ADDC;
     }
-    else if (CFG_VALUE_MATCH("rts"))
+    else if (CFG_VALUE_MATCH("rts") || CFG_VALUE_MATCH("rts_1"))
     {
       cfg.trxcntl = TRX_RTS_1;
     }
