@@ -128,8 +128,8 @@ int tty_set_attr(ttydata_t *mod);
 speed_t tty_transpeed(int speed);
 int tty_cooked(ttydata_t *mod);
 int tty_close(ttydata_t *mod);
-void tty_set_rts(int fd);
-void tty_clr_rts(int fd);
+void tty_set_tx(int fd);
+void tty_set_rx(int fd);
 void tty_delay(int usec);
 
 #endif /* _TTY_H */

@@ -251,7 +251,7 @@ conn_write(int d, void *buf, size_t nbytes, int istty)
 #ifdef TRXCTL
   if (istty && cfg.trxcntl != TRX_ADDC)
   {
-    tty_set_rts(d);
+    tty_set_tx(d);
     tty_delay(35000000l/cfg.ttyspeed);
   }
 #endif
@@ -267,7 +267,7 @@ conn_write(int d, void *buf, size_t nbytes, int istty)
   if (istty && cfg.trxcntl != TRX_ADDC )
   {
     tty_delay(DV(nbytes, tty.bpc, cfg.ttyspeed));
-    tty_clr_rts(d);
+    tty_set_rx(d);
   }
 #endif
 

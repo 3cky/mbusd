@@ -189,7 +189,7 @@ tty_set_attr(ttydata_t *mod)
     return RC_ERR;
   tcflush(mod->fd, TCIOFLUSH);
 #ifdef  TRXCTL
-  tty_clr_rts(mod->fd);
+  tty_set_rx(mod->fd);
 #endif
 #ifdef HAVE_TIOCRS485
   if (mod->rs485)
@@ -465,9 +465,9 @@ void sysfs_gpio_set(char *filename, char *value) {
 
 }
 
-/* Set RTS line to active state */
+/* Set tty device into transmit mode */
 void
-tty_set_rts(int fd)
+tty_set_tx(int fd)
 {
 	if ( TRX_RTS_1 == cfg.trxcntl ) {
 		int mstat = TIOCM_RTS;
@@ -482,9 +482,9 @@ tty_set_rts(int fd)
 	}
 }
 
-/* Set RTS line to passive state */
+/* Set tty device into receive mode */
 void
-tty_clr_rts(int fd)
+tty_set_rx(int fd)
 {
 	if ( TRX_RTS_1 == cfg.trxcntl ) {
 		int mstat = TIOCM_RTS;
