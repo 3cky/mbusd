@@ -202,7 +202,11 @@ cfg_handle_param(char *name, char *value)
     }
     else if (CFG_VALUE_MATCH("rts"))
     {
-      cfg.trxcntl = TRX_RTS;
+      cfg.trxcntl = TRX_RTS_1;
+    }
+    else if (CFG_VALUE_MATCH("rts_0"))
+    {
+      cfg.trxcntl = TRX_RTS_0;
     }
     else if (CFG_VALUE_MATCH("sysfs_0"))
     {

@@ -469,10 +469,13 @@ void sysfs_gpio_set(char *filename, char *value) {
 void
 tty_set_rts(int fd)
 {
-	if ( TRX_RTS == cfg.trxcntl ) {
+	if ( TRX_RTS_1 == cfg.trxcntl ) {
 		int mstat = TIOCM_RTS;
 		ioctl(fd, TIOCMBIS, &mstat);
-	} else if ( TRX_SYSFS_1 == cfg.trxcntl) {
+	} else if ( TRX_RTS_0 == cfg.trxcntl ) {
+		int mstat = TIOCM_RTS;
+		ioctl(fd, TIOCMBIC, &mstat);
+  } else if ( TRX_SYSFS_1 == cfg.trxcntl) {
 		sysfs_gpio_set(cfg.trxcntl_file,"1");
 	} else if ( TRX_SYSFS_0 == cfg.trxcntl) {
 		sysfs_gpio_set(cfg.trxcntl_file,"0");
@@ -483,9 +486,12 @@ tty_set_rts(int fd)
 void
 tty_clr_rts(int fd)
 {
-	if ( TRX_RTS == cfg.trxcntl ) {
+	if ( TRX_RTS_1 == cfg.trxcntl ) {
 		int mstat = TIOCM_RTS;
 		ioctl(fd, TIOCMBIC, &mstat);
+	} else if ( TRX_RTS_0 == cfg.trxcntl ) {
+		int mstat = TIOCM_RTS;
+		ioctl(fd, TIOCMBIS, &mstat);
 	} else if ( TRX_SYSFS_1 == cfg.trxcntl) {
 		sysfs_gpio_set(cfg.trxcntl_file,"0");
 	} else if ( TRX_SYSFS_0 == cfg.trxcntl) {
