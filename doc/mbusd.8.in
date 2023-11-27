@@ -18,6 +18,7 @@ mbusd \- MODBUS/TCP to MODBUS/RTU gateway.
 .RB [ -m
 .IR mode ]
 .RB [ -t ]
+.RB [ -r ]
 .RB [ -y
 .IR sysfsfile ]
 .RB [ -Y
@@ -67,13 +68,15 @@ Specifies TCP address to bind.
 .IP "\fB-P \fIport\fR"
 Specifies TCP port number.
 .IP \fB-t\fR
-Enable RTS RS-485 data direction control (if not disabled while compile).
+Enable RTS RS-485 data direction control using RTS, active transmit.
+.IP \fB-r\fR
+Enable RTS RS-485 data direction control using RTS, active receive.
 .IP "\fB-y \fIfile\fR"
 Enable RS-485 direction data direction control by writing '1' to file
-for transmitter enable and '0' to file for transmitter disable
+for transmitter enable and '0' to file for transmitter disable.
 .IP "\fB-Y \fIfile\fR"
 Enable RS-485 direction data direction control by writing '0' to file
-for transmitter enable and '1' to file for transmitter disable
+for transmitter enable and '1' to file for transmitter disable.
 .IP "\fB-C \fImaxconn\fR"
 Specifies maximum number of simultaneous TCP connections.
 .IP "\fB-N \fIretries\fR"

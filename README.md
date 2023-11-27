@@ -54,19 +54,19 @@ Usage:
 
        mbusd [-h] [-d] [-L logfile] [-v level] [-c cfgfile] 
              [-p device] [-s speed] [-m mode] [-S]
-             [-t] [-y sysfsfile] [-Y sysfsfile] 
+             [-t] [-r] [-y sysfsfile] [-Y sysfsfile] 
              [-A address] [-P port] [-C maxconn] [-N retries]
-             [-R pause] [-W wait] [-T timeout]
+             [-R pause] [-W wait] [-T timeout] [-b]
 
        -h     Usage help.
        -d     Instruct mbusd not to fork itself (non-daemonize).
        -L logfile
-              Specifies log file name ('-' for logging to STDOUT only, default is /var/log/mbusd.log).
+              Specifies log file name ('-' for logging to STDOUT only, relative path or bare filename
+              will be stored at /var/log, default is /var/log/mbusd.log).
        -v level
-              Specifies  log  verbosity level (0 for errors only, 1 for warnings
-              and 2 for also information messages.) If mbusd was compiled in debug mode,
-              valid log levels are up to 9, where log levels above 2 forces
-              logging of information about additional internal events.
+              Specifies log verbosity level (0 for errors only, 1 for warnings and 2 for informational 
+              messages also). If mbusd was compiled in debug mode, valid log levels are up to 9, 
+              where log levels above 2 adds logging of information about additional internal events.
        -c cfgfile
               Read configuration from cfgfile.
        -p device
@@ -76,27 +76,28 @@ Usage:
        -m mode
               Specifies serial port mode (like 8N1).
        -S     Enable RS-485 support for given serial port device (Linux only)
-       -t     Enable RTS RS-485 data direction control (if not disabled while compile).
+       -t     Enable RTS RS-485 data direction control using RTS, active transmit.
+       -r     Enable RTS RS-485 data direction control using RTS, active receive.
        -y file
               Enable RS-485 direction data direction control by writing '1' to file
-              for transmitter enable and '0' to file for transmitter disable
+              for transmitter enable and '0' to file for transmitter disable.
        -Y file
               Enable RS-485 direction data direction control by writing '0' to file
-              for transmitter enable and '1' to file for transmitter disable
+              for transmitter enable and '1' to file for transmitter disable.
        -A address
-             Specifies TCP address to bind (default 0.0.0.0).
+             Specifies TCP server address to bind (default is 0.0.0.0).
        -P port
-              Specifies TCP port number (default 502).
+              Specifies TCP server port number (default is 502).
        -C maxconn
-              Specifies maximum number of simultaneous TCP connections.
+              Specifies maximum number of simultaneous TCP connections (default is 32).
        -N retries
-              Specifies maximum number of request retries (0 disables retries).
+              Specifies maximum number of request retries (0 disables retries, default is 3).
        -R pause
-              Specifies pause between requests in milliseconds.
+              Specifies pause between requests in milliseconds (default is 100ms).
        -W wait
-              Specifies response wait time in milliseconds.
+              Specifies response wait time in milliseconds (default is 500ms).
        -T timeout
-              Specifies connection timeout value in seconds (0 disables timeout).
+              Specifies connection timeout value in seconds (0 disables timeout, default is 60).
        -b
               Instructs mbusd to reply on a broadcast.
 

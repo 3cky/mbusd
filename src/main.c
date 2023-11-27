@@ -113,7 +113,7 @@ usage(char *exename)
 #endif
    "\n"   
 #ifdef TRXCTL
-   "             [-t] [-y sysfsfile] [-Y sysfsfile]\n"
+   "             [-t] [-r] [-y sysfsfile] [-Y sysfsfile]\n"
 #endif
    "             [-A address] [-P port] [-C maxconn] [-N retries]\n"
    "             [-R pause] [-W wait] [-T timeout] [-b]\n\n"
@@ -121,23 +121,23 @@ usage(char *exename)
    "  -h         : this help\n"
    "  -d         : don't daemonize\n"
 #ifdef LOG
-   "  -L logfile : set log file name (default %s%s, \n"
+   "  -L logfile : set log file name (default is %s%s, \n"
    "               '-' for logging to STDOUT only)\n"
 #ifdef DEBUG
-   "  -v level   : set log level (0-9, default %d, 0 - errors only)\n"
+   "  -v level   : set log level (0-9, default is %d, 0 - errors only)\n"
 #else
    "  -v level   : set log level (0-2, default %d, 0 - errors only)\n"
 #endif
 #endif
    "  -c cfgfile : read configuration from cfgfile\n"
-   "  -p device  : set serial port device name (default %s)\n"
-   "  -s speed   : set serial port speed (default %d)\n"
-   "  -m mode    : set serial port mode (default %s)\n"
+   "  -p device  : set serial port device name (default is %s)\n"
+   "  -s speed   : set serial port speed (default is %d)\n"
+   "  -m mode    : set serial port mode (default is %s)\n"
 #ifdef HAVE_TIOCRS485
    "  -S         : enable Linux RS-485 support for given serial port device\n"
 #endif   
-   "  -A address : set TCP server address to bind (default %s)\n"
-   "  -P port    : set TCP server port number (default %d)\n"
+   "  -A address : set TCP server address to bind (default is %s)\n"
+   "  -P port    : set TCP server port number (default is %d)\n"
 #ifdef TRXCTL
    "  -t         : enable RTS RS-485 data direction control using RTS, active transmit\n"
    "  -r         : enable RTS RS-485 data direction control using RTS, active receive\n"
@@ -145,15 +145,15 @@ usage(char *exename)
    "  -Y         : enable RTS RS-485 data direction control using sysfs file, active receive\n"
 #endif
    "  -C maxconn : set maximum number of simultaneous TCP connections\n"
-   "               (1-%d, default %d)\n"
+   "               (1-%d, default is %d)\n"
    "  -N retries : set maximum number of request retries\n"
-   "               (0-%d, default %d, 0 - without retries)\n"
+   "               (0-%d, default is %d, 0 disables retrying)\n"
    "  -R pause   : set pause between requests in milliseconds\n"
-   "               (1-%d, default %lu)\n"
+   "               (1-%d, default is %lu)\n"
    "  -W wait    : set response wait time in milliseconds\n"
-   "               (1-%d, default %lu)\n"
+   "               (1-%d, default is %lu)\n"
    "  -T timeout : set connection timeout value in seconds\n"
-   "               (0-%d, default %d, 0 - no timeout)\n"
+   "               (0-%d, default is %d, 0 disables timeout)\n"
    "  -b         : enable reply on broadcast"
    "\n", PACKAGE, VERSION, exename,
 #ifdef LOG
