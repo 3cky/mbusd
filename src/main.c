@@ -133,7 +133,7 @@ usage(char *exename)
    "             [-R pause] [-W wait] [-T timeout] [-b]\n\n"
    "Options:\n"
    "  -h         : this help\n"
-   "  -d         : don't daemonize\n"
+   "  -d         : don't fork (non-daemonize)\n"
 #ifdef LOG
    "  -L logfile : set log file name (default is %s%s, \n"
    "               '-' for logging to STDOUT only)\n"
@@ -150,14 +150,16 @@ usage(char *exename)
 #ifdef HAVE_TIOCRS485
    "  -S         : enable Linux RS-485 support for given serial port device\n"
 #endif   
-   "  -A address : set TCP server address to bind (default is %s)\n"
-   "  -P port    : set TCP server port number (default is %d)\n"
 #ifdef TRXCTL
    "  -t         : enable RTS RS-485 data direction control using RTS, active transmit\n"
    "  -r         : enable RTS RS-485 data direction control using RTS, active receive\n"
    "  -y         : enable RTS RS-485 data direction control using sysfs file, active transmit\n"
+   "               (writes '1' to sysfs file for transmit enable, '0' for transmit disable)\n"
    "  -Y         : enable RTS RS-485 data direction control using sysfs file, active receive\n"
+   "               (writes '0' to sysfs file for transmit enable, '1' for transmit disable)\n"
 #endif
+   "  -A address : set TCP server address to bind (default is %s)\n"
+   "  -P port    : set TCP server port number (default is %d)\n"
    "  -C maxconn : set maximum number of simultaneous TCP connections\n"
    "               (1-%d, default is %d)\n"
    "  -N retries : set maximum number of request retries\n"
