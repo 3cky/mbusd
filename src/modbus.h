@@ -35,7 +35,6 @@
 #define _MODBUS_H
 
 #include "globals.h"
-#include "crc16.h"
 
 /*
  * Macro for accessing data in MODBUS frame

@@ -70,7 +70,6 @@ set(mbusd_SOURCES
         src/conn.c
         src/queue.c
         src/modbus.c
-        src/crc16.c
         src/state.c
         src/sig.c
         src/sock.c
