@@ -40,6 +40,7 @@
 #include "conn.h"
 #include "queue.h"
 #include "sig.h"
+#include "util.h"
 #ifdef LOG
 #  include "log.h"
 #endif
@@ -55,20 +56,6 @@ int server_sd = -1;
 ttydata_t tty;
 /* Connections queue descriptor */
 queue_t queue;
-
-static int
-main_is_empty(char *s)
-{
-  char *p = s + strlen(s);
-  if (strlen(s) == 0)
-    return 1;
-  while (p > s && isspace((unsigned char )(*--p)))
-  { //no-op
-  }
-  if (p == s && isspace((unsigned char )(*p)))
-    return 1;
-  return 0;
-}
 
 #ifndef HAVE_DAEMON
 #include <fcntl.h>
@@ -273,14 +260,16 @@ main(int argc, char *argv[])
         }
         break;
       case 'L':
-        if (main_is_empty(optarg))
-        { /* report about invalid log file */
-          printf("%s: -L: missing logfile value\n", exename, optarg);
+        char *logfilenamevalue = strdup(optarg);
+        char *logfilename = util_trim(logfilenamevalue);
+        if (!strlen(logfilename))
+        { /* report about empty log file */
+          printf("%s: -L: log file name is empty, exiting...\n", exename);
           exit(-1);
         }
-        else if (*optarg != '/')
+        else if (*logfilename != '/')
         {
-          if (*optarg == '-')
+          if (*logfilename == '-')
           {
             /* logging to file disabled */
             *cfg.logname = '\0';
@@ -288,10 +277,11 @@ main(int argc, char *argv[])
           else
           { /* concatenate given log file name with default path */
             strncpy(cfg.logname, LOGPATH, INTBUFSIZE);
-            strncat(cfg.logname, optarg, INTBUFSIZE - strlen(cfg.logname));
+            strncat(cfg.logname, logfilename, INTBUFSIZE - strlen(cfg.logname));
           }
         }
-        else strncpy(cfg.logname, optarg, INTBUFSIZE);
+        else strncpy(cfg.logname, logfilename, INTBUFSIZE);
+        free(logfilenamevalue);
         break;
 #endif
       case 'p':
