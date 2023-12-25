@@ -98,6 +98,20 @@ cfg_ltrim(const char *s)
   return (char *) s;
 }
 
+static int
+cfg_is_empty(char *s)
+{
+  char *p = s + strlen(s);
+  if (strlen(s) == 0)
+    return 1;
+  while (p > s && isspace((unsigned char )(*--p)))
+  { //no-op
+  }
+  if (p == s && isspace((unsigned char )(*p)))
+    return 1;
+  return 0;
+}
+
 int
 cfg_handle_param(char *name, char *value)
 {
@@ -231,7 +245,43 @@ cfg_handle_param(char *name, char *value)
   }
   else if (CFG_NAME_MATCH("loglevel"))
   {
-    cfg.dbglvl = (char)strtol(optarg, NULL, 0);
+    cfg.dbglvl = (char)strtol(value, NULL, 0);
+#  ifdef DEBUG
+    if (!(isdigit(*value)) || cfg.dbglvl < 0 || cfg.dbglvl > 9)
+    { /* report about invalid log level */
+      CFG_ERR("invalid loglevel value: %s (must be 0-9)", value);
+#  else
+    if (!(isdigit(*value)) || cfg.dbglvl < 0 || cfg.dbglvl > 2)
+    { /* report about invalid log level */
+      CFG_ERR("invalid loglevel value: %s (must be 0-2)", value);
+#  endif
+      return(0);
+    }
+  }
+  else if (CFG_NAME_MATCH("logfile"))
+  {
+    if (cfg_is_empty(value))
+    {
+      CFG_ERR("missing logfile value", value);
+      return(0);
+    }
+    else if (*value != '/')
+    {
+      if (*value == '-')
+      {
+        /* logging to file disabled */
+        *cfg.logname = '\0';
+      }
+      else
+      { /* concatenate given log file name with default path */
+        strncpy(cfg.logname, LOGPATH, INTBUFSIZE);
+        strncat(cfg.logname, value, INTBUFSIZE - strlen(cfg.logname));
+      }
+    }
+    else strncpy(cfg.logname, value, INTBUFSIZE);
+
+
+    
 #endif
   }
   else {

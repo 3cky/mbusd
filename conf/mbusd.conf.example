@@ -4,6 +4,14 @@
 #                                           #
 #############################################
 
+########## Logging settings #############
+
+# Logging verbosity level
+loglevel = 2
+
+# Logfile (fully-qualified path, or filename [stored at /var/log/] or - for STDOUT only)
+logfile = /var/log/mbus.log
+
 ########## Serial port settings #############
 
 # Serial port device name

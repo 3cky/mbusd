@@ -62,7 +62,7 @@ Usage:
        -d     Instruct mbusd not to fork itself (non-daemonize).
        -L logfile
               Specifies log file name ('-' for logging to STDOUT only, relative path or bare filename
-              will be stored at /var/log, default is /var/log/mbusd.log).
+              will be stored at /var/log, default is /var/log/mbus.log).
        -v level
               Specifies log verbosity level (0 for errors only, 1 for warnings and 2 for informational 
               messages also). If mbusd was compiled in debug mode, valid log levels are up to 9, 
@@ -78,11 +78,11 @@ Usage:
        -S     Enable RS-485 support for given serial port device (Linux only)
        -t     Enable RTS RS-485 data direction control using RTS, active transmit.
        -r     Enable RTS RS-485 data direction control using RTS, active receive.
-       -y file
-              Enable RS-485 direction data direction control by writing '1' to file
+       -y sysfsfile
+              Enable RS-485 direction data direction control by writing '1' to sysfs file
               for transmitter enable and '0' to file for transmitter disable.
-       -Y file
-              Enable RS-485 direction data direction control by writing '0' to file
+       -Y sysfsfile
+              Enable RS-485 direction data direction control by writing '0' to sysfs file
               for transmitter enable and '1' to file for transmitter disable.
        -A address
              Specifies TCP server address to bind (default is 0.0.0.0).
