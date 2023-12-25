@@ -34,8 +34,9 @@
 #include "cfg.h"
 
 #include <stdlib.h>
-#include <ctype.h>
 #include <string.h>
+
+#include "util.h"
 
 #define CFG_MAX_LINE_LENGTH 200
 
@@ -79,37 +80,6 @@ cfg_init(void)
   cfg.respwait = DEFAULT_RESPWAIT;
   cfg.conntimeout = DEFAULT_CONNTIMEOUT;
   cfg.replyonbroadcast=0;
-}
-
-static char *
-cfg_rtrim(char *s)
-{
-  char *p = s + strlen(s);
-  while (p > s && isspace((unsigned char )(*--p)))
-    *p = '\0';
-  return s;
-}
-
-static char *
-cfg_ltrim(const char *s)
-{
-  while (*s && isspace((unsigned char )(*s)))
-    s++;
-  return (char *) s;
-}
-
-static int
-cfg_is_empty(char *s)
-{
-  char *p = s + strlen(s);
-  if (strlen(s) == 0)
-    return 1;
-  while (p > s && isspace((unsigned char )(*--p)))
-  { //no-op
-  }
-  if (p == s && isspace((unsigned char )(*p)))
-    return 1;
-  return 0;
 }
 
 int
@@ -255,15 +225,15 @@ cfg_handle_param(char *name, char *value)
     { /* report about invalid log level */
       CFG_ERR("invalid loglevel value: %s (must be 0-2)", value);
 #  endif
-      return(0);
+      return 0;
     }
   }
   else if (CFG_NAME_MATCH("logfile"))
   {
-    if (cfg_is_empty(value))
+    if (!strlen(value))
     {
       CFG_ERR("missing logfile value", value);
-      return(0);
+      return 0;
     }
     else if (*value != '/')
     {
@@ -279,9 +249,6 @@ cfg_handle_param(char *name, char *value)
       }
     }
     else strncpy(cfg.logname, value, INTBUFSIZE);
-
-
-    
 #endif
   }
   else {
@@ -315,7 +282,7 @@ cfg_parse_file(void *file)
   {
     lineno++;
 
-    start = cfg_ltrim(cfg_rtrim(line));
+    start = util_trim(line);
 
     if (*start == '#')
     {
@@ -330,8 +297,8 @@ cfg_parse_file(void *file)
       {
         *end = '\0';
 
-        name = cfg_rtrim(start);
-        value = cfg_ltrim(cfg_rtrim(end + 1));
+        name = util_rtrim(start);
+        value = util_trim(end + 1);
 
         /* handle name/value pair */
         if (!cfg_handle_param(name, value))

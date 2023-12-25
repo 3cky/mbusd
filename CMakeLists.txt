@@ -73,6 +73,7 @@ set(mbusd_SOURCES
         src/state.c
         src/sig.c
         src/sock.c
+        src/util.c
         )
 add_executable(mbusd ${mbusd_SOURCES})
 install(TARGETS mbusd DESTINATION bin)
