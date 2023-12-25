@@ -40,7 +40,7 @@ extern int isdaemon;
 
 /* Default log file path and name */
 #define LOGPATH "/var/log/"
-#define LOGNAME "mbus.log"
+#define LOGNAME "mbusd.log"
 
 #ifdef LOG
 int log_init(char *logname);

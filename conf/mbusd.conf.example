@@ -10,7 +10,7 @@
 loglevel = 2
 
 # Logfile (fully-qualified path, or filename [stored at /var/log/] or - for STDOUT only)
-logfile = /var/log/mbus.log
+logfile = /var/log/mbusd.log
 
 ########## Serial port settings #############
 
