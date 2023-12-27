@@ -178,6 +178,8 @@ main(int argc, char *argv[])
   char *exename;
   char ttyparity;
   char *end;
+  char *logfilenamevalue;
+  char *logfilename;
 
   sig_init();
 
@@ -260,8 +262,8 @@ main(int argc, char *argv[])
         }
         break;
       case 'L':
-        char *logfilenamevalue = strdup(optarg);
-        char *logfilename = util_trim(logfilenamevalue);
+        logfilenamevalue = strdup(optarg);
+        logfilename = util_trim(logfilenamevalue);
         if (!strlen(logfilename))
         { /* report about empty log file */
           printf("%s: -L: log file name is empty, exiting...\n", exename);
