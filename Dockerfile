@@ -1,4 +1,4 @@
-FROM alpine:latest AS build
+FROM --platform=$BUILDPLATFORM alpine:latest AS build
 RUN apk add --no-cache alpine-sdk cmake linux-headers
 COPY . /mbusd
 WORKDIR /mbusd/build

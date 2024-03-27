@@ -1,4 +1,4 @@
-name: mbusd
+name: build
 
 on:
   push:
