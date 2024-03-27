@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.2] - 2024-03-27
+- Make use of Linux RS-485 support (#97).
+- Add flag `-r` to support inverted RTS flow control(#98).
+- Logging fixes and enhancements (#90).
+- Default log file name changed to `/var/log/mbusd.log`.
+- Fix building on older gcc versions (#100).
+- Add docker image publish github workflow.
+
 ## [0.5.1] - 2022-08-18
 - Add 'reply on broadcast' feature (#75).
 - Fix for "Resource temporarily unavailable" error in tty read() (#78).
@@ -80,6 +88,7 @@
 ## 0.1.1 - 2003-09-13
 ### Initial release
 
+[0.5.2]: https://github.com/3cky/mbusd/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/3cky/mbusd/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/3cky/mbusd/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/3cky/mbusd/compare/v0.3.0...v0.4.0
