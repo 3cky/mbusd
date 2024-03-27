@@ -150,7 +150,7 @@ docker run -d --privileged \
     -p 502:502 \
     -v /dev:/dev \
     -v /path/to/mbusd.conf:/etc/mbusd.conf \
-    3cky/mbusd
+    3cky/mbusd:latest
 ```
 
 where `/path/to/mbusd.conf` is the path to **mbusd** config file in the local filesystem.
