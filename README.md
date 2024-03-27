@@ -137,7 +137,23 @@ To start the **mbusd** service on system boot:
 
 	# systemctl enable mbusd@<serial port>.service
 
-Please check systemd documentation for other usefull systemd [commands](https://wiki.archlinux.org/index.php/systemd)
+Please check systemd documentation for other usefull systemd [commands](https://wiki.archlinux.org/index.php/systemd).
+
+Docker:
+-------
+
+**mbusd** can be launched in Docker container with the following command:
+
+```shell
+docker run -d --privileged \
+    --name=mbusd \
+    -p 502:502 \
+    -v /dev:/dev \
+    -v /path/to/mbusd.conf:/etc/mbusd.conf \
+    3cky/mbusd
+```
+
+where `/path/to/mbusd.conf` is the path to **mbusd** config file in the local filesystem.
 
 Contributing:
 -------------
