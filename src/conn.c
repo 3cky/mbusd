@@ -266,7 +266,8 @@ conn_write(int d, void *buf, size_t nbytes, int istty)
 #ifdef TRXCTL
   if (istty && cfg.trxcntl != TRX_ADDC )
   {
-    tty_delay(DV(nbytes, tty.bpc, cfg.ttyspeed));
+    // one char more delay to prevent too early GPIO switch on some HW
+    tty_delay(DV((nbytes + 1), tty.bpc, cfg.ttyspeed));
     tty_set_rx(d);
   }
 #endif
