@@ -245,8 +245,6 @@ conn_write(int d, void *buf, size_t nbytes, int istty)
 {
   int rc;
   fd_set fs;
-  struct timeval ts, tts;
-  long delay;
 
 #ifdef TRXCTL
   if (istty && cfg.trxcntl != TRX_ADDC)
@@ -840,7 +838,7 @@ conn_loop(void)
               if (curconn->ctr >= MB_DATA_NBYTES)
               {
                 /* compute request data length for fc 15/16 */
-                unsigned int len;
+                unsigned int len = 0;
                 switch (MB_FRAME(curconn->buf, MB_FCODE))
                 {
                   case 15: /* Force Multiple Coils */
