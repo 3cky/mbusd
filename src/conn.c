@@ -810,30 +810,51 @@ conn_loop(void)
 #ifdef DEBUG
                 logw(7, "conn[%s]: read request fc %d", curconn->remote_addr, fc);
 #endif
-                switch (fc)
+								if (cfg.readonlyoption)
                 {
-                  case 1: /* Read Coil Status */
-                  case 2: /* Read Input Status */
-                  case 3: /* Read Holding Registers */
-                  case 4: /* Read Input Registers */
-                  case 5: /* Force Single Coil */
-                  case 6: /* Preset Single Register */
+                  switch (fc)
                   {
-                    /* set data length for requests with fixed length */
-                    conn_fix_request_header_len(curconn, 6);
-                    state_conn_set(curconn, CONN_RQST_TAIL);
-                  }
+                    case 1: /* Read Coil Status */
+                    case 2: /* Read Input Status */
+                    case 3: /* Read Holding Registers */
+                    case 4: /* Read Input Registers */
+                    {
+                      /* set data length for requests with fixed length */
+                      conn_fix_request_header_len(curconn, 6);
+                      state_conn_set(curconn, CONN_RQST_TAIL);
+                    }
                     break;
-                  case 15: /* Force Multiple Coils */
-                  case 16: /* Preset Multiple Registers */
-                    /* will read number of registers/coils to compute request data length */
-                    state_conn_set(curconn, CONN_RQST_NVAL);
+                    default:
+                      /* unknown function code, closing connection */
+                      curconn = conn_close(curconn);
                     break;
-                  default:
-                    /* unknown function code, will rely on data length from header */
-                    state_conn_set(curconn, CONN_RQST_TAIL);
-                    break;
-                }
+                    }
+                } else {
+	                switch (fc)
+	                {
+	                  case 1: /* Read Coil Status */
+	                  case 2: /* Read Input Status */
+	                  case 3: /* Read Holding Registers */
+	                  case 4: /* Read Input Registers */
+	                  case 5: /* Force Single Coil */
+	                  case 6: /* Preset Single Register */
+	                  {
+	                    /* set data length for requests with fixed length */
+	                    conn_fix_request_header_len(curconn, 6);
+	                    state_conn_set(curconn, CONN_RQST_TAIL);
+	                  }
+	                    break;
+	                  case 15: /* Force Multiple Coils */
+	                  case 16: /* Preset Multiple Registers */
+	                    /* will read number of registers/coils to compute request data length */
+	                    state_conn_set(curconn, CONN_RQST_NVAL);
+	                    break;
+	                  default:
+	                    /* unknown function code, will rely on data length from header */
+	                    state_conn_set(curconn, CONN_RQST_TAIL);
+	                    break;
+	                }
+	      				}
               }
             if (curconn->state == CONN_RQST_NVAL)
               if (curconn->ctr >= MB_DATA_NBYTES)
