@@ -50,7 +50,7 @@ cfg_t cfg;
 /* Configuration error message */
 char cfg_err[INTBUFSIZE + 1];
 
-#define CFG_ERR(s, v) snprintf(cfg_err, INTBUFSIZE, s, v)
+#define CFG_ERR(...) snprintf(cfg_err, INTBUFSIZE, __VA_ARGS__)
 
 /*
  * Setting up config defaults
@@ -232,7 +232,7 @@ cfg_handle_param(char *name, char *value)
   {
     if (!strlen(value))
     {
-      CFG_ERR("missing logfile value", value);
+      CFG_ERR("missing logfile value");
       return 0;
     }
     else if (*value != '/')

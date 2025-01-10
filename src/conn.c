@@ -245,8 +245,6 @@ conn_write(int d, void *buf, size_t nbytes, int istty)
 {
   int rc;
   fd_set fs;
-  struct timeval ts, tts;
-  long delay;
 
 #ifdef TRXCTL
   if (istty && cfg.trxcntl != TRX_ADDC)
@@ -266,7 +264,8 @@ conn_write(int d, void *buf, size_t nbytes, int istty)
 #ifdef TRXCTL
   if (istty && cfg.trxcntl != TRX_ADDC )
   {
-    tty_delay(DV(nbytes, tty.bpc, cfg.ttyspeed));
+    // one char more delay to prevent too early GPIO switch on some HW
+    tty_delay(DV((nbytes + 1), tty.bpc, cfg.ttyspeed));
     tty_set_rx(d);
   }
 #endif
@@ -839,7 +838,7 @@ conn_loop(void)
               if (curconn->ctr >= MB_DATA_NBYTES)
               {
                 /* compute request data length for fc 15/16 */
-                unsigned int len;
+                unsigned int len = 0;
                 switch (MB_FRAME(curconn->buf, MB_FCODE))
                 {
                   case 15: /* Force Multiple Coils */

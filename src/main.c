@@ -194,7 +194,7 @@ main(int argc, char *argv[])
   while ((rc = getopt(argc, argv,
                "dh"
 #ifdef TRXCTL
-               "ty:Y:"
+               "try:Y:"
 #endif
 #ifdef HAVE_TIOCRS485
                "S"
