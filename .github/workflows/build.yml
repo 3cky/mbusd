@@ -2,43 +2,44 @@ name: build
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
+  workflow_dispatch:
 
 env:
- BUILD_TYPE: Release
+  BUILD_TYPE: Release
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-            
-    - name: Configure CMake
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
 
-    - name: Build
-      # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      - name: Configure CMake
+        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
-    - name: Install test dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install setuptools wheel twisted pyserial pymodbus==3.6.9
-        sudo apt-get install -y socat
+      - name: Build
+        # Build your program with the given configuration
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    - name: Run tests
-      working-directory: ${{github.workspace}}/build
-      run: make test
-      
-    - name: Show failed test log
-      if: ${{ failure() }}
-      run: cat ${{github.workspace}}/build/Testing/Temporary/LastTest.log
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel twisted pyserial pymodbus==3.6.9
+          sudo apt-get install -y socat
+
+      - name: Run tests
+        working-directory: ${{github.workspace}}/build
+        run: make test
+
+      - name: Show failed test log
+        if: ${{ failure() }}
+        run: cat ${{github.workspace}}/build/Testing/Temporary/LastTest.log
