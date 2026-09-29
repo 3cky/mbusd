@@ -16,6 +16,7 @@ Features:
 * Robustness - can retry requests with mismatched response CRC
 * Flexible RTU modes - speed/parity/stop-bits/timeouts can be configured for RTU network
 * Support for both of automatic and manual (using RTS bit) direction control types for RS-485 transceivers
+* Optional local echo handling for RS-485 adapters that receive their own transmissions
 
 Supported function codes:
 -------------------------
@@ -109,6 +110,36 @@ Configuration file:
 Please see [example configuration file](conf/mbusd.conf.example)
 for complete list of available configuration options.
 
+### RS-485 local echo
+
+Some RS-485 adapters receive a copy of their own transmitted request before the
+slave's response. For an adapter known to behave this way, enable local echo
+handling in the configuration file:
+
+```ini
+local_echo = yes
+```
+
+The default is `no`. This is a configuration-file option; load the file using
+`mbusd -c /path/to/mbusd.conf`.
+
+When enabled, mbusd discards at most one exact copy of the transmitted RTU
+request, including its CRC, before parsing the slave's response. Fragmented
+echoes are buffered, and bytes that do not match the request are preserved for
+normal response parsing. Receiving an echo does not restart the response timeout
+or count as a successful slave response.
+
+Enable this only for adapters that echo transmitted data. The successful replies
+for function codes 05 (Write Single Coil) and 06 (Write Single Register) are
+identical to their requests. On a non-echoing adapter, enabling this option would
+discard those valid acknowledgements and cause a timeout.
+
+This behavior was observed with a Waveshare RS232/RS485/CAN Board on a Raspberry
+Pi 5, using `/dev/ttySC1` to read an Acrel ADL400 meter at 9600 baud, 8N1. This is
+an observation from that setup, not a requirement of Modbus or a claim that all
+RS-485 adapters echo. Automatic transmit-direction control alone does not imply
+local echo.
+
 systemd:
 ---------------
 
@@ -178,17 +209,31 @@ please do not send bug reports via personal email.
 
 ### Building and Testing
 
-Dependencies: please see the correct OS-distribution section in the
- [.gitlab-ci.yml](https://github.com/3cky/mbusd/blob/master/.gitlab-ci.yml)
+The integration suite uses Python 3, `socat`, and the Python packages installed
+by [the GitHub Actions workflow](.github/workflows/build.yml), including
+`pymodbus==3.6.9`, `pyserial`, and `twisted`.
 
-With all dependencies met, one is able to *build and execute tests*
-issuing the following *bash* commands:
+Build and run all tests from the repository root:
+
+```shell
+cmake -S . -B build
+cmake --build build
+(cd build && ctest --output-on-failure)
 ```
-# build
-mkdir output.dir/ && cd $_
-cmake ../ && make
-# execute all tests
-(cd ../ && python tests/run_itests.py output.dir/mbusd)
+
+`tests/run_itests.py` covers Modbus requests against a simulated RTU slave.
+`tests/test_local_echo.py` runs the real mbusd executable against a TCP client
+and pseudo-terminal, using only the Python 3 standard library. It covers
+fragmented and combined echo/response delivery, repeated requests, disabled or
+absent echo, mismatching prefixes, CRC errors, timeouts, slave exceptions, and
+FC05/FC06 acknowledgements. Neither suite requires physical serial hardware.
+
+Run just the local echo regression tests with:
+
+```shell
+python3 tests/test_local_echo.py build/mbusd
+# Or through CTest:
+(cd build && ctest -R local_echo --output-on-failure)
 ```
 
 Author:
@@ -211,6 +256,9 @@ Luuk Loeffen (<luukloeffen@hotmail.com>):
 
 Nick Mayerhofer (<nick.mayerhofer@enchant.at>):
  - CMake build system
+
+Adam Prescott (<adam@nemiah.uk>):
+ - Optional RS-485 local echo handling and regression tests
 
 License:
 --------

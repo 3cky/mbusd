@@ -623,8 +623,40 @@ conn_loop(void)
           state_tty_set(&tty, TTY_PAUSE);
           continue;
         }
-        rc = conn_read(tty.fd, tty.rxbuf + tty.ptrbuf,
-                       tty.rxlen - tty.ptrbuf + tty.rxoffset);
+        if (tty.echo_pending)
+        {
+          /* Never read beyond the candidate echo: the response may already be
+             queued in the same kernel read buffer. Keep partial echoes outside
+             rxbuf so a timeout cannot interpret one as a meter response. */
+          rc = conn_read(tty.fd, tty.echo_buf + tty.echo_len,
+                         tty.txlen - tty.echo_len);
+          if (rc > 0)
+          {
+            tty.echo_len += rc;
+            if (memcmp(tty.echo_buf, tty.txbuf, tty.echo_len) == 0)
+            {
+              if (tty.echo_len == tty.txlen)
+              {
+                tty.echo_pending = false;
+#ifdef LOG
+                logw(5, "tty: discarded local request echo (%u bytes)", tty.echo_len);
+#endif
+              }
+              /* Preserve the original response deadline, even after echo. */
+              rc = RC_EAGAIN;
+            }
+            else
+            {
+              /* Not an echo. Replay every byte through normal response parsing. */
+              memcpy(tty.rxbuf, tty.echo_buf, tty.echo_len);
+              rc = tty.echo_len;
+              tty.echo_pending = false;
+            }
+          }
+        }
+        else
+          rc = conn_read(tty.fd, tty.rxbuf + tty.ptrbuf,
+                         tty.rxlen - tty.ptrbuf + tty.rxoffset);
         if (rc == RC_EAGAIN)
         { /* some tty devices seem to be set as ready to be read by select()
              while no data is available (see #78) */
