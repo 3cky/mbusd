@@ -587,6 +587,13 @@ conn_loop(void)
                 break;
               case 3:
               case 4:
+              case 23: /* Read/Write Multiple Registers (0x17): the read part of the
+                          response has the same [addr][fc][byteCount][data][crc] layout
+                          as FC3/4, with byteCount = readQty*2 and the readQty low byte
+                          at txbuf[5]. Without this, FC23 fell through to `default`
+                          (rxlen = TTY_BUFSIZE), so the response timer below was NOT
+                          extended for the reply's transmit time and large replies were
+                          truncated -> CRC error -> exception 4. */
                 tty.rxlen = 5 + tty.txbuf[5] * 2;
                 break;
               case 7:
@@ -663,6 +670,7 @@ conn_loop(void)
                 case 2:
                 case 3:
                 case 4:
+                case 23: /* FC23 read response length = 5 + byteCount, same as FC3/4 */
                   i = 5 + tty.rxbuf[tty.rxoffset + 2];
                   break;
                 default:
