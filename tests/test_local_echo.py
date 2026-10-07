@@ -118,6 +118,29 @@ def main():
         case(args.binary, label, True, chunks, bytes([1, 0x83, 4 if label.startswith('bad') else 0x0b]))
     exception = b'\x01\x83\x02'
     case(args.binary, 'meter exception after echo', True, lambda req: [req + crc(exception)], exception)
+    # FC15 has the same long-request/short-reply geometry as FC16. Exercise
+    # both a small request and the maximum 1968 coils (255 bytes including CRC).
+    for coils in (16, 1968):
+        byte_count = (coils + 7) // 8
+        request = struct.pack('>BBHHB', 1, 15, 0, coils, byte_count) + b'\x55' * byte_count
+        reply = request[:6]
+        case(args.binary, f'FC15 {coils} coils with echo', True,
+             lambda req: [req + crc(reply)], reply, request=request)
+        case(args.binary, f'FC15 {coils} coils without echo', True,
+             lambda req: [crc(reply)], reply, request=request)
+        case(args.binary, f'FC15 {coils} coils echo alone cannot count as acknowledgement', True,
+             lambda req: [req], bytes([1, 0x8f, 0x0b]), request=request)
+        case(args.binary, f'damaged FC15 {coils} coils followed by excess serial data', True,
+             lambda req: [req[:-1] + bytes([req[-1] ^ 1]), b'\x55' * 1024],
+             bytes([1, 0x8f, 4]), request=request, repeat=2)
+    request = bytes.fromhex('01 0f 0000 0010 02 5555')
+    reply = request[:6]
+    case(args.binary, 'fragmented FC15 echo and response', True,
+         lambda req: [req[:7], req[7:], crc(reply)[:3], crc(reply)[3:]],
+         reply, request=request)
+    case(args.binary, 'fragmented damaged FC15 echo followed by excess serial data', True,
+         lambda req: [req[:7], req[7:-1] + bytes([req[-1] ^ 1]), b'\x55' * 1024],
+         bytes([1, 0x8f, 4]), request=request)
     # FC16 requests can be much longer than their 8-byte replies. Replaying
     # a damaged echo must not underflow the next read length, even with more
     # than a buffer's worth of serial data following it (PR #135).
