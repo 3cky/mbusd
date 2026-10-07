@@ -226,7 +226,9 @@ cmake --build build
 and pseudo-terminal, using only the Python 3 standard library. It covers
 fragmented and combined echo/response delivery, repeated requests, disabled or
 absent echo, mismatching prefixes, CRC errors, timeouts, slave exceptions, and
-FC05/FC06 acknowledgements. Neither suite requires physical serial hardware.
+FC05/FC06 acknowledgements, and damaged FC16 echoes longer than the expected
+reply (including maximum-length requests and excess trailing serial data).
+Neither suite requires physical serial hardware.
 
 Run just the local echo regression tests with:
 

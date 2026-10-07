@@ -618,12 +618,15 @@ conn_loop(void)
     {
       if (tty.state == TTY_RESP)
       {
-        if (tty.rxlen - tty.ptrbuf + tty.rxoffset <= 0) {
-          tcflush(tty.fd, TCIFLUSH);
-          state_tty_set(&tty, TTY_PAUSE);
-          continue;
+        unsigned int rxend = MIN(tty.rxlen + tty.rxoffset, TTY_BUFSIZE);
+        /* A replayed echo candidate can exceed the expected response length.
+           Check before subtracting, and never read beyond the actual buffer. */
+        if (tty.ptrbuf >= rxend)
+        {
+          state_tty_set(&tty, TTY_PROC);
+          rc = RC_EAGAIN;
         }
-        if (tty.echo_pending)
+        else if (tty.echo_pending)
         {
           /* Never read beyond the candidate echo: the response may already be
              queued in the same kernel read buffer. Keep partial echoes outside
@@ -656,7 +659,7 @@ conn_loop(void)
         }
         else
           rc = conn_read(tty.fd, tty.rxbuf + tty.ptrbuf,
-                         tty.rxlen - tty.ptrbuf + tty.rxoffset);
+                         rxend - tty.ptrbuf);
         if (rc == RC_EAGAIN)
         { /* some tty devices seem to be set as ready to be read by select()
              while no data is available (see #78) */
@@ -680,8 +683,8 @@ conn_loop(void)
             /* we received more than 3 bytes from header - address, request id and bytes count */
             if (!tty.rxoffset) {
               /* offset is unknown */
-              unsigned char i;
-              for (i = 0; i < tty.ptrbuf - tty.rxoffset + rc - 1; i++) {
+              unsigned int i;
+              for (i = 0; i + 2 < tty.ptrbuf + rc; i++) {
                 if (tty.rxbuf[i] == tty.txbuf[0] && tty.rxbuf[i+1] == tty.txbuf[1]) {
 #ifdef DEBUG
                   logw(5, "tty: rx offset is %d", i);
@@ -713,7 +716,7 @@ conn_loop(void)
           }
           tty.ptrbuf += rc;
           logw(5, "tty: read %d bytes of %d, offset %d", tty.ptrbuf, tty.rxlen + tty.rxoffset, tty.rxoffset);
-          if (tty.ptrbuf == tty.rxlen + tty.rxoffset)
+          if (tty.ptrbuf >= MIN(tty.rxlen + tty.rxoffset, TTY_BUFSIZE))
             state_tty_set(&tty, TTY_PROC);
         }
       }

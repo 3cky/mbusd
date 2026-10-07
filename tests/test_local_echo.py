@@ -118,6 +118,23 @@ def main():
         case(args.binary, label, True, chunks, bytes([1, 0x83, 4 if label.startswith('bad') else 0x0b]))
     exception = b'\x01\x83\x02'
     case(args.binary, 'meter exception after echo', True, lambda req: [req + crc(exception)], exception)
+    # FC16 requests can be much longer than their 8-byte replies. Replaying
+    # a damaged echo must not underflow the next read length, even with more
+    # than a buffer's worth of serial data following it (PR #135).
+    for registers in (2, 123):
+        request = struct.pack('>BBHHB', 1, 16, 0, registers, registers * 2) + b'\x00\x01' * registers
+        reply = request[:6]
+        case(args.binary, f'FC16 {registers} registers with echo', True,
+             lambda req: [req + crc(reply)], reply, request=request)
+        case(args.binary, f'FC16 {registers} registers without echo', True,
+             lambda req: [crc(reply)], reply, request=request)
+        case(args.binary, f'damaged FC16 {registers} registers followed by excess serial data', True,
+             lambda req: [req[:-1] + bytes([req[-1] ^ 1]), b'\x55' * 1024],
+             bytes([1, 0x90, 4]), request=request, repeat=2)
+    request = bytes.fromhex('01 10 0000 0002 04 0001 0002')
+    case(args.binary, 'fragmented damaged FC16 echo followed by excess serial data', True,
+         lambda req: [req[:7], req[7:-1] + bytes([req[-1] ^ 1]), b'\x55' * 1024],
+         bytes([1, 0x90, 4]), request=request)
     for function in (5, 6):
         request = bytes([1, function, 0, 1, 0, 0])
         case(args.binary, f'FC{function:02} identical echo and write reply', True, lambda req: [req + req], request, request=request)
