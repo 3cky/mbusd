@@ -152,6 +152,8 @@ state_tty_set(ttydata_t *mod, int state)
 #endif
       break;
     case TTY_RESP:
+      mod->echo_pending = cfg.local_echo;
+      mod->echo_len = 0;
       mod->ptrbuf = 0;
       mod->rxoffset = 0;
       /* XXX need real recv length? */

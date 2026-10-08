@@ -80,6 +80,8 @@ typedef struct
   unsigned long respwait;
   /* reply to client on broadcast */
   int replyonbroadcast;
+  /* Discard one exact echoed RTU request before parsing the response. */
+  bool local_echo;
 } cfg_t;
 
 /* Prototypes */

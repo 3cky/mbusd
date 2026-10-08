@@ -111,6 +111,13 @@ add_test(
 	COMMAND ${BASH} -c "cd ${CMAKE_CURRENT_SOURCE_DIR}/tests && ./run_itests.sh $<TARGET_FILE:mbusd>"
 )
 
+# Hardware-free echo regression tests (Python 3 standard library only).
+add_test(
+    NAME local_echo
+    COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_local_echo.py $<TARGET_FILE:mbusd>
+)
+set_tests_properties(local_echo PROPERTIES TIMEOUT 30)
+
 ## Please find Packaging stuff following
 #@source http://xit0.org/2013/04/cmake-use-git-branch-and-commit-details-in-project/
 # Get the current working branch

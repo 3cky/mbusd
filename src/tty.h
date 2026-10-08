@@ -114,8 +114,11 @@ typedef struct
   unsigned long timer;          /* time tracking variable */
   unsigned int txlen;           /* tx data length */
   unsigned int rxlen;           /* rx data length */
-  unsigned char ptrbuf;         /* ptr in the buffer */
+  unsigned int ptrbuf;         /* ptr in the buffer */
   unsigned char rxoffset;       /* ptr in the buffer */
+  bool echo_pending;            /* compare at most one echo per transmission */
+  unsigned int echo_len;
+  unsigned char echo_buf[TTY_BUFSIZE];
   unsigned char txbuf[TTY_BUFSIZE]; /* transmitting buffer */
   unsigned char rxbuf[TTY_BUFSIZE]; /* receiving buffer */
 } ttydata_t;

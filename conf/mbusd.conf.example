@@ -59,3 +59,7 @@ wait = 500
 
 # Reply on Broadcast
 replyonbroadcast = no
+
+# Discard exactly one locally echoed RTU request, including CRC.
+# Enable only for adapters which echo TX; FC05/06 replies may equal requests.
+# local_echo = no
