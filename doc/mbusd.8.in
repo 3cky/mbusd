@@ -17,6 +17,7 @@ mbusd \- MODBUS/TCP to MODBUS/RTU gateway.
 .IR speed ]
 .RB [ -m
 .IR mode ]
+.RB [ -e ]
 .RB [ -t ]
 .RB [ -r ]
 .RB [ -y
@@ -61,6 +62,11 @@ Specifies serial port device name.
 Specifies serial port speed.
 .IP "\fB-m \fImode\fR"
 Specifies serial port mode (like 8N1).
+.IP \fB-e\fR
+Discard one locally echoed RTU request, including its CRC, for each transmission.
+Enable only for serial adapters that echo transmitted data.
+This enables the local_echo configuration setting, which is disabled by default.
+Place this option after \fB-c\fR to override the configuration file setting.
 .IP \fB-S\fR
 Enable RS-485 support for given serial port device (Linux only).
 .IP "\fB-A \fIaddress\fR"

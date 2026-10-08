@@ -30,7 +30,7 @@ def exact(sock, count):
     return data
 
 
-def case(binary, name, echo, chunks, expected, request=b'\x01\x03\x08\x00\x00\x02', omit_option=False, repeat=1):
+def case(binary, name, echo, chunks, expected, request=b'\x01\x03\x08\x00\x00\x02', omit_option=False, repeat=1, cli_options=()):
     master, slave = pty.openpty()
     with socket.socket() as port_socket:
         port_socket.bind(('127.0.0.1', 0))
@@ -45,7 +45,7 @@ def case(binary, name, echo, chunks, expected, request=b'\x01\x03\x08\x00\x00\x0
                 if not omit_option:
                     file.write(f'local_echo = {"yes" if echo else "no"}\n')
             with open(directory + '/log', 'w+') as log:
-                process = subprocess.Popen([binary, '-d', '-L', '-', '-c', config], stdout=log, stderr=log)
+                process = subprocess.Popen([binary, '-d', '-L', '-', '-c', config, *cli_options], stdout=log, stderr=log)
                 try:
                     deadline = time.monotonic() + 3
                     while True:
@@ -109,6 +109,10 @@ def main():
     case(args.binary, 'fragmented echo and response', True, lambda req: [bytes([b]) for b in req + frame], response)
     case(args.binary, 'no echo with option enabled', True, lambda req: [frame], response)
     case(args.binary, 'default off', False, lambda req: [frame], response, omit_option=True)
+    case(args.binary, 'command-line echo enabled', False, lambda req: [req + frame], response,
+         omit_option=True, cli_options=('-e',))
+    case(args.binary, 'command-line echo overrides config off', False, lambda req: [req + frame], response,
+         cli_options=('-e',))
     case(args.binary, 'mismatch after shared request prefix', True, lambda req: [frame[:3], frame[3:]], response,
          request=b'\x01\x03\x04\x00\x00\x02')
     for label, chunks in [('echo only', lambda req: [req]), ('partial echo', lambda req: [req[:4]]),

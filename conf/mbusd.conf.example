@@ -62,4 +62,5 @@ replyonbroadcast = no
 
 # Discard exactly one locally echoed RTU request, including CRC.
 # Enable only for adapters which echo TX; FC05/06 replies may equal requests.
+# Can also be enabled with -e on the command line
 # local_echo = no

@@ -108,7 +108,7 @@ usage(char *exename)
    "[-L logfile] [-v level] "
 #endif
    "[-c cfgfile] \n"
-   "             [-p device] [-s speed] [-m mode]"
+   "             [-p device] [-s speed] [-m mode] [-e]"
 #ifdef HAVE_TIOCRS485
    " [-S]"
 #endif
@@ -134,6 +134,7 @@ usage(char *exename)
    "  -p device  : set serial port device name (default is %s)\n"
    "  -s speed   : set serial port speed (default is %d)\n"
    "  -m mode    : set serial port mode (default is %s)\n"
+   "  -e         : discard local echo of transmitted RTU requests\n"
 #ifdef HAVE_TIOCRS485
    "  -S         : enable Linux RS-485 support for given serial port device\n"
 #endif
@@ -192,7 +193,7 @@ main(int argc, char *argv[])
 
   /* command line argument list parsing */
   while ((rc = getopt(argc, argv,
-               "dh"
+               "deh"
 #ifdef TRXCTL
                "try:Y:"
 #endif
@@ -210,6 +211,9 @@ main(int argc, char *argv[])
         exit(-1);
       case 'd':
         isdaemon = FALSE;
+        break;
+      case 'e':
+        cfg.local_echo = true;
         break;
       case 'c':
         if ((err_line = cfg_read_file(optarg)) != 0)
